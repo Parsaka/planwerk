@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "planwerk"
+version = "0.1.0"
+description = "Controlling and planning platform on SAP S/4HANA-shaped data with an AI controlling assistant (simulated Nordwerk GmbH)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Parsa Kamali" }]
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "pyarrow>=15",
+  "duckdb>=1.0",
+  "scikit-learn>=1.4",
+  "pyyaml>=6",
+  "sqlglot>=25",
+]
+
+[project.optional-dependencies]
+dbt = ["dbt-duckdb>=1.8"]
+snowflake = ["dbt-snowflake>=1.8"]
+reporting = ["openpyxl>=3.1", "python-pptx>=0.6.23", "matplotlib>=3.8"]
+assistant = ["langgraph>=0.2", "mcp>=1.0", "openai>=1.40"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+planwerk-generate = "planwerk.generator.run:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]
