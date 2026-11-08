@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import datetime
 import hashlib
 import json
@@ -107,8 +108,13 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--profile", default="dev", choices=sorted(C.PROFILES))
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", type=Path, default=C.REPO_ROOT / "data" / "raw")
+    ap.add_argument("--noise-level", type=float, default=1.0,
+                    help="scale of random demand and cost noise; 0 = exploratory noise-free run (not the main scenario)")
     a = ap.parse_args(argv)
-    generate(GeneratorConfig(seed=a.seed, profile=a.profile, out_dir=a.out))
+    scenario = main_scenario()
+    if a.noise_level != 1.0:
+        scenario = dataclasses.replace(scenario, noise_level=a.noise_level)
+    generate(GeneratorConfig(seed=a.seed, profile=a.profile, out_dir=a.out), scenario)
 
 
 if __name__ == "__main__":

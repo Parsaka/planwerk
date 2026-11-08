@@ -17,3 +17,4 @@ reports/out/
 .terraform/
 data/audit/
 sac/import/
+data/explore/
