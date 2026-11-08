@@ -1,5 +1,7 @@
 -- Primary fixed-cost variance per cost centre and account, year to date, constant currency.
 -- variance = plan - actual (positive = favourable). Responsibility view (before the BAB).
+-- Row-level security on Snowflake: row access policy per cost-centre owner (no-op on DuckDB).
+{{ config(post_hook="{{ apply_cost_centre_policy(this) }}") }}
 with months as (select distinct fiscal_month as to_month from {{ ref('dim_period') }}),
 base as (
     select cast(left(period, 4) as integer) as fiscal_year, cast(right(period, 2) as integer) as fiscal_month,

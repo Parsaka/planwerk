@@ -1,0 +1,684 @@
+# Data contract between the S/4HANA extract and the Planwerk warehouse. Checked by tests/test_contracts.py
+# on every CI run; dbt marts with consumers additionally have enforced dbt model contracts.
+contract: s4_sources
+version: 1.0.0
+owner: Plattform-Owner Planwerk
+consumer: dbt staging (models/staging)
+source: S/4HANA extract (simulated Nordwerk GmbH, generator v0.1.0)
+sla:
+  delivery: workday 2 after period end
+  completeness: all documents of the period, row counts in manifest.json
+  freshness: period end + 2 workdays
+rules:
+- Every listed column is present with the listed type; extra columns are allowed (additive changes).
+- Primary key columns are not null and unique.
+- 'Removing or retyping a column is a breaking change: new major version, announced one closing in advance.'
+- Amounts are signed (debit positive, credit negative) in HSL/KSL/TSL; currencies in RHCUR/RKCUR/RWCUR.
+tables:
+  ACDOCA:
+    primary_key:
+    - RBUKRS
+    - GJAHR
+    - BELNR
+    - DOCLN
+    columns:
+    - name: RCLNT
+      type: string
+    - name: RLDNR
+      type: string
+    - name: RBUKRS
+      type: string
+    - name: GJAHR
+      type: string
+    - name: BELNR
+      type: string
+    - name: DOCLN
+      type: string
+    - name: RYEAR
+      type: string
+    - name: POPER
+      type: string
+    - name: BUDAT
+      type: date
+    - name: BLDAT
+      type: date
+    - name: BLART
+      type: string
+    - name: RACCT
+      type: string
+    - name: KOKRS
+      type: string
+    - name: RCNTR
+      type: string
+    - name: PRCTR
+      type: string
+    - name: RTCUR
+      type: string
+    - name: RHCUR
+      type: string
+    - name: RKCUR
+      type: string
+    - name: TSL
+      type: decimal
+    - name: HSL
+      type: decimal
+    - name: KSL
+      type: decimal
+    - name: MSL
+      type: decimal
+    - name: RUNIT
+      type: string
+    - name: DRCRK
+      type: string
+    - name: KOART
+      type: string
+    - name: KUNNR
+      type: string
+    - name: LIFNR
+      type: string
+    - name: MATNR
+      type: string
+    - name: WERKS
+      type: string
+    - name: AUFNR
+      type: string
+    - name: KDAUF
+      type: string
+    - name: KDPOS
+      type: string
+    - name: MATKL_MM
+      type: string
+    - name: KDGRP
+      type: string
+    - name: AWTYP
+      type: string
+    - name: AWREF
+      type: string
+    - name: NETDT
+      type: date
+    - name: AUGBL
+      type: string
+    - name: AUGDT
+      type: date
+    - name: MWSKZ
+      type: string
+    - name: SGTXT
+      type: string
+  ACDOCP:
+    primary_key: []
+    columns:
+    - name: RCLNT
+      type: string
+    - name: RLDNR
+      type: string
+    - name: CATEGORY
+      type: string
+    - name: RBUKRS
+      type: string
+    - name: RYEAR
+      type: string
+    - name: POPER
+      type: string
+    - name: FISCYEARPER
+      type: string
+    - name: RACCT
+      type: string
+    - name: KOKRS
+      type: string
+    - name: RCNTR
+      type: string
+    - name: PRCTR
+      type: string
+    - name: MATKL_MM
+      type: string
+    - name: KDGRP
+      type: string
+    - name: RHCUR
+      type: string
+    - name: HSL
+      type: decimal
+    - name: RKCUR
+      type: string
+    - name: KSL
+      type: decimal
+    - name: MSL
+      type: decimal
+    - name: RUNIT
+      type: string
+    - name: PLAN_FX_EUR_PLN
+      type: decimal
+  AFKO:
+    primary_key:
+    - AUFNR
+    columns:
+    - name: AUFNR
+      type: string
+    - name: MATNR
+      type: string
+    - name: GAMNG
+      type: decimal
+    - name: WERKS
+      type: string
+    - name: BUKRS
+      type: string
+    - name: KOSTL
+      type: string
+    - name: GLTRI
+      type: date
+    - name: KDAUF
+      type: string
+    - name: KDPOS
+      type: string
+    - name: AUART
+      type: string
+  ALLOC_KEYS:
+    primary_key: []
+    columns:
+    - name: BUKRS
+      type: string
+    - name: KOSTL
+      type: string
+    - name: KEY_ENERGY
+      type: decimal
+    - name: KEY_MAINT
+      type: decimal
+    - name: KEY_IT
+      type: decimal
+  BKPF:
+    primary_key:
+    - BUKRS
+    - BELNR
+    - GJAHR
+    columns:
+    - name: BUKRS
+      type: string
+    - name: BELNR
+      type: string
+    - name: GJAHR
+      type: string
+    - name: BLART
+      type: string
+    - name: BLDAT
+      type: date
+    - name: BUDAT
+      type: date
+    - name: MONAT
+      type: string
+    - name: CPUDT
+      type: date
+    - name: USNAM
+      type: string
+    - name: WAERS
+      type: string
+    - name: XBLNR
+      type: string
+    - name: AWTYP
+      type: string
+    - name: AWREF
+      type: string
+    - name: BSTAT
+      type: string
+  BSEG:
+    primary_key:
+    - BUKRS
+    - BELNR
+    - GJAHR
+    - BUZEI
+    columns:
+    - name: BUKRS
+      type: string
+    - name: BELNR
+      type: string
+    - name: GJAHR
+      type: string
+    - name: BUZEI
+      type: string
+    - name: HKONT
+      type: string
+    - name: KOART
+      type: string
+    - name: SHKZG
+      type: string
+    - name: DMBTR
+      type: decimal
+    - name: WRBTR
+      type: decimal
+    - name: KUNNR
+      type: string
+    - name: LIFNR
+      type: string
+    - name: KOSTL
+      type: string
+    - name: PRCTR
+      type: string
+    - name: AUGBL
+      type: string
+    - name: AUGDT
+      type: date
+    - name: NETDT
+      type: date
+    - name: MWSKZ
+      type: string
+    - name: SGTXT
+      type: string
+  CEPC:
+    primary_key:
+    - PRCTR
+    columns:
+    - name: KOKRS
+      type: string
+    - name: PRCTR
+      type: string
+    - name: BUKRS
+      type: string
+    - name: KTEXT
+      type: string
+    - name: DATAB
+      type: string
+    - name: DATBI
+      type: string
+  CSKS:
+    primary_key:
+    - KOKRS
+    - KOSTL
+    - DATBI
+    columns:
+    - name: KOKRS
+      type: string
+    - name: KOSTL
+      type: string
+    - name: BUKRS
+      type: string
+    - name: KTEXT
+      type: string
+    - name: LTEXT
+      type: string
+    - name: KOSAR
+      type: string
+    - name: CM_LEVEL
+      type: string
+    - name: VERAK
+      type: string
+    - name: PRCTR
+      type: string
+    - name: WAERS
+      type: string
+    - name: HEADCOUNT
+      type: integer
+    - name: DATAB
+      type: string
+    - name: DATBI
+      type: string
+  DISCOUNT_COND:
+    primary_key: []
+    columns:
+    - name: KSCHL
+      type: string
+    - name: KDGRP
+      type: string
+    - name: KBETR
+      type: decimal
+  DRIVERS:
+    primary_key: []
+    columns:
+    - name: period
+      type: string
+    - name: ppi_total_industry
+      type: decimal
+    - name: ppi_basic_metals
+      type: decimal
+    - name: ppi_rubber_plastics
+      type: decimal
+    - name: ppi_energy_d35
+      type: decimal
+    - name: ppi_intermediate_goods
+      type: decimal
+    - name: ppi_machinery
+      type: decimal
+    - name: eur_pln
+      type: decimal
+    - name: dayahead_eur_mwh
+      type: decimal
+    - name: lci_de
+      type: decimal
+    - name: lci_at
+      type: decimal
+    - name: lci_pl
+      type: decimal
+    - name: year
+      type: integer
+    - name: month
+      type: integer
+  EKKO:
+    primary_key:
+    - EBELN
+    columns:
+    - name: EBELN
+      type: string
+    - name: BUKRS
+      type: string
+    - name: BSART
+      type: string
+    - name: LIFNR
+      type: string
+    - name: BEDAT
+      type: date
+    - name: WAERS
+      type: string
+  EKPO:
+    primary_key:
+    - EBELN
+    - EBELP
+    columns:
+    - name: EBELN
+      type: string
+    - name: EBELP
+      type: string
+    - name: MATNR
+      type: string
+    - name: MENGE
+      type: decimal
+    - name: NETPR
+      type: decimal
+    - name: NETWR
+      type: decimal
+    - name: WERKS
+      type: string
+    - name: MEINS
+      type: string
+  KNA1:
+    primary_key:
+    - KUNNR
+    columns:
+    - name: KUNNR
+      type: string
+    - name: NAME1
+      type: string
+    - name: LAND1
+      type: string
+    - name: ORT01
+      type: string
+    - name: KTOKD
+      type: string
+    - name: BRSCH
+      type: string
+    - name: STCEG
+      type: string
+    - name: ERDAT
+      type: string
+    - name: LOEVM
+      type: string
+  KNVV:
+    primary_key: []
+    columns:
+    - name: KUNNR
+      type: string
+    - name: VKORG
+      type: string
+    - name: VTWEG
+      type: string
+    - name: SPART
+      type: string
+    - name: KDGRP
+      type: string
+    - name: ZTERM
+      type: string
+    - name: WAERS
+      type: string
+    - name: WEIGHT
+      type: decimal
+    - name: PAY_DELAY_MEAN
+      type: decimal
+  LFA1:
+    primary_key:
+    - LIFNR
+    columns:
+    - name: LIFNR
+      type: string
+    - name: NAME1
+      type: string
+    - name: LAND1
+      type: string
+    - name: ORT01
+      type: string
+    - name: KTOKK
+      type: string
+    - name: BUKRS
+      type: string
+    - name: CATEGORY
+      type: string
+    - name: ZTERM
+      type: string
+  MARA:
+    primary_key:
+    - MATNR
+    columns:
+    - name: MATNR
+      type: string
+    - name: MTART
+      type: string
+    - name: MATKL
+      type: string
+    - name: MAKTX
+      type: string
+    - name: MEINS
+      type: string
+    - name: LIST_PRICE_2022
+      type: decimal
+    - name: BASE_PRICE
+      type: decimal
+    - name: POPULARITY
+      type: decimal
+    - name: DRIVER
+      type: string
+    - name: ERSDA
+      type: string
+  MARC:
+    primary_key: []
+    columns:
+    - name: MATNR
+      type: string
+    - name: WERKS
+      type: string
+    - name: BESKZ
+      type: string
+    - name: DISMM
+      type: string
+    - name: PLIFZ
+      type: integer
+  MBEW:
+    primary_key: []
+    columns:
+    - name: MATNR
+      type: string
+    - name: BDATJ
+      type: integer
+    - name: STPRS
+      type: decimal
+    - name: PEINH
+      type: integer
+    - name: VPRSV
+      type: string
+  PRICE_LIST:
+    primary_key: []
+    columns:
+    - name: MATNR
+      type: string
+    - name: VKORG
+      type: string
+    - name: DATAB
+      type: string
+    - name: DATBI
+      type: string
+    - name: VERSION
+      type: string
+    - name: KBETR
+      type: decimal
+    - name: KONWA
+      type: string
+  SKA1:
+    primary_key:
+    - SAKNR
+    columns:
+    - name: KTOPL
+      type: string
+    - name: SAKNR
+      type: string
+    - name: TXT50
+      type: string
+    - name: XBILK
+      type: string
+    - name: GLACCOUNT_TYPE
+      type: string
+    - name: KATYP
+      type: string
+    - name: GKV_POSITION
+      type: string
+    - name: CM_BLOCK
+      type: string
+  STPO:
+    primary_key: []
+    columns:
+    - name: MATNR
+      type: string
+    - name: POSNR
+      type: string
+    - name: IDNRK
+      type: string
+    - name: MENGE
+      type: decimal
+    - name: MEINS
+      type: string
+  T001:
+    primary_key:
+    - BUKRS
+    columns:
+    - name: BUKRS
+      type: string
+    - name: BUTXT
+      type: string
+    - name: ORT01
+      type: string
+    - name: LAND1
+      type: string
+    - name: WAERS
+      type: string
+    - name: KTOPL
+      type: string
+    - name: KKBER
+      type: string
+    - name: PERIV
+      type: string
+  T001W:
+    primary_key: []
+    columns:
+    - name: WERKS
+      type: string
+    - name: NAME1
+      type: string
+    - name: BWKEY
+      type: string
+    - name: BUKRS
+      type: string
+    - name: LAND1
+      type: string
+  VBAK:
+    primary_key:
+    - VBELN
+    columns:
+    - name: VBELN
+      type: string
+    - name: ERDAT
+      type: date
+    - name: AUART
+      type: string
+    - name: VKORG
+      type: string
+    - name: KUNNR
+      type: string
+    - name: KDGRP
+      type: string
+    - name: NETWR
+      type: decimal
+    - name: WAERK
+      type: string
+    - name: ZTERM
+      type: string
+  VBAP:
+    primary_key:
+    - VBELN
+    - POSNR
+    columns:
+    - name: VBELN
+      type: string
+    - name: POSNR
+      type: string
+    - name: MATNR
+      type: string
+    - name: MATKL
+      type: string
+    - name: KWMENG
+      type: decimal
+    - name: NETPR
+      type: decimal
+    - name: NETWR
+      type: decimal
+    - name: WERKS
+      type: string
+    - name: VRKME
+      type: string
+    - name: EDATU
+      type: date
+  VBRK:
+    primary_key:
+    - VBELN
+    columns:
+    - name: VBELN
+      type: string
+    - name: BUKRS
+      type: string
+    - name: FKDAT
+      type: date
+    - name: NETWR
+      type: decimal
+    - name: MWSBK
+      type: decimal
+    - name: WAERK
+      type: string
+    - name: ZTERM
+      type: string
+    - name: AUBEL
+      type: string
+    - name: FKART
+      type: string
+    - name: VKORG
+      type: string
+    - name: KUNRG
+      type: string
+  VBRP:
+    primary_key:
+    - VBELN
+    - POSNR
+    columns:
+    - name: VBELN
+      type: string
+    - name: POSNR
+      type: string
+    - name: MATNR
+      type: string
+    - name: MATKL
+      type: string
+    - name: FKIMG
+      type: decimal
+    - name: NETWR
+      type: decimal
+    - name: AUBEL
+      type: string
+    - name: WAVWR_EUR
+      type: decimal
+    - name: AUPOS
+      type: string
+    - name: PRCTR
+      type: string
+    - name: WERKS
+      type: string

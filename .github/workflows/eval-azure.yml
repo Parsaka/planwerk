@@ -1,0 +1,36 @@
+name: eval-azure-openai
+
+# Model-quality part of the Q3 eval with the real Azure OpenAI deployment. Manual only (costs
+# money), runs in the protected environment "eval", authenticates with OIDC (no stored secret).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    environment: eval
+    timeout-minutes: 30
+    env:
+      AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+      AZURE_OPENAI_DEPLOYMENT: ${{ vars.AZURE_OPENAI_DEPLOYMENT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: pip install -e ".[dbt,assistant,azure,dev]"
+      - run: make generate dbt forecast PROFILE=ci
+      - run: python -m planwerk.assistant.eval --provider azure --out q3-eval-azure.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: q3-eval-azure
+          path: q3-eval-azure.json
