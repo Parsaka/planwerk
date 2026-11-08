@@ -5,7 +5,7 @@ export PLANWERK_RAW ?= $(CURDIR)/data/raw
 export PLANWERK_DUCKDB ?= $(CURDIR)/data/warehouse/planwerk.duckdb
 DBT_FLAGS = --project-dir $(CURDIR)/dbt --profiles-dir $(CURDIR)/dbt
 
-.PHONY: install generate dbt test lint forecast backtest liquidity assistant mcp eval reports all clean
+.PHONY: install generate dbt test lint forecast backtest liquidity assistant mcp q1 sac eval reports all clean
 
 install:
 	pip install -e ".[dbt,reporting,assistant,dev]"
@@ -41,11 +41,17 @@ mcp:                 ## run the MCP server (stdio)
 eval:                ## Q3: golden set and commentary evaluation of the AI assistant
 	python -m planwerk.assistant.eval
 
-reports:             ## German Excel month-end report and steering-committee deck
+q1:                  ## Q1: variance bridge evaluation against the injected ground truth
+	python -m planwerk.controlling.q1_evaluation
+
+sac:                 ## SAC Planning import files (dimensions, facts, driver basis)
+	python -m planwerk.sac.export
+
+reports: q1          ## German Excel month-end report and steering-committee deck
 	python -m planwerk.reporting.excel_report
 	python -m planwerk.reporting.deck
 
-all: generate dbt forecast backtest liquidity eval reports
+all: generate dbt forecast backtest liquidity q1 eval sac reports
 
 clean:
 	rm -rf data/raw data/warehouse dbt/target reports/out

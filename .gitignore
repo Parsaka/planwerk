@@ -16,3 +16,4 @@ reports/out/
 *.tfstate.*
 .terraform/
 data/audit/
+sac/import/

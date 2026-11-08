@@ -1,0 +1,69 @@
+{
+  "year": 2025,
+  "plan_db2_eur": 98416236.29,
+  "actual_db2_eur": 93928796.56,
+  "gap_db2_eur": -4487439.72,
+  "bridge": {
+    "volume_effect": -1930838.2,
+    "mix_effect": -709639.0,
+    "price_effect": -2161745.13,
+    "var_cost_effect": 311846.32,
+    "sales_deduction_effect": 20120.45,
+    "fixed_cost_db2_effect": -475325.03,
+    "fx_effect_db2": 458140.87
+  },
+  "closure_abs_eur": 1.1734664440155029e-07,
+  "recovery": [
+    {
+      "effect": "price_pg10",
+      "injected_eur": -2065032.58,
+      "measured_eur": -2151974.19,
+      "difference_eur": -86941.61,
+      "tolerance_eur": 206503.26,
+      "recovered": true,
+      "note": "PVM price effect of PG10 (group)"
+    },
+    {
+      "effect": "demand_shift (mix)",
+      "injected_eur": -668429.37,
+      "measured_eur": -709639.0,
+      "difference_eur": -41209.63,
+      "tolerance_eur": 66842.94,
+      "recovered": true,
+      "note": "group mix effect"
+    },
+    {
+      "effect": "volume_level + customer_loss (volume)",
+      "injected_eur": -5933864.58,
+      "measured_eur": -1930838.2,
+      "difference_eur": 4003026.38,
+      "tolerance_eur": 593386.46,
+      "recovered": false,
+      "note": "group volume effect at plan prices; contains the random demand of the single realisation"
+    },
+    {
+      "effect": "one_off_1410_2025-06",
+      "injected_eur": -450000.0,
+      "measured_eur": -448949.58,
+      "difference_eur": 1050.42,
+      "tolerance_eur": 50000.0,
+      "recovered": true,
+      "note": "cost centre 1410, account 701000, month 2025-06"
+    }
+  ],
+  "realisation": {
+    "revenue_actual_eur": 262711023.29,
+    "revenue_expected_eur": 256099721.08,
+    "revenue_realisation_vs_expected": 0.0258,
+    "db2_actual_eur": 93928796.56,
+    "db2_expected_eur": 90511053.05
+  },
+  "criteria": {
+    "c1_bridge_closes": true,
+    "c2_effects_recovered": false,
+    "c2_recovered_count": "3/4",
+    "c3_cost_centre_coverage": 1.0,
+    "c3_met": true
+  },
+  "h1_met": false
+}
