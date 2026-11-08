@@ -15,7 +15,7 @@ Planwerk answers three questions that were fixed, with thresholds, before any an
 
 | | Question | Result |
 |---|---|---|
-| Q1 | Where does the 4.5 M EUR gap in contribution margin II against plan come from (price, volume, mix, cost; which cost centre)? | Bridge closes to the cent, 100 % of the cost deviation sits on named cost centres. Of four injected effects, three are recovered within tolerance; the volume effect is not. **H1 not met.** |
+| Q1 | Where does the 4.5 M EUR gap in contribution margin II against plan come from (price, volume, mix, cost; which cost centre)? | Bridge closes to the cent, 100 % of the cost deviation sits on named cost centres. Of four injected effects, three are recovered within tolerance; the volume effect is not, because one year's demand fluctuation swamps it (shown over six runs). **H1 not met.** |
 | Q2 | How many months earlier does a rolling ML forecast flag a missed annual target than straight-line extrapolation? | Over 200 simulated scenarios the median lead is 0 months (target: 2). ML has no false alarms against 11.3 % for straight-line. **H2 not met.** |
 | Q3 | Can AI write the German month-end commentary with 100 % correct figures and save half the controller's time? | 39/39 commentaries with every figure correct, also with a deliberately hostile model; 200/200 golden-set questions; 0 of 80 injection attempts succeeded. Time saving needs a practising controller: **open.** |
 

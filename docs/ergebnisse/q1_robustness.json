@@ -1,0 +1,185 @@
+{
+  "note": "Exploratory, not pre-registered. The H1 verdict stays as in q1_evaluation.json.",
+  "runs": [
+    {
+      "run": "seed42 (main)",
+      "gap_db2_eur": -4487439.72,
+      "revenue_realisation_vs_expected": 0.0258,
+      "bridge_closes": true,
+      "cost_centre_coverage": 1.0,
+      "effects": {
+        "price_pg10": {
+          "injected": -2065032.58,
+          "measured": -2151974.19,
+          "recovered": true
+        },
+        "demand_shift (mix)": {
+          "injected": -668429.37,
+          "measured": -709639.0,
+          "recovered": true
+        },
+        "volume_level + customer_loss (volume)": {
+          "injected": -5933864.58,
+          "measured": -1930838.2,
+          "recovered": false
+        },
+        "one_off_1410_2025-06": {
+          "injected": -450000.0,
+          "measured": -448949.58,
+          "recovered": true
+        }
+      }
+    },
+    {
+      "run": "seed123",
+      "gap_db2_eur": -6429347.51,
+      "revenue_realisation_vs_expected": 0.018,
+      "bridge_closes": true,
+      "cost_centre_coverage": 1.0,
+      "effects": {
+        "price_pg10": {
+          "injected": -2052427.52,
+          "measured": -2064970.62,
+          "recovered": true
+        },
+        "demand_shift (mix)": {
+          "injected": -635593.52,
+          "measured": -808581.32,
+          "recovered": false
+        },
+        "volume_level + customer_loss (volume)": {
+          "injected": -6845740.53,
+          "measured": -4105049.23,
+          "recovered": false
+        },
+        "one_off_1410_2025-06": {
+          "injected": -450000.0,
+          "measured": -443658.94,
+          "recovered": true
+        }
+      }
+    },
+    {
+      "run": "seed2024",
+      "gap_db2_eur": -9442920.14,
+      "revenue_realisation_vs_expected": -0.0125,
+      "bridge_closes": true,
+      "cost_centre_coverage": 1.0,
+      "effects": {
+        "price_pg10": {
+          "injected": -2060961.52,
+          "measured": -1981806.53,
+          "recovered": true
+        },
+        "demand_shift (mix)": {
+          "injected": -661687.17,
+          "measured": -286976.31,
+          "recovered": false
+        },
+        "volume_level + customer_loss (volume)": {
+          "injected": -6173973.03,
+          "measured": -8308740.53,
+          "recovered": false
+        },
+        "one_off_1410_2025-06": {
+          "injected": -450000.0,
+          "measured": -403439.14,
+          "recovered": true
+        }
+      }
+    },
+    {
+      "run": "seed31415",
+      "gap_db2_eur": -8843382.38,
+      "revenue_realisation_vs_expected": -0.0071,
+      "bridge_closes": true,
+      "cost_centre_coverage": 1.0,
+      "effects": {
+        "price_pg10": {
+          "injected": -2060017.92,
+          "measured": -2019724.1,
+          "recovered": true
+        },
+        "demand_shift (mix)": {
+          "injected": -691618.99,
+          "measured": -410661.77,
+          "recovered": false
+        },
+        "volume_level + customer_loss (volume)": {
+          "injected": -6331078.22,
+          "measured": -7554569.11,
+          "recovered": false
+        },
+        "one_off_1410_2025-06": {
+          "injected": -450000.0,
+          "measured": -430231.15,
+          "recovered": true
+        }
+      }
+    },
+    {
+      "run": "seed42_noise0",
+      "gap_db2_eur": -4420811.53,
+      "revenue_realisation_vs_expected": 0.025,
+      "bridge_closes": true,
+      "cost_centre_coverage": 1.0,
+      "effects": {
+        "price_pg10": {
+          "injected": -2065032.58,
+          "measured": -2156418.88,
+          "recovered": true
+        },
+        "demand_shift (mix)": {
+          "injected": -668429.37,
+          "measured": -598285.29,
+          "recovered": false
+        },
+        "volume_level + customer_loss (volume)": {
+          "injected": -5933864.58,
+          "measured": -2057730.8,
+          "recovered": false
+        },
+        "one_off_1410_2025-06": {
+          "injected": -450000.0,
+          "measured": -449923.35,
+          "recovered": true
+        }
+      }
+    },
+    {
+      "run": "seed7",
+      "gap_db2_eur": -6666771.42,
+      "revenue_realisation_vs_expected": 0.0153,
+      "bridge_closes": true,
+      "cost_centre_coverage": 1.0,
+      "effects": {
+        "price_pg10": {
+          "injected": -2057797.3,
+          "measured": -2168871.33,
+          "recovered": true
+        },
+        "demand_shift (mix)": {
+          "injected": -631218.19,
+          "measured": -1298362.6,
+          "recovered": false
+        },
+        "volume_level + customer_loss (volume)": {
+          "injected": -6479106.36,
+          "measured": -4075213.76,
+          "recovered": false
+        },
+        "one_off_1410_2025-06": {
+          "injected": -450000.0,
+          "measured": -459274.12,
+          "recovered": true
+        }
+      }
+    }
+  ],
+  "recovered_per_effect": {
+    "demand_shift (mix)": "1/6",
+    "one_off_1410_2025-06": "6/6",
+    "price_pg10": "6/6",
+    "volume_level + customer_loss (volume)": "0/6"
+  }
+}
