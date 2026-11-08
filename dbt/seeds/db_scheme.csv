@@ -1,0 +1,4 @@
+cm_level,db_line,sort,text_de
+DB2,FIX_DB2,20,Fertigungs- und materialnahe Fixkosten
+DB3,FIX_DB3,30,Bereichsfixkosten Vertrieb Service Logistik
+UNT,FIX_UNT,40,Unternehmensfixkosten

@@ -143,6 +143,7 @@ ACCOUNTS = {
     "380000": dict(text="Umsatzsteuer", kind="B", gkv="", cm=""),
     "039000": dict(text="Kumulierte Abschreibungen", kind="B", gkv="", cm=""),
     "390000": dict(text="Sonstige Verbindlichkeiten / Rückstellungen", kind="B", gkv="", cm=""),
+    "290000": dict(text="Eigenkapital (Gewinnvortrag, Ausschüttungen)", kind="B", gkv="", cm=""),
 }
 COMPONENT_ACCOUNT = {"STAHL": "500000", "KUNST": "501000", "ELEK": "502000", "HAWA": "503000"}
 

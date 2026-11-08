@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
 import json
 import time
@@ -69,6 +70,7 @@ def generate(cfg: GeneratorConfig, scenario: Scenario | None = None, write: bool
         columns={"RBUKRS": "BUKRS", "DOCLN": "BUZEI", "RACCT": "HKONT", "DRCRK": "SHKZG", "HSL": "DMBTR",
                  "TSL": "WRBTR", "RCNTR": "KOSTL"})
     tables["DRIVERS"] = drivers.drop(columns=["quarter"])
+    tables["PRICE_LIST"], tables["DISCOUNT_COND"] = M.price_conditions(md, scenario)
     if write:
         _write(cfg, tables, scenario, truth, time.time() - t0, log)
     tables["_ground_truth"] = truth  # type: ignore[assignment]
@@ -83,6 +85,11 @@ def _write(cfg: GeneratorConfig, tables: dict, scenario: Scenario, truth: dict, 
         df = df.copy()
         for c in df.columns:
             if df[c].dtype == object:
+                sample = df[c].dropna()
+                first = sample.iloc[0] if len(sample) else ""
+                if isinstance(first, datetime.date):
+                    df[c] = pd.to_datetime(df[c]).astype("datetime64[s]").dt.date
+                    continue
                 df[c] = df[c].astype("string")
         df.to_parquet(out / f"{name.lower()}.parquet", index=False)
         counts[name] = len(df)

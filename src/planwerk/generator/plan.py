@@ -32,6 +32,15 @@ def _material_split(md: MasterData) -> pd.DataFrame:
     return pd.concat([s, hawa], ignore_index=True)[["MATKL", "RACCT", "SHARE"]]
 
 
+def _skonto_rate(md: MasterData) -> pd.DataFrame:
+    """Expected cash discount as share of net revenue per company code and customer group."""
+    k = md.knvv.assign(Z=(md.knvv["ZTERM"] == "Z014").astype(float) * md.knvv["WEIGHT"])
+    g = k.groupby(["VKORG", "KDGRP"]).agg(Z=("Z", "sum"), W=("WEIGHT", "sum")).reset_index()
+    vat = g["VKORG"].map(lambda b: C.COMPANY_CODES[b]["vat"])
+    g["SKONTO_RATE"] = g["Z"] / g["W"] * 0.75 * C.PAYMENT_TERMS["Z014"]["skonto"] * (1 + vat)
+    return g.rename(columns={"VKORG": "BUKRS"})[["BUKRS", "KDGRP", "SKONTO_RATE"]]
+
+
 def build_plan(md: MasterData, drivers: pd.DataFrame, scenario: Scenario, scale: float,
                years=(2023, 2024, 2025)) -> pd.DataFrame:
     split = _material_split(md)
@@ -51,7 +60,14 @@ def build_plan(md: MasterData, drivers: pd.DataFrame, scenario: Scenario, scale:
         mat["MSL"] = 0.0
         mat["RCNTR"] = [C.PRODUCTION_CC.get((b, g), "") for b, g in zip(mat["BUKRS"], mat["MATKL"])]
         mat.loc[mat["MATKL"] == "PG40", "RCNTR"] = ""
-        sl = pd.concat([rev, mat], ignore_index=True)
+        # expected cash discounts (Skonti): customers with terms Z014, 75 % take the 2 % on gross
+        sk = sales.merge(_skonto_rate(md), on=["BUKRS", "KDGRP"], how="left").fillna({"SKONTO_RATE": 0.0})
+        sk["RACCT"] = "409000"
+        sk["HSL"] = sk["REVENUE"] * sk["SKONTO_RATE"]
+        sk["MSL"] = 0.0
+        sk["RCNTR"] = ""
+        sk = sk[sk["HSL"] > 0]
+        sl = pd.concat([rev, mat, sk], ignore_index=True)
         sl["PRCTR"] = [_pc_for_pg(b, g) for b, g in zip(sl["BUKRS"], sl["MATKL"])]
         sl["MATKL_MM"] = sl["MATKL"]
         sl["RUNIT"] = np.where(sl["RACCT"].isin(["400000", "405000"]),

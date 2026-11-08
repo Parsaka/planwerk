@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: stg_s4__journal_lines
+    description: Universal Journal (ACDOCA) with readable names. Grain = one line item.
+    columns:
+      - name: company_code
+        tests: [not_null, {relationships: {to: ref('stg_s4__company_codes'), field: company_code}}]
+      - name: document_number
+        tests: [not_null]
+      - name: gl_account
+        tests: [not_null, {relationships: {to: ref('stg_s4__gl_accounts'), field: gl_account}}]
+      - name: cost_centre
+        tests: [{relationships: {to: ref('stg_s4__cost_centres'), field: cost_centre}}]
+      - name: debit_credit
+        tests: [{accepted_values: {values: ['S', 'H']}}]
+      - name: period
+        tests: [not_null]
+  - name: stg_s4__plan_lines
+    columns:
+      - name: plan_category
+        tests: [{accepted_values: {values: ['PLN']}}]
+      - name: gl_account
+        tests: [{relationships: {to: ref('stg_s4__gl_accounts'), field: gl_account}}]
+  - name: stg_s4__cost_centres
+    columns:
+      - name: cm_level
+        tests: [not_null, {accepted_values: {values: ['HILF', 'DB2', 'DB3', 'UNT']}}]
+      - name: valid_from
+        tests: [not_null]
+  - name: stg_s4__gl_accounts
+    columns:
+      - name: gl_account
+        tests: [unique, not_null]
+  - name: stg_s4__billing_items
+    columns:
+      - name: material_group
+        tests: [{accepted_values: {values: ['PG10', 'PG20', 'PG30', 'PG40', 'PG50']}}]
+  - name: stg_s4__customers
+    columns:
+      - name: customer
+        tests: [not_null]

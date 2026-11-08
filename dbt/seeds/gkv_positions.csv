@@ -1,0 +1,11 @@
+gkv_position,sort,text_de,sign_display
+01_UMSATZ,1,1. Umsatzerlöse,-1
+02_BESTAND,2,2. Erhöhung oder Verminderung des Bestands an fertigen Erzeugnissen,-1
+05A_MATERIAL_RHB,5,5. a) Aufwendungen für Roh- Hilfs- und Betriebsstoffe und für bezogene Waren,-1
+05B_MATERIAL_LEIST,6,5. b) Aufwendungen für bezogene Leistungen,-1
+06A_PERSONAL_LOHN,7,6. a) Löhne und Gehälter,-1
+06B_PERSONAL_SOZIAL,8,6. b) Soziale Abgaben,-1
+07_ABSCHREIBUNG,9,7. a) Abschreibungen auf Sachanlagen,-1
+08_SONST_BETR_AUFW,10,8. Sonstige betriebliche Aufwendungen (saldiert),-1
+13_ZINSAUFWAND,13,13. Zinsen und ähnliche Aufwendungen,-1
+14_STEUERN_EE,14,14. Steuern vom Einkommen und vom Ertrag,-1

@@ -34,14 +34,19 @@ is assigned to named cost centres (not "Sonstige").
 **Method.** Price-volume-mix decomposition (PVM) on DB I (revenue minus variable cost of goods sold at standard), cost variance per cost element
 and cost centre on DB II, following the standard controlling convention:
 
-| Effect | Formula (per product group *g*) |
+| Effect | Formula (per cell *c* = company code × product group × customer group) |
 |---|---|
-| Volume | (Q_ist,total − Q_plan,total) × plan mix share_g × plan unit margin_g |
-| Mix | Q_ist,total × (mix share_ist,g − mix share_plan,g) × plan unit margin_g |
-| Price | Q_ist,g × (P_ist,g − P_plan,g) |
-| Cost (variable) | Q_ist,g × (c_plan,g − c_ist,g) |
+| Price | Σ items Q × (P_ist − P_plan), P_plan = budget price list × (1 − standard discount) |
+| Variable cost | Σ items Q × (standard cost − actual material cost of the item's production order) |
+| Volume | (V_ist / V_plan − 1) × DB I_plan, where V = revenue at plan prices, per company code |
+| Mix | (DB I at plan prices and standard cost for actual quantities − DB I_plan) − volume |
 | Fixed cost | Σ cost centre (Plan − Ist) for fixed cost elements |
 | Currency | DB at actual FX rate − DB at plan FX rate (company code 3000, PLN) |
+
+Revision 1 (2026-11-08, during implementation; no result was ever computed with the original
+unit-based definition): volume is measured as revenue at plan
+prices instead of units, because units are not additive across product groups (pieces vs.
+service hours). The four DB I effects still add up exactly to DB I actual − DB I plan.
 
 All effects are signed so that a positive value improves DB (favourable). Price, volume,
 mix and variable cost are computed at plan FX rates (constant currency); the currency
@@ -77,8 +82,9 @@ the straight-line method.
 **Method.** Backtest over ≥ 200 simulated scenarios (different seeds and effect sizes, about
 half of them with a true miss) plus the main 2025 scenario. Methods compared:
 (a) straight-line extrapolation, (b) seasonal naive (prior-year shape), (c) ML
-(gradient-boosted regression on order intake lags, seasonality and driver indices),
-trained only on data before the forecast month (no leakage, checked by test).
+(gradient-boosted regression of the monthly DB I deviation from budget on order intake versus
+budget revenue, recent DB I deviation, calendar month and horizon; fixed costs = remaining budget
+at the YTD run-rate), trained only on data before the forecast month (no leakage, checked by test).
 
 **Success criteria.** Median lead time advantage of (c) over (a) ≥ 2 months **and**
 false-alarm rate (c) ≤ false-alarm rate (a). Results are reported with interquartile range.

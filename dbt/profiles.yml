@@ -1,0 +1,21 @@
+# Credentials never live in this file; Snowflake values come from environment variables
+# (GitHub Actions: OIDC -> key pair stored as an encrypted secret, see docs/betrieb/runbook.md).
+planwerk:
+  target: "{{ env_var('PLANWERK_TARGET', 'duckdb') }}"
+  outputs:
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('PLANWERK_DUCKDB', '../data/warehouse/planwerk.duckdb') }}"
+      threads: 4
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'unset') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', 'unset') }}"
+      authenticator: snowflake_jwt
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH', '') }}"
+      role: PLANWERK_TRANSFORMER
+      warehouse: PLANWERK_WH
+      database: PLANWERK
+      schema: analytics
+      threads: 8
+      query_tag: planwerk-dbt

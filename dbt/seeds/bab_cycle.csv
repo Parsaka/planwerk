@@ -1,0 +1,7 @@
+company_code,step,sender,allocation_key,description
+1000,1,1130,key_it,IT nach Köpfen
+1000,2,1400,key_energy,Energie nach MWh-Schlüssel
+1000,3,1410,key_maintenance,Instandhaltung nach Maschinenstunden
+2000,1,2400,key_energy,Energie nach MWh-Schlüssel
+3000,1,3400,key_energy,Energie nach MWh-Schlüssel
+3000,2,3410,key_maintenance,Instandhaltung nach Maschinenstunden

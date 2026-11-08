@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: mart_db_statement_monthly
+    description: Mehrstufige Deckungsbeitragsrechnung (DB I bis Betriebsergebnis) per period and company code, IST and PLAN.
+    columns:
+      - name: version
+        tests: [{accepted_values: {values: ['IST', 'PLAN']}}]
+      - name: fix_unallocated_eur
+        description: Costs left on service cost centres after the BAB. Must be zero.
+  - name: mart_cost_centre_monthly
+    description: Cost-centre report after the BAB (primary, received, sent, total).
+  - name: mart_pvm_cells
+    description: Price-volume-mix effects of DB I per company code x product group x customer group, year to date.
+  - name: mart_cost_variance
+    description: Primary fixed-cost variance per cost centre and account, year to date (responsibility view).
+  - name: mart_db2_bridge
+    description: Bridge budget -> actual DB II and operating result, YTD, per company code and group. Positive = favourable.
+    config:
+      contract: {enforced: true}
+    columns:
+      - {name: fiscal_year, data_type: integer}
+      - {name: to_month, data_type: integer}
+      - {name: scope, data_type: varchar}
+      - {name: plan_db2_eur, data_type: double}
+      - {name: volume_effect, data_type: double}
+      - {name: mix_effect, data_type: double}
+      - {name: price_effect, data_type: double}
+      - {name: var_cost_effect, data_type: double}
+      - {name: sales_deduction_effect, data_type: double}
+      - {name: fixed_cost_db2_effect, data_type: double}
+      - {name: fx_effect_db2, data_type: double}
+      - {name: actual_db2_eur, data_type: double}
+      - {name: residual_db2, data_type: double}
+      - {name: plan_operating_result_eur, data_type: double}
+      - {name: fixed_cost_db3_effect, data_type: double}
+      - {name: fixed_cost_unt_effect, data_type: double}
+      - {name: other_effect, data_type: double}
+      - {name: fx_effect_operating, data_type: double}
+      - {name: actual_operating_result_eur, data_type: double}
+  - name: mart_kpi_monthly
+    description: KPI table (actual, plan, variance) per period and scope; interface of the AI assistant.
+    config:
+      contract: {enforced: true}
+    columns:
+      - {name: period, data_type: varchar, tests: [not_null]}
+      - {name: fiscal_year, data_type: integer}
+      - {name: fiscal_month, data_type: integer}
+      - {name: scope, data_type: varchar, tests: [{accepted_values: {values: ['1000', '2000', '3000', 'GRUPPE']}}]}
+      - {name: kpi, data_type: varchar}
+      - {name: actual_eur, data_type: double}
+      - {name: plan_eur, data_type: double}
+      - {name: variance_eur, data_type: double}
+      - {name: variance_pct, data_type: double}
+  - name: mart_gkv_pnl
+    description: GuV nach § 275 Abs. 2 HGB (Gesamtkostenverfahren).
+  - name: mart_reconciliation_co_gkv
+    description: Überleitung Betriebsergebnis CO -> operatives Ergebnis GuV. residual_eur must be zero.

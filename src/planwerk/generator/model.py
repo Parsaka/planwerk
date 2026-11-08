@@ -56,6 +56,27 @@ def local_price_level(bukrs: str) -> float:
     return lvl
 
 
+def price_conditions(md: MasterData, scenario: Scenario) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Sales price list per material, sales organisation and year (condition table, A004/KONP
+    style) in two versions: ACT (price list actually in force) and PLN (price list the budget
+    assumed). Plus the standard discount per customer group (condition K007 style)."""
+    m = md.mara[md.mara["MTART"].isin(["FERT", "HAWA", "DIEN"])][["MATNR", "MATKL", "LIST_PRICE_2022"]]
+    rows = []
+    for bukrs, cc in C.COMPANY_CODES.items():
+        lvl = local_price_level(bukrs)
+        for y in (2023, 2024, 2025):
+            for version, inc in (("ACT", scenario.price_increase_actual), ("PLN", scenario.price_increase_plan)):
+                # the plan of year y knows the actual list prices of earlier years
+                f = m["MATKL"].map(lambda g: list_price_factor(
+                    {yy: (inc[yy] if yy == y else scenario.price_increase_actual[yy]) for yy in inc}, y, g))
+                rows.append(pd.DataFrame(dict(MATNR=m["MATNR"], VKORG=bukrs, DATAB=f"{y}-01-01", DATBI=f"{y}-12-31",
+                                              VERSION=version, KBETR=(m["LIST_PRICE_2022"] * f * lvl).round(2),
+                                              KONWA=cc["currency"])))
+    prices = pd.concat(rows, ignore_index=True)
+    disc = pd.DataFrame([dict(KSCHL="K007", KDGRP=k, KBETR=v["discount"]) for k, v in C.SEGMENTS.items()])
+    return prices, disc
+
+
 def material_weights(md: MasterData) -> pd.DataFrame:
     m = md.mara[md.mara["MTART"].isin(["FERT", "HAWA", "DIEN"])][["MATNR", "MATKL", "POPULARITY",
                                                                   "LIST_PRICE_2022"]]

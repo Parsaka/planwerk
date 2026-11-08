@@ -1,0 +1,16 @@
+user_name,role,cost_centre
+controller,CONTROLLER,*
+geschaeftsfuehrung,MANAGEMENT,*
+leitung_fertigung_pumpen,CC_OWNER,1500
+leitung_fertigung_pumpen,CC_OWNER,1520
+leitung_instandhaltung,CC_OWNER,1410
+leitung_vertrieb_inland,CC_OWNER,1600
+leitung_vertrieb_export,CC_OWNER,1610
+leitung_service,CC_OWNER,1700
+leitung_it,CC_OWNER,1130
+geschaeftsfuehrung_at,CC_OWNER,2100
+geschaeftsfuehrung_at,CC_OWNER,2400
+geschaeftsfuehrung_at,CC_OWNER,2500
+geschaeftsfuehrung_at,CC_OWNER,2600
+geschaeftsfuehrung_at,CC_OWNER,2700
+geschaeftsfuehrung_at,CC_OWNER,2800

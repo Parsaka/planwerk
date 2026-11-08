@@ -1,0 +1,67 @@
+version: 2
+
+sources:
+  - name: s4
+    description: >
+      SIMULATED S/4HANA extract of the fictional Nordwerk group (Track B). On DuckDB the tables
+      are read directly from the generator's Parquet files; on Snowflake they are loaded into
+      schema S4_RAW by `python -m planwerk.load.snowflake`.
+    schema: s4_raw
+    meta:
+      external_location: "read_parquet('{{ env_var('PLANWERK_RAW', '../data/raw') }}/{name}.parquet')"
+    tables:
+      - name: t001
+        description: Company codes
+      - name: t001w
+        description: Plants
+      - name: ska1
+        description: G/L accounts of chart of accounts NWKR incl. HGB GKV mapping and contribution-margin block
+      - name: cepc
+        description: Profit centres
+      - name: csks
+        description: Cost centres with validity intervals (DATAB/DATBI), source of the SCD2 dimension
+      - name: mara
+        description: Material master
+      - name: marc
+        description: Material plant data
+      - name: mbew
+        description: Standard prices per fiscal year
+      - name: stpo
+        description: Bill of material items (lite)
+      - name: kna1
+        description: Customer master (general data)
+      - name: knvv
+        description: Customer sales data (customer group KDGRP, payment terms)
+      - name: lfa1
+        description: Vendor master
+      - name: alloc_keys
+        description: Statistical key figures for the BAB allocation
+      - name: acdoca
+        description: Universal Journal line items (actuals, ledger 0L)
+        loaded_at_field: budat
+      - name: acdocp
+        description: Plan line items (category PLN = budget)
+      - name: bkpf
+        description: Accounting document headers
+      - name: bseg
+        description: FI line item compatibility view
+      - name: vbak
+        description: Sales order headers
+      - name: vbap
+        description: Sales order items
+      - name: vbrk
+        description: Billing document headers
+      - name: vbrp
+        description: Billing document items
+      - name: afko
+        description: Production orders (make-to-order)
+      - name: ekko
+        description: Purchase order headers
+      - name: ekpo
+        description: Purchase order items
+      - name: price_list
+        description: Sales price conditions per material, sales org and year (versions ACT and PLN)
+      - name: discount_cond
+        description: Standard discount per customer group (condition K007)
+      - name: drivers
+        description: REAL macro drivers (Eurostat/Destatis PPI, Eurostat LCI, ECB FX, SMARD power)

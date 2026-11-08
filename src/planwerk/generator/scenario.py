@@ -57,7 +57,7 @@ class Scenario:
         2025: dict(PG10=0.040, PG20=0.030, PG30=0.030, PG40=0.040, PG50=0.035),
     })
     year_volume_actual: dict = field(default_factory=lambda: dict(YEAR_VOLUME))
-    year_volume_plan: dict = field(default_factory=lambda: {2023: 1.01, 2024: 0.99, 2025: 0.98})
+    year_volume_plan: dict = field(default_factory=lambda: {2023: 1.01, 2024: 0.99, 2025: 1.00})
     customer_losses: list = field(default_factory=lambda: [
         CustomerLoss("2000", "03", 0.10, "2025-04",
                      "Rahmenvertrag mit größtem Kommunalkunden in Österreich verloren (Ausschreibung)"),
@@ -91,17 +91,18 @@ def main_scenario() -> Scenario:
 def random_scenario(index: int, base_seed: int = 7) -> Scenario:
     """Variation of the main scenario for the Q2 backtest.
 
-    Roughly half of the draws end up missing the DB II target by more than 2 %.
+    The ranges are set so that roughly half of the draws miss the DB II target by more than 2 %
+    (checked in the backtest summary: n_miss vs n_no_miss).
     """
     rng = np.random.default_rng([base_seed, index])
     s = Scenario(name=f"bt{index:03d}")
     s.price_increase_actual = copy.deepcopy(PRICE_INCREASE)
-    pg10 = float(rng.uniform(0.0, 0.05))
+    pg10 = float(rng.uniform(0.01, 0.065))
     s.price_increase_actual[2025]["PG10"] = pg10
     s.year_volume_actual = dict(YEAR_VOLUME)
-    s.year_volume_actual[2025] = float(rng.uniform(0.94, 1.03))
+    s.year_volume_actual[2025] = float(rng.uniform(0.97, 1.07))
     start_shift = int(rng.integers(2, 11))
-    shift = float(rng.uniform(0.80, 1.08))
+    shift = float(rng.uniform(0.86, 1.10))
     s.demand_shifts = [
         DemandShift(None, None, shift, f"2025-{start_shift:02d}", "Nachfrageschock (Backtest)"),
     ]

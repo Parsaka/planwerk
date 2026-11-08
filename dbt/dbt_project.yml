@@ -1,0 +1,48 @@
+name: planwerk
+version: "0.1.0"
+config-version: 2
+profile: planwerk
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+target-path: target
+clean-targets: [target, dbt_packages, logs]
+
+vars:
+  # data window and the "as of" date for open items / liquidity
+  first_period: "2023-01"
+  last_period: "2025-12"
+  as_of_date: "2025-12-31"
+  # user for row-level security demo on DuckDB (Snowflake uses CURRENT_USER())
+  planwerk_user: "controller"
+
+models:
+  planwerk:
+    +persist_docs: {relation: true, columns: true}
+    staging:
+      # tables on DuckDB so the warehouse file does not depend on the Parquet path; views on Snowflake
+      +materialized: "{{ 'table' if target.type == 'duckdb' else 'view' }}"
+      +schema: staging
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+    marts:
+      +materialized: table
+      core:
+        +schema: core
+      controlling:
+        +schema: controlling
+    semantic:
+      +materialized: view
+      +schema: semantic
+
+seeds:
+  planwerk:
+    +schema: reference
+
+tests:
+  planwerk:
+    +severity: error

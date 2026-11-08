@@ -574,6 +574,16 @@ def overheads(md: MasterData, drivers: pd.DataFrame, scenario: Scenario, cfg: Ge
                 rows.append((bukrs, p, np.datetime64(f"{p}-10"), "770000",
                              {"1000": 1_100_000, "2000": 150_000, "3000": 120_000}[bukrs] * local))
     it = pd.DataFrame(rows, columns=["BUKRS", "PERIOD", "DATE", "RACCT", "AMOUNT"])
+    # opening bank balance (carry-forward 01.01.2023) and yearly profit distribution in May
+    eq = []
+    for bukrs in C.COMPANY_CODES:
+        local = M.PL_PRICE_LIST_FX if bukrs == "3000" else 1.0
+        eq.append((bukrs, "2023-01", np.datetime64("2023-01-02"), "290000",
+                   -{"1000": 12e6, "2000": 2.5e6, "3000": 2.0e6}[bukrs] * local))
+        for y, d in ((2023, 22e6), (2024, 26e6), (2025, 30e6)):
+            amt = {"1000": d, "2000": d * 0.15, "3000": d * 0.2}[bukrs] * local
+            eq.append((bukrs, f"{y}-05", np.datetime64(f"{y}-05-15"), "290000", amt))
+    it = pd.concat([it, pd.DataFrame(eq, columns=it.columns)], ignore_index=True)
     it["AMOUNT"] = np.round(it["AMOUNT"] * cfg.scale, 2)
     ikey = ("SA-FIN-" + it["BUKRS"] + it["PERIOD"] + it["RACCT"]).to_numpy()
     ic = it["BUKRS"].map(lambda x: C.COMPANY_CODES[x]["currency"]).to_numpy()

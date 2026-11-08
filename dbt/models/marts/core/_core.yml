@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: dim_cost_centre
+    description: SCD2 cost-centre dimension (one row per cost centre version).
+    columns:
+      - name: cost_centre_sk
+        tests: [unique, not_null]
+      - name: cost_centre
+        tests: [not_null]
+  - name: dim_period
+    columns:
+      - name: period
+        tests: [unique, not_null]
+  - name: dim_material
+    columns:
+      - name: material
+        tests: [unique, not_null]
+  - name: dim_gl_account
+    columns:
+      - name: gl_account
+        tests: [unique, not_null]
+  - name: fct_journal_line
+    description: Universal Journal with the SCD2 cost-centre version valid at the posting date.
+    tests:
+      - dbt_expression_cost_centre_resolved
+  - name: fct_sales_item
+    description: Billed sales order item with revenue, matched variable cost and plan references (PVM input).
+    columns:
+      - name: plan_price_lc
+        tests: [not_null]
+      - name: revenue_eur
+        tests: [not_null]
+  - name: fct_open_item
+    description: Open AR/AP items at the as-of date.
+    columns:
+      - name: item_type
+        tests: [{accepted_values: {values: ['AR', 'AP']}}]
+  - name: mart_data_quality_findings
+    description: MDG-style master-data findings. Hard rules (DQ04, DQ06) must be empty; soft rules are reported.
+    tests:
+      - dq_hard_rules_empty
