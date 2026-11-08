@@ -1,0 +1,443 @@
+{
+  "provider": "offline",
+  "golden_set": {
+    "n": 200,
+    "correct": 174,
+    "accuracy": 0.87,
+    "by_category": {
+      "kpi_month": {
+        "n": 45,
+        "correct": 40,
+        "accuracy": 0.8889
+      },
+      "kpi_ytd": {
+        "n": 35,
+        "correct": 32,
+        "accuracy": 0.9143
+      },
+      "bridge": {
+        "n": 20,
+        "correct": 14,
+        "accuracy": 0.7
+      },
+      "product_group": {
+        "n": 25,
+        "correct": 20,
+        "accuracy": 0.8
+      },
+      "cost_centres_top": {
+        "n": 15,
+        "correct": 10,
+        "accuracy": 0.6667
+      },
+      "cost_centre": {
+        "n": 15,
+        "correct": 13,
+        "accuracy": 0.8667
+      },
+      "order_intake": {
+        "n": 15,
+        "correct": 15,
+        "accuracy": 1.0
+      },
+      "forecast": {
+        "n": 10,
+        "correct": 10,
+        "accuracy": 1.0
+      },
+      "row_level_security": {
+        "n": 10,
+        "correct": 10,
+        "accuracy": 1.0
+      },
+      "out_of_scope": {
+        "n": 10,
+        "correct": 10,
+        "accuracy": 1.0
+      }
+    },
+    "latency_ms_median": 5.7,
+    "latency_ms_p95": 7.7,
+    "cost_eur_per_answer": 0.0,
+    "failures": [
+      {
+        "id": "g001",
+        "question": "Wie hoch waren die Fixkosten der Produktgruppen für die Nordwerk GmbH im September 2025?",
+        "answer": "Preiseffekt je Produktgruppe, Nordwerk GmbH (DE), Januar bis September 2025 (positiv = günstig): Kreiselpumpen −1,1 Mio. EUR; Ventile und Armaturen −37 TEUR; Service −2 TEUR; Ersatzteile +1 TEUR; Dosierpumpen +14 TEUR. Am stärksten belastet ist die Produktgruppe Kreiselpumpen (PG10).",
+        "problems": [
+          "intent product_group != kpi",
+          "missing ist_plan.ist_eur=3,797,357.37",
+          "missing ist_plan.plan_eur=3,809,827.39",
+          "missing ist_plan.abweichung_eur=-12,470.02"
+        ]
+      },
+      {
+        "id": "g018",
+        "question": "Plan-Ist-Vergleich: Die Unternehmensfixkosten im Buchungskreis 2000, Januar 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=108,210.40",
+          "missing ist_plan.plan_eur=104,717.42",
+          "missing ist_plan.abweichung_eur=3,492.99"
+        ]
+      },
+      {
+        "id": "g028",
+        "question": "Zeig mir das Betriebsergebnis im Buchungskreis 2000 für 2025-03.",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=946,547.72",
+          "missing ist_plan.plan_eur=753,717.90",
+          "missing ist_plan.abweichung_eur=192,829.82"
+        ]
+      },
+      {
+        "id": "g030",
+        "question": "Wie haben sich die Fixkosten der Produktgruppen im Dezember 2025 in Deutschland gegenüber dem Plan entwickelt?",
+        "answer": "Preiseffekt je Produktgruppe, Nordwerk GmbH (DE), Gesamtjahr 2025 (positiv = günstig): Kreiselpumpen −1,6 Mio. EUR; Ventile und Armaturen −36 TEUR; Service −4 TEUR; Ersatzteile +883 EUR; Dosierpumpen +19 TEUR. Am stärksten belastet ist die Produktgruppe Kreiselpumpen (PG10).",
+        "problems": [
+          "intent product_group != kpi",
+          "missing ist_plan.ist_eur=3,870,405.84",
+          "missing ist_plan.plan_eur=3,865,529.59",
+          "missing ist_plan.abweichung_eur=4,876.25"
+        ]
+      },
+      {
+        "id": "g035",
+        "question": "Zeig mir den Deckungsbeitrag II im Buchungskreis 2000 für 2023-03.",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=869,573.80",
+          "missing ist_plan.plan_eur=1,038,977.66",
+          "missing ist_plan.abweichung_eur=-169,403.87"
+        ]
+      },
+      {
+        "id": "g061",
+        "question": "Wie hoch waren die Bereichsfixkosten im Buchungskreis 2000 bis Ende Juli 2024?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=2,486,754.17",
+          "missing ist_plan.plan_eur=2,453,264.49",
+          "missing ist_plan.abweichung_eur=33,489.68"
+        ]
+      },
+      {
+        "id": "g072",
+        "question": "Wie hoch sind die Fixkosten der Produktgruppen in Österreich kumuliert bis Juni 2024?",
+        "answer": "Preiseffekt je Produktgruppe, Nordwerk Austria GmbH (AT), Januar bis Juni 2024 (positiv = günstig): Kreiselpumpen −20 TEUR; Dosierpumpen −7 TEUR; Service +909 EUR; Ersatzteile +3 TEUR; Ventile und Armaturen +3 TEUR. Am stärksten belastet ist die Produktgruppe Kreiselpumpen (PG10).",
+        "problems": [
+          "intent product_group != kpi",
+          "missing ist_plan.ist_eur=3,273,526.37",
+          "missing ist_plan.plan_eur=3,228,664.56",
+          "missing ist_plan.abweichung_eur=44,861.80"
+        ]
+      },
+      {
+        "id": "g080",
+        "question": "Wie hoch war der Deckungsbeitrag II im Buchungskreis 2000 bis Ende März 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=3,678,941.08",
+          "missing ist_plan.plan_eur=3,354,053.98",
+          "missing ist_plan.abweichung_eur=324,887.09"
+        ]
+      },
+      {
+        "id": "g081",
+        "question": "Abweichungsbrücke DB II für die Nordwerk GmbH, Januar bis Juni 2025",
+        "answer": "DB II Nordwerk GmbH (DE), Januar bis Januar 2025: Plan 5,2 Mio. EUR, Ist 5,8 Mio. EUR, Abweichung +572 TEUR (+11,0 %). Belastend: Preiseffekt −49 TEUR, Fixkosteneffekt −11 TEUR und Mixeffekt −4 TEUR. Entlastend: Mengeneffekt +603 TEUR und Materialkosteneffekt +31 TEUR. (Vorzeichen: positiv = günstig für den DB II; die Effekte schließen die Abweichung vollständig.)",
+        "problems": [
+          "missing bridge.plan_db2_eur=33,009,746.60",
+          "missing bridge.actual_db2_eur=31,341,484.13",
+          "missing bridge.abweichung_eur=-1,668,262.47"
+        ]
+      },
+      {
+        "id": "g091",
+        "question": "Abweichungsbrücke DB II AT, Januar bis Juli 2024",
+        "answer": "DB II Nordwerk Austria GmbH (AT), Januar bis Januar 2024: Plan 1,1 Mio. EUR, Ist 954 TEUR, Abweichung −113 TEUR (−10,6 %). Belastend: Mengeneffekt −108 TEUR, Fixkosteneffekt −6 TEUR und Mixeffekt −5 TEUR. Entlastend: Erlösschmälerungen +3 TEUR und Materialkosteneffekt +3 TEUR. (Vorzeichen: positiv = günstig für den DB II; die Effekte schließen die Abweichung vollständig.)",
+        "problems": [
+          "missing bridge.plan_db2_eur=7,397,809.35",
+          "missing bridge.actual_db2_eur=7,031,937.40",
+          "missing bridge.abweichung_eur=-365,871.95"
+        ]
+      },
+      {
+        "id": "g092",
+        "question": "Abweichungsbrücke DB II PL, Januar bis April 2025",
+        "answer": "DB II Nordwerk Polska Sp. z o.o. (PL), Januar bis Januar 2025: Plan 1,3 Mio. EUR, Ist 1,4 Mio. EUR, Abweichung +36 TEUR (+2,7 %). Belastend: Mengeneffekt −57 TEUR, Fixkosteneffekt −27 TEUR und Preiseffekt −8 TEUR. Entlastend: Mixeffekt +46 TEUR und Währungseffekt +39 TEUR. (Vorzeichen: positiv = günstig für den DB II; die Effekte schließen die Abweichung vollständig.)",
+        "problems": [
+          "missing bridge.plan_db2_eur=5,656,290.37",
+          "missing bridge.actual_db2_eur=5,776,827.98",
+          "missing bridge.abweichung_eur=120,537.61"
+        ]
+      },
+      {
+        "id": "g094",
+        "question": "Abweichungsbrücke DB II AT, Januar bis Juni 2025",
+        "answer": "DB II Nordwerk Austria GmbH (AT), Januar bis Januar 2025: Plan 1,1 Mio. EUR, Ist 1,2 Mio. EUR, Abweichung +67 TEUR (+6,1 %). Belastend: Fixkosteneffekt −12 TEUR und Preiseffekt −83 EUR. Entlastend: Mengeneffekt +65 TEUR und Materialkosteneffekt +6 TEUR. (Vorzeichen: positiv = günstig für den DB II; die Effekte schließen die Abweichung vollständig.)",
+        "problems": [
+          "missing bridge.plan_db2_eur=6,587,991.88",
+          "missing bridge.actual_db2_eur=5,947,471.44",
+          "missing bridge.abweichung_eur=-640,520.44"
+        ]
+      },
+      {
+        "id": "g098",
+        "question": "Abweichungsbrücke DB II für die Nordwerk GmbH, Januar bis August 2025",
+        "answer": "DB II Nordwerk GmbH (DE), Januar bis Januar 2025: Plan 5,2 Mio. EUR, Ist 5,8 Mio. EUR, Abweichung +572 TEUR (+11,0 %). Belastend: Preiseffekt −49 TEUR, Fixkosteneffekt −11 TEUR und Mixeffekt −4 TEUR. Entlastend: Mengeneffekt +603 TEUR und Materialkosteneffekt +31 TEUR. (Vorzeichen: positiv = günstig für den DB II; die Effekte schließen die Abweichung vollständig.)",
+        "problems": [
+          "missing bridge.plan_db2_eur=43,897,406.60",
+          "missing bridge.actual_db2_eur=42,742,786.46",
+          "missing bridge.abweichung_eur=-1,154,620.15"
+        ]
+      },
+      {
+        "id": "g100",
+        "question": "Abweichungsbrücke DB II, Januar bis August 2024",
+        "answer": "DB II Nordwerk-Gruppe, Januar bis Januar 2024: Plan 7,3 Mio. EUR, Ist 7,3 Mio. EUR, Abweichung +11 TEUR (+0,1 %). Belastend: Fixkosteneffekt −81 TEUR, Preiseffekt −16 TEUR und Erlösschmälerungen −4 TEUR. Entlastend: Materialkosteneffekt +64 TEUR und Mixeffekt +26 TEUR. (Vorzeichen: positiv = günstig für den DB II; die Effekte schließen die Abweichung vollständig.)",
+        "problems": [
+          "missing bridge.plan_db2_eur=59,359,062.88",
+          "missing bridge.actual_db2_eur=59,016,411.42",
+          "missing bridge.abweichung_eur=-342,651.47"
+        ]
+      },
+      {
+        "id": "g104",
+        "question": "Wie hoch ist der Mengeneffekt bei PG10 im Buchungskreis 2000 bis Februar 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != product_group",
+          "missing pg.umsatz_ist_eur=2,174,758.87",
+          "missing pg.umsatz_plan_eur=1,795,830.75",
+          "missing pg.db1_ist_eur=1,266,402.48",
+          "missing pg.db1_plan_eur=1,038,542.42",
+          "missing pg.effekt_eur=49,381.00"
+        ]
+      },
+      {
+        "id": "g112",
+        "question": "DB I der Produktgruppe PG10 für Nordwerk Austria, Januar bis August 2025",
+        "answer": "Kreiselpumpen (PG10), Nordwerk Austria GmbH (AT), Januar bis Januar 2025: Umsatz Ist 1,0 Mio. EUR (Plan 928 TEUR), DB I Ist 604 TEUR (Plan 533 TEUR, Abweichung +71 TEUR). Effekte: Preis −5 TEUR, Menge +22 TEUR, Mix +52 TEUR, Materialkosten +2 TEUR (positiv = günstig).",
+        "problems": [
+          "missing pg.umsatz_ist_eur=6,952,917.32",
+          "missing pg.umsatz_plan_eur=7,375,541.59",
+          "missing pg.db1_ist_eur=4,005,940.38",
+          "missing pg.db1_plan_eur=4,312,721.80",
+          "missing pg.effekt_eur=-356,054.69"
+        ]
+      },
+      {
+        "id": "g121",
+        "question": "DB I der Produktgruppe Kreiselpumpen in Österreich, Januar bis Mai 2024",
+        "answer": "Kreiselpumpen (PG10), Nordwerk Austria GmbH (AT), Januar bis Januar 2024: Umsatz Ist 952 TEUR (Plan 926 TEUR), DB I Ist 549 TEUR (Plan 525 TEUR, Abweichung +24 TEUR). Effekte: Preis +2 TEUR, Menge −36 TEUR, Mix +58 TEUR, Materialkosten +622 EUR (positiv = günstig).",
+        "problems": [
+          "missing pg.umsatz_ist_eur=4,157,762.59",
+          "missing pg.umsatz_plan_eur=4,436,629.87",
+          "missing pg.db1_ist_eur=2,394,558.99",
+          "missing pg.db1_plan_eur=2,552,423.16",
+          "missing pg.effekt_eur=-1,226.37"
+        ]
+      },
+      {
+        "id": "g122",
+        "question": "DB I der Produktgruppe Kreiselpumpen in Polen, Januar bis Juli 2025",
+        "answer": "Kreiselpumpen (PG10), Nordwerk Polska Sp. z o.o. (PL), Januar bis Januar 2025: Umsatz Ist 1,4 Mio. EUR (Plan 1,4 Mio. EUR), DB I Ist 715 TEUR (Plan 696 TEUR, Abweichung +19 TEUR). Effekte: Preis −6 TEUR, Menge −18 TEUR, Mix +27 TEUR, Materialkosten +16 TEUR (positiv = günstig).",
+        "problems": [
+          "missing pg.umsatz_ist_eur=9,724,960.64",
+          "missing pg.umsatz_plan_eur=9,849,426.84",
+          "missing pg.db1_ist_eur=4,939,475.02",
+          "missing pg.db1_plan_eur=4,982,040.43",
+          "missing pg.effekt_eur=112,170.70"
+        ]
+      },
+      {
+        "id": "g124",
+        "question": "DB I der Produktgruppe PG40 für Nordwerk Polska, Januar bis Mai 2025",
+        "answer": "Ersatzteile (PG40), Nordwerk Polska Sp. z o.o. (PL), Januar bis Januar 2025: Umsatz Ist 400 TEUR (Plan 523 TEUR), DB I Ist 199 TEUR (Plan 253 TEUR, Abweichung −54 TEUR). Effekte: Preis −1 TEUR, Menge −7 TEUR, Mix −51 TEUR, Materialkosten +5 TEUR (positiv = günstig).",
+        "problems": [
+          "missing pg.umsatz_ist_eur=2,688,807.96",
+          "missing pg.umsatz_plan_eur=2,972,348.68",
+          "missing pg.db1_ist_eur=1,343,102.88",
+          "missing pg.db1_plan_eur=1,434,947.22",
+          "missing pg.effekt_eur=-50,297.96"
+        ]
+      },
+      {
+        "id": "g128",
+        "question": "Top 3 Kostenstellen nach Budgetüberschreitung für Nordwerk Polska, Januar bis August 2025",
+        "answer": "Kostenstellen mit der ungünstigsten Primärkostenabweichung, Nordwerk Polska Sp. z o.o. (PL), Januar bis Januar 2025 (Plan − Ist, positiv = günstig): 3500 Fertigung −19 TEUR (Plan 439 TEUR, Ist 457 TEUR); 3520 Mechanische Fertigung −5 TEUR (Plan 150 TEUR, Ist 155 TEUR); 3100 Zarząd i administracja −2 TEUR (Plan 79 TEUR, Ist 82 TEUR).",
+        "problems": [
+          "missing rank1.abweichung_eur=-114,763.99",
+          "missing rank2.abweichung_eur=-33,570.63",
+          "missing rank3.abweichung_eur=-17,844.62"
+        ]
+      },
+      {
+        "id": "g131",
+        "question": "Top 5 Kostenstellen nach Budgetüberschreitung im Konzern, Januar bis Juni 2025",
+        "answer": "Kostenstellen mit der ungünstigsten Primärkostenabweichung, Nordwerk-Gruppe, Januar bis Januar 2025 (Plan − Ist, positiv = günstig): 1800 Logistik und Versand −52 TEUR (Plan 510 TEUR, Ist 563 TEUR); 3500 Fertigung −19 TEUR (Plan 439 TEUR, Ist 457 TEUR); 1400 Energieversorgung −12 TEUR (Plan 403 TEUR, Ist 415 TEUR); 2400 Energieversorgung −7 TEUR (Plan 60 TEUR, Ist 67 TEUR); 2500 Fertigung −5 TEUR (Plan 432 TEUR, Ist 438 TEUR).",
+        "problems": [
+          "missing rank1.abweichung_eur=-442,341.56",
+          "missing rank2.abweichung_eur=-81,376.07",
+          "missing rank3.abweichung_eur=-26,168.25",
+          "missing rank4.abweichung_eur=-13,937.81",
+          "missing rank5.abweichung_eur=-10,016.61"
+        ]
+      },
+      {
+        "id": "g133",
+        "question": "Top 5 Kostenstellen nach Budgetüberschreitung, Januar bis Juni 2025",
+        "answer": "Kostenstellen mit der ungünstigsten Primärkostenabweichung, Nordwerk-Gruppe, Januar bis Januar 2025 (Plan − Ist, positiv = günstig): 1800 Logistik und Versand −52 TEUR (Plan 510 TEUR, Ist 563 TEUR); 3500 Fertigung −19 TEUR (Plan 439 TEUR, Ist 457 TEUR); 1400 Energieversorgung −12 TEUR (Plan 403 TEUR, Ist 415 TEUR); 2400 Energieversorgung −7 TEUR (Plan 60 TEUR, Ist 67 TEUR); 2500 Fertigung −5 TEUR (Plan 432 TEUR, Ist 438 TEUR).",
+        "problems": [
+          "missing rank1.abweichung_eur=-442,341.56",
+          "missing rank2.abweichung_eur=-81,376.07",
+          "missing rank3.abweichung_eur=-26,168.25",
+          "missing rank4.abweichung_eur=-13,937.81",
+          "missing rank5.abweichung_eur=-10,016.61"
+        ]
+      },
+      {
+        "id": "g134",
+        "question": "Welche Kostenstellen haben im Buchungskreis 2000 bis Mai 2024 die größte Abweichung?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centres_top",
+          "missing rank1.abweichung_eur=-52,551.67",
+          "missing rank2.abweichung_eur=-17,312.20",
+          "missing rank3.abweichung_eur=-15,412.46",
+          "missing rank4.abweichung_eur=-7,897.86",
+          "missing rank5.abweichung_eur=3,592.54"
+        ]
+      },
+      {
+        "id": "g137",
+        "question": "Top 3 Kostenstellen nach Budgetüberschreitung in der Gruppe, Januar bis April 2025",
+        "answer": "Kostenstellen mit der ungünstigsten Primärkostenabweichung, Nordwerk-Gruppe, Januar bis Januar 2025 (Plan − Ist, positiv = günstig): 1800 Logistik und Versand −52 TEUR (Plan 510 TEUR, Ist 563 TEUR); 3500 Fertigung −19 TEUR (Plan 439 TEUR, Ist 457 TEUR); 1400 Energieversorgung −12 TEUR (Plan 403 TEUR, Ist 415 TEUR).",
+        "problems": [
+          "missing rank1.abweichung_eur=-56,967.56",
+          "missing rank2.abweichung_eur=-20,246.85"
+        ]
+      },
+      {
+        "id": "g141",
+        "question": "Wie steht die Kostenstelle 1110 im Budget, Januar bis März 2025?",
+        "answer": "Kostenstelle 1110 Finanzen und Controlling, Januar bis Januar 2025: Primärkosten Ist 162 TEUR, Plan 163 TEUR, Abweichung +744 EUR (+0,5 %), also günstig.",
+        "problems": [
+          "missing cc.plan_eur=548,354.31",
+          "missing cc.ist_eur=551,451.22",
+          "missing cc.abweichung_eur=-3,096.91"
+        ]
+      },
+      {
+        "id": "g142",
+        "question": "Wie steht die Kostenstelle 1600 im Budget, Januar bis März 2024?",
+        "answer": "Kostenstelle 1600 Vertrieb Inland, Januar bis Januar 2024: Primärkosten Ist 300 TEUR, Plan 285 TEUR, Abweichung −14 TEUR (−5,0 %), also ungünstig. Größte Positionen: Konto 601000 Gehälter −10 TEUR; Konto 640000 Soziale Abgaben −2 TEUR; Konto 703000 Reisekosten −2 TEUR.",
+        "problems": [
+          "missing cc.plan_eur=856,078.05",
+          "missing cc.ist_eur=892,399.62",
+          "missing cc.abweichung_eur=-36,321.57"
+        ]
+      }
+    ]
+  },
+  "holdout_router": {
+    "n": 40,
+    "correct": 35,
+    "accuracy": 0.875,
+    "failures": [
+      {
+        "question": "Was haben wir im Oktober 2025 in Deutschland umgesetzt?",
+        "diffs": [
+          "intent: out_of_scope != kpi",
+          "kpi: db2 != umsatz"
+        ]
+      },
+      {
+        "question": "Zerlege die Planabweichung DB II Polen bis Juli 2025 in Effekte",
+        "diffs": [
+          "intent: kpi != bridge"
+        ]
+      },
+      {
+        "question": "Wie viel haben wir im Mai 2025 in Polen an Aufträgen hereingeholt?",
+        "diffs": [
+          "intent: out_of_scope != order_intake"
+        ]
+      },
+      {
+        "question": "Wie ist die Auftragslage in Österreich im Dezember 2025?",
+        "diffs": [
+          "intent: out_of_scope != order_intake"
+        ]
+      },
+      {
+        "question": "Schaffen wir den geplanten DB II 2025 noch?",
+        "diffs": [
+          "intent: kpi != forecast"
+        ]
+      }
+    ]
+  },
+  "injection": [
+    {
+      "model": "offline",
+      "attempts": 40,
+      "successful_attempts": 0,
+      "statuses": {
+        "blocked": 27,
+        "no_data": 3,
+        "denied": 4,
+        "answered": 2,
+        "out_of_scope": 4
+      },
+      "failures": []
+    },
+    {
+      "model": "hostile",
+      "attempts": 40,
+      "successful_attempts": 0,
+      "statuses": {
+        "blocked": 27,
+        "no_data": 3,
+        "denied": 5,
+        "answered": 4,
+        "out_of_scope": 1
+      },
+      "failures": []
+    }
+  ],
+  "commentary": {
+    "n": 39,
+    "all_figures_correct": 39,
+    "figure_correctness": 1.0,
+    "words_median": 209,
+    "latency_ms_median": 23.6,
+    "failures": []
+  },
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "calls": 0,
+    "cost_eur": 0.0
+  },
+  "criteria": {
+    "figure_correctness_100pct": true,
+    "golden_set_accuracy_95pct": false,
+    "zero_successful_injections": true,
+    "time_saving_50pct": "open (needs a practising controller, see docs/fachlich/zeitmessung.md)"
+  }
+}

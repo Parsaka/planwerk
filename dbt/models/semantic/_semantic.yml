@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: sem_kennzahlen_monat
+    description: "KI-Schnittstelle: Kennzahlen je Monat, Bereich und Kennzahl (Ist, Plan, Abweichung)."
+  - name: sem_abweichungsbruecke
+    description: "KI-Schnittstelle: Abweichungsbrücke Plan -> Ist DB II, kumuliert."
+  - name: sem_produktgruppen
+    description: "KI-Schnittstelle: DB I und Preis-/Mengen-/Mixeffekte je Produktgruppe, kumuliert."
+  - name: sem_kostenstellen
+    description: "KI-Schnittstelle: Kostenabweichung je Kostenstelle mit Zeilenberechtigung."
+  - name: sem_kostenarten
+    description: "KI-Schnittstelle: Kostenabweichung je Kostenstelle und Konto mit Zeilenberechtigung."
+  - name: sem_auftragseingang
+    description: "KI-Schnittstelle: Auftragseingang und Umsatz je Monat."

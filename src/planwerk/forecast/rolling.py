@@ -88,6 +88,12 @@ def main() -> None:
     con.register("m", mon)
     con.execute("create or replace table forecast.rolling_forecast as select * from r")
     con.execute("create or replace table forecast.rolling_forecast_monthly as select * from m")
+    # semantic view for the AI assistant (no full-year actuals: only what was known at forecast time)
+    con.execute("create schema if not exists semantic")
+    con.execute("""create or replace view semantic.sem_prognose as
+        select fiscal_year as jahr, version, method as methode, scope as bereich, known_months as bekannte_monate,
+               forecast_db2_eur as prognose_db2_eur, plan_db2_eur, flag_target_miss as ziel_verfehlt
+        from forecast.rolling_forecast""")
     g = res[res["scope"] == "GRUPPE"].copy()
     g["vs_plan"] = g["forecast_db2_eur"] / g["plan_db2_eur"] - 1
     print(g[["version", "method", "forecast_db2_eur", "plan_db2_eur", "actual_db2_eur", "vs_plan",

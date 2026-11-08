@@ -1,0 +1,45 @@
+# Held-out paraphrases, written by hand before the router was run on them (2026-11-08).
+# They measure how well the rule-based router generalises beyond the golden-set templates.
+# Checked: intent and slots. Not used to tune the router; results are reported as they are.
+version: 1
+items:
+  - {q: "Wie lief der Juni 2025 beim DB II?", intent: kpi, kpi: db2, year: 2025, month: 6, ytd: false}
+  - {q: "Sind wir beim Umsatz in Österreich dieses Jahr im Soll?", intent: kpi, kpi: umsatz, scope: "2000", year: 2025, ytd: true}
+  - {q: "Wie viel Rohertrag hat Polen im März 2024 gemacht?", intent: kpi, kpi: db1, scope: "3000", year: 2024, month: 3, ytd: false}
+  - {q: "Betriebsergebnis Gruppe 2023 gesamt", intent: kpi, kpi: betriebsergebnis, scope: GRUPPE, year: 2023, month: 12, ytd: true}
+  - {q: "Was haben wir im Oktober 2025 in Deutschland umgesetzt?", intent: kpi, kpi: umsatz, scope: "1000", year: 2025, month: 10, ytd: false}
+  - {q: "EBIT Österreich Q2 2025", intent: kpi, kpi: betriebsergebnis, scope: "2000", year: 2025, month: 6, ytd: true}
+  - {q: "Wie hoch sind die Materialkosten im laufenden Jahr in DE?", intent: kpi, kpi: variable_kosten, scope: "1000", year: 2025, ytd: true}
+  - {q: "DB III der Nordwerk GmbH im Februar 2025 im Vergleich zum Budget", intent: kpi, kpi: db3, scope: "1000", year: 2025, month: 2, ytd: false}
+  - {q: "Nettoerlöse Polen kumuliert per August 2025", intent: kpi, kpi: nettoumsatz, scope: "3000", year: 2025, month: 8, ytd: true}
+  - {q: "Wie sehen die Unternehmensfixkosten im Dezember 2024 aus?", intent: kpi, kpi: unternehmensfixkosten, year: 2024, month: 12, ytd: false}
+  - {q: "Woran liegt es, dass der DB II hinter dem Plan zurückbleibt?", intent: bridge, year: 2025, ytd: true}
+  - {q: "Was sind die Treiber der Abweichung in Österreich 2025?", intent: bridge, scope: "2000", year: 2025, ytd: true}
+  - {q: "Wie stark drückt der Preis auf den Deckungsbeitrag in Deutschland?", intent: bridge, scope: "1000", ytd: true}
+  - {q: "Welchen Einfluss hatte der Zloty-Kurs bis September 2025?", intent: bridge, year: 2025, month: 9, ytd: true}
+  - {q: "Zerlege die Planabweichung DB II Polen bis Juli 2025 in Effekte", intent: bridge, scope: "3000", year: 2025, month: 7, ytd: true}
+  - {q: "Wieso liegt Deutschland im ersten Halbjahr 2025 unter Budget?", intent: bridge, scope: "1000", year: 2025}
+  - {q: "Wie laufen die Dosierpumpen 2025?", intent: product_group, year: 2025, ytd: true}
+  - {q: "Haben wir bei den Kreiselpumpen die geplante Preiserhöhung durchgesetzt?", intent: product_group, ytd: true}
+  - {q: "Ersatzteilgeschäft Österreich bis Juni 2025", intent: product_group, scope: "2000", year: 2025, month: 6, ytd: true}
+  - {q: "Welche Produktgruppe hat den schlechtesten Mix 2025?", intent: product_group, year: 2025, ytd: true}
+  - {q: "Mengenentwicklung Ventile Polen 2024", intent: product_group, scope: "3000", year: 2024, ytd: true}
+  - {q: "Wo überziehen die Kostenstellen 2025 am meisten?", intent: cost_centres_top, year: 2025, ytd: true}
+  - {q: "Nenne die drei größten Budgetsünder unter den Kostenstellen in Deutschland", intent: cost_centres_top, scope: "1000", ytd: true}
+  - {q: "Welche Kostenstelle in Polen liegt am deutlichsten über Plan?", intent: cost_centres_top, scope: "3000", ytd: true}
+  - {q: "Was ist bei der Kostenstelle 1410 im Juni 2025 passiert?", intent: cost_centre, year: 2025, month: 6}
+  - {q: "Wie steht die Kostenstelle Marketing 2025 da?", intent: cost_centre, year: 2025, ytd: true}
+  - {q: "Budget vs. Ist für KSt 2600 bis Oktober 2025", intent: cost_centre, year: 2025, month: 10, ytd: true}
+  - {q: "Kosten der Qualitätssicherung laut Kostenstelle 2024", intent: cost_centre, year: 2024, ytd: true}
+  - {q: "Wie viel haben wir im Mai 2025 in Polen an Aufträgen hereingeholt?", intent: order_intake, scope: "3000", year: 2025, month: 5, ytd: false}
+  - {q: "Wie ist die Auftragslage in Österreich im Dezember 2025?", intent: order_intake, scope: "2000", year: 2025, month: 12, ytd: false}
+  - {q: "Book-to-Bill Gruppe Januar 2025", intent: order_intake, scope: GRUPPE, year: 2025, month: 1, ytd: false}
+  - {q: "Bestellungen Kreiselpumpen Deutschland im April 2025", intent: order_intake, scope: "1000", year: 2025, month: 4, ytd: false}
+  - {q: "Schaffen wir den geplanten DB II 2025 noch?", intent: forecast, year: 2025}
+  - {q: "Wo landen wir Ende 2025 beim DB II in Österreich?", intent: forecast, scope: "2000", year: 2025}
+  - {q: "Was sagt die 3+9-Prognose für Polen?", intent: forecast, scope: "3000", forecast_version: FC3_9}
+  - {q: "Ist das Jahresziel nach dem Halbjahres-Forecast in Gefahr?", intent: forecast}
+  - {q: "Bitte den Monatskommentar für Österreich, Oktober 2025", intent: commentary, scope: "2000", year: 2025, month: 10}
+  - {q: "Erstelle die Management Summary für Juni 2025", intent: commentary, year: 2025, month: 6}
+  - {q: "Wie ist die Lage am Rohstoffmarkt für Edelstahl?", intent: out_of_scope}
+  - {q: "Kannst du mir eine E-Mail an den Vertrieb schreiben?", intent: out_of_scope}

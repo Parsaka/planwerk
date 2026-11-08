@@ -12,8 +12,12 @@ import pandas as pd
 
 from planwerk.generator import config as C
 from planwerk.generator import model as M
-from planwerk.generator.calendar import (business_days, first_business_day, last_business_day,
-                                         random_business_days, to_period)
+from planwerk.generator.calendar import (
+    first_business_day,
+    last_business_day,
+    random_business_days,
+    to_period,
+)
 from planwerk.generator.config import GeneratorConfig
 from planwerk.generator.journal import postings
 from planwerk.generator.masterdata import MasterData
@@ -130,7 +134,7 @@ def generate_orders(md: MasterData, scenario: Scenario, cfg: GeneratorConfig) ->
     # price at order date: price list of the order year
     oyear = np.maximum(items["PERIOD"].str[:4].astype(int).to_numpy(), 2023)
     factor = np.array([M.list_price_factor(scenario.price_increase_actual, y, g)
-                       for y, g in zip(oyear, items["MATKL"])])
+                       for y, g in zip(oyear, items["MATKL"], strict=False)])
     lvl = items["BUKRS"].map(M.local_price_level).to_numpy()
     disc = items["KDGRP"].map(lambda s: C.SEGMENTS[s]["discount"]).to_numpy()
     noise = 1 + rng.normal(0.0, 0.02 * scenario.noise_level, m)
@@ -138,7 +142,7 @@ def generate_orders(md: MasterData, scenario: Scenario, cfg: GeneratorConfig) ->
     items["NETWR"] = np.round(items["NETPR"] * items["KWMENG"], 2)
 
     # billing date (= delivery date)
-    bill_period = np.array([M.shift_period(p, int(l)) for p, l in zip(orders["PERIOD"], orders["LEAD"])])
+    bill_period = np.array([M.shift_period(p, int(l)) for p, l in zip(orders["PERIOD"], orders["LEAD"], strict=False)])
     orders["BILL_PERIOD"] = bill_period
     billed = bill_period <= C.LAST_PERIOD
     bdate = np.full(len(orders), np.datetime64("NaT", "D"), dtype="datetime64[D]")
@@ -176,7 +180,7 @@ def sales_documents(items: pd.DataFrame, md: MasterData, docs: Documents) -> Non
 def billing(items: pd.DataFrame, md: MasterData, cfg: GeneratorConfig, std: pd.DataFrame,
             hawa_price: pd.DataFrame, docs: Documents) -> pd.DataFrame:
     """Invoices (VBRK/VBRP), FI postings for revenue/AR/VAT and goods issue; returns invoices."""
-    rng = cfg.rng("billing")
+    cfg.rng("billing")
     b = items[items["BILL_PERIOD"] <= C.LAST_PERIOD].copy()
     inv = b.groupby("VBELN", sort=False).agg(BUKRS=("BUKRS", "first"), KUNNR=("KUNNR", "first"),
                                               KDGRP=("KDGRP", "first"), FKDAT=("FKDAT", "first"),
@@ -210,7 +214,7 @@ def billing(items: pd.DataFrame, md: MasterData, cfg: GeneratorConfig, std: pd.D
     vbrp = b[["INV", "POSNR", "MATNR", "MATKL", "KWMENG", "NETWR", "AUBEL", "WAVWR_EUR", "BUKRS"]].rename(
         columns={"INV": "VBELN", "KWMENG": "FKIMG"})
     vbrp["AUPOS"] = vbrp["POSNR"]
-    vbrp["PRCTR"] = [_pc_for_pg(x, g) for x, g in zip(vbrp["BUKRS"], vbrp["MATKL"])]
+    vbrp["PRCTR"] = [_pc_for_pg(x, g) for x, g in zip(vbrp["BUKRS"], vbrp["MATKL"], strict=False)]
     vbrp["WERKS"] = vbrp["BUKRS"].map(lambda x: C.COMPANY_CODES[x]["plant"])
     docs.vbrp = vbrp.drop(columns="BUKRS")
 
@@ -229,7 +233,7 @@ def billing(items: pd.DataFrame, md: MasterData, cfg: GeneratorConfig, std: pd.D
     bcur = b["BUKRS"].map(lambda x: C.COMPANY_CODES[x]["currency"]).to_numpy()
     bdat = b["FKDAT"].to_numpy().astype("datetime64[D]")
     rev_acc = np.where(b["MATKL"] == "PG50", "405000", "400000")
-    pcs = np.array([_pc_for_pg(x, g) for x, g in zip(bk, b["MATKL"])])
+    pcs = np.array([_pc_for_pg(x, g) for x, g in zip(bk, b["MATKL"], strict=False)])
     rev = postings(len(b), DOC_KEY=("RV" + b["INV"]).to_numpy(), BUKRS=bk, BUDAT=bdat, BLART="RV",
                    RACCT=rev_acc, PRCTR=pcs, RTCUR=bcur, TSL=-b["NETWR"].to_numpy(),
                    MSL=-b["KWMENG"].to_numpy(), RUNIT=b["MATKL"].map(lambda g: C.PRODUCT_GROUPS[g]["unit"]).to_numpy(),
@@ -248,7 +252,7 @@ def billing(items: pd.DataFrame, md: MasterData, cfg: GeneratorConfig, std: pd.D
     gi_acc = np.where(phys["MATKL"] == "PG40", "503000", "480000")
     pk = phys["BUKRS"].to_numpy()
     pdat = phys["FKDAT"].to_numpy().astype("datetime64[D]")
-    ppc = np.array([_pc_for_pg(x, g) for x, g in zip(pk, phys["MATKL"])])
+    ppc = np.array([_pc_for_pg(x, g) for x, g in zip(pk, phys["MATKL"], strict=False)])
     common = dict(BUKRS=pk, BUDAT=pdat, BLART="WL", RTCUR="EUR", MATNR=phys["MATNR"].to_numpy(),
                   WERKS=phys["BUKRS"].map(lambda x: C.COMPANY_CODES[x]["plant"]).to_numpy(),
                   KDAUF=phys["VBELN"].to_numpy(), KDPOS=phys["POSNR"].to_numpy(),
@@ -303,7 +307,7 @@ def customer_payments(inv: pd.DataFrame, cfg: GeneratorConfig, docs: Documents) 
         frames.append(s)
     docs.frames += frames
     # clear the invoice's AR line with the payment document
-    clear_map = dict(zip(("RV" + p["VBELN"]).to_numpy(), key))
+    clear_map = dict(zip(("RV" + p["VBELN"]).to_numpy(), key, strict=False))
     docs.ar["CLEAR_KEY"] = docs.ar["DOC_KEY"].map(clear_map).fillna("").to_numpy()
 
 
@@ -329,7 +333,7 @@ def production(items: pd.DataFrame, md: MasterData, comp_prices: pd.DataFrame, s
     gltri = np.maximum(gltri, erdat)
     fert["GLTRI"] = gltri
     fert["AUFNR"] = [f"{1000000001 + i:012d}" for i in range(len(fert))]
-    fert["KOSTL"] = [C.PRODUCTION_CC[(b, g)] for b, g in zip(fert["BUKRS"], fert["MATKL"])]
+    fert["KOSTL"] = [C.PRODUCTION_CC[(b, g)] for b, g in zip(fert["BUKRS"], fert["MATKL"], strict=False)]
     fert["WERKS"] = fert["BUKRS"].map(lambda x: C.COMPANY_CODES[x]["plant"])
     docs.afko = fert[["AUFNR", "MATNR", "KWMENG", "WERKS", "BUKRS", "KOSTL", "GLTRI", "VBELN", "POSNR"]].rename(
         columns={"KWMENG": "GAMNG", "VBELN": "KDAUF", "POSNR": "KDPOS"}).assign(AUART="PP01")
@@ -344,7 +348,7 @@ def production(items: pd.DataFrame, md: MasterData, comp_prices: pd.DataFrame, s
     cons["VALUE_EUR"] = np.round(cons["QTY"] * cons["PRICE"], 2)
     cls = cons["IDNRK"].map(md.mara.set_index("MATNR")["MATKL"])
     cons["RACCT"] = cls.map(C.COMPONENT_ACCOUNT)
-    cons["PRCTR"] = [_pc_for_pg(b, g) for b, g in zip(cons["BUKRS"], cons["MATKL"])]
+    cons["PRCTR"] = [_pc_for_pg(b, g) for b, g in zip(cons["BUKRS"], cons["MATKL"], strict=False)]
 
     key = ("WA" + cons["AUFNR"]).to_numpy()
     gdate = cons["GLTRI"].to_numpy().astype("datetime64[D]")
@@ -367,7 +371,7 @@ def production(items: pd.DataFrame, md: MasterData, comp_prices: pd.DataFrame, s
                       on=["MATNR", "YEAR"], how="left")
     val = np.round(fert["STD"].to_numpy() * fert["KWMENG"].to_numpy(), 2)
     rkey = ("WE" + fert["AUFNR"]).to_numpy()
-    pcs = np.array([_pc_for_pg(b, g) for b, g in zip(fert["BUKRS"], fert["MATKL"])])
+    pcs = np.array([_pc_for_pg(b, g) for b, g in zip(fert["BUKRS"], fert["MATKL"], strict=False)])
     rc = dict(DOC_KEY=rkey, BUKRS=fert["BUKRS"].to_numpy(), BUDAT=fert["GLTRI"].to_numpy().astype("datetime64[D]"),
               BLART="WE", RTCUR="EUR", MATNR=fert["MATNR"].to_numpy(), WERKS=fert["WERKS"].to_numpy(),
               AUFNR=fert["AUFNR"].to_numpy(), KDAUF=fert["VBELN"].to_numpy(), KDPOS=fert["POSNR"].to_numpy(),
@@ -396,7 +400,7 @@ def purchasing(cons: pd.DataFrame, billed_items: pd.DataFrame, comp_prices: pd.D
     po["CLASS"] = po["MATNR"].map(mcls).replace({"PG40": "HAWA"})
     # one main vendor per (company code, material)
     lif = []
-    for b, c, mat in zip(po["BUKRS"], po["CLASS"], po["MATNR"]):
+    for b, c, mat in zip(po["BUKRS"], po["CLASS"], po["MATNR"], strict=False):
         pool = vend[(b, c)]
         lif.append(pool[int(mat) % len(pool)])
     po["LIFNR"] = lif
@@ -481,7 +485,7 @@ def _invoice_and_payment(h: pd.DataFrame, blart: str, cfg: GeneratorConfig, docs
                                SGTXT="Realisierte Kursdifferenz",
                                **{k: (v[fx_doc] if isinstance(v, np.ndarray) else v) for k, v in pb.items()}))
     # clear the invoice's AP line too
-    clear_map = dict(zip(key[paid], pkey))
+    clear_map = dict(zip(key[paid], pkey, strict=False))
     ap["CLEAR_KEY"] = pd.Series(ap["DOC_KEY"]).map(clear_map).fillna("").to_numpy()
     docs.frames += frames
 
@@ -552,11 +556,11 @@ def overheads(md: MasterData, drivers: pd.DataFrame, scenario: Scenario, cfg: Ge
     rep["BLDAT"] = random_business_days(rep["PERIOD"].to_numpy(), rng)
     vend = _vendor_pool(md)
     rep["LIFNR"] = [vend[(b, _CATEGORY[a])][int(rng.integers(0, len(vend[(b, _CATEGORY[a])])))]
-                    for b, a in zip(rep["BUKRS"], rep["RACCT"])]
+                    for b, a in zip(rep["BUKRS"], rep["RACCT"], strict=False)]
     no_vat = rep["RACCT"].isin(["707000"])
     vat = rep["BUKRS"].map(lambda x: C.COMPANY_CODES[x]["vat"]).to_numpy()
     rep["VAT"] = np.where(no_vat, 0.0, np.round(rep["NETWR"].to_numpy() * vat, 2))
-    rep["REF"] = ["KR%s%08d" % (b, i) for i, b in enumerate(rep["BUKRS"])]
+    rep["REF"] = [f"KR{b}{i:08d}" for i, b in enumerate(rep["BUKRS"])]
     cur = rep["BUKRS"].map(lambda x: C.COMPANY_CODES[x]["currency"]).to_numpy()
     _invoice_and_payment(rep, "KR", cfg, docs, md, currency=cur, expense_lines=[
         dict(RACCT=rep["RACCT"].to_numpy(), RCNTR=rep["KOSTL"].to_numpy(),

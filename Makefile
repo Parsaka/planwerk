@@ -3,9 +3,9 @@ PROFILE ?= dev
 SEED ?= 42
 export PLANWERK_RAW ?= $(CURDIR)/data/raw
 export PLANWERK_DUCKDB ?= $(CURDIR)/data/warehouse/planwerk.duckdb
-DBT = cd dbt && dbt
+DBT_FLAGS = --project-dir $(CURDIR)/dbt --profiles-dir $(CURDIR)/dbt
 
-.PHONY: install generate dbt test lint forecast backtest liquidity assistant eval reports all clean
+.PHONY: install generate dbt test lint forecast backtest liquidity assistant mcp eval reports all clean
 
 install:
 	pip install -e ".[dbt,reporting,assistant,dev]"
@@ -15,13 +15,13 @@ generate:            ## simulate Nordwerk GmbH (S/4HANA tables as Parquet)
 
 dbt:                 ## build and test the warehouse (staging -> core -> controlling -> semantic)
 	mkdir -p data/warehouse
-	$(DBT) seed --profiles-dir . && $(DBT) build --profiles-dir .
+	dbt seed $(DBT_FLAGS) && dbt build $(DBT_FLAGS)
 
 test:                ## unit, data and logic tests (CI profile)
 	pytest
 
 lint:
-	ruff check src tests
+	ruff check src tests eval
 
 forecast:            ## rolling forecast 3+9 / 6+6 / 9+3 for the main scenario
 	python -m planwerk.forecast.rolling
@@ -31,6 +31,12 @@ backtest:            ## Q2: lead time of ML forecast vs straight-line over simul
 
 liquidity:           ## 13-week liquidity forecast from open items
 	python -m planwerk.controlling.liquidity
+
+assistant:           ## ask the assistant: make assistant Q="Warum liegt der DB II unter Plan?"
+	python -m planwerk.assistant.graph "$(Q)"
+
+mcp:                 ## run the MCP server (stdio)
+	python -m planwerk.assistant.mcp_server
 
 eval:                ## Q3: golden set and commentary evaluation of the AI assistant
 	python -m planwerk.assistant.eval

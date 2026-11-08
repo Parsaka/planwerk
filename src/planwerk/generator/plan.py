@@ -11,8 +11,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from planwerk.generator import config as C
 from planwerk.generator import aggregate as A
+from planwerk.generator import config as C
 from planwerk.generator.masterdata import MasterData
 from planwerk.generator.scenario import Scenario
 from planwerk.generator.transactions import _pc_for_pg
@@ -58,7 +58,7 @@ def build_plan(md: MasterData, drivers: pd.DataFrame, scenario: Scenario, scale:
         mat = sales[sales["MATKL"] != "PG50"].merge(split, on="MATKL")
         mat["HSL"] = mat["VARCOST"] * mat["SHARE"]
         mat["MSL"] = 0.0
-        mat["RCNTR"] = [C.PRODUCTION_CC.get((b, g), "") for b, g in zip(mat["BUKRS"], mat["MATKL"])]
+        mat["RCNTR"] = [C.PRODUCTION_CC.get((b, g), "") for b, g in zip(mat["BUKRS"], mat["MATKL"], strict=False)]
         mat.loc[mat["MATKL"] == "PG40", "RCNTR"] = ""
         # expected cash discounts (Skonti): customers with terms Z014, 75 % take the 2 % on gross
         sk = sales.merge(_skonto_rate(md), on=["BUKRS", "KDGRP"], how="left").fillna({"SKONTO_RATE": 0.0})
@@ -68,7 +68,7 @@ def build_plan(md: MasterData, drivers: pd.DataFrame, scenario: Scenario, scale:
         sk["RCNTR"] = ""
         sk = sk[sk["HSL"] > 0]
         sl = pd.concat([rev, mat, sk], ignore_index=True)
-        sl["PRCTR"] = [_pc_for_pg(b, g) for b, g in zip(sl["BUKRS"], sl["MATKL"])]
+        sl["PRCTR"] = [_pc_for_pg(b, g) for b, g in zip(sl["BUKRS"], sl["MATKL"], strict=False)]
         sl["MATKL_MM"] = sl["MATKL"]
         sl["RUNIT"] = np.where(sl["RACCT"].isin(["400000", "405000"]),
                                sl["MATKL"].map(lambda g: C.PRODUCT_GROUPS[g]["unit"]), "")

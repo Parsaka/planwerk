@@ -15,3 +15,4 @@ reports/out/
 *.tfstate
 *.tfstate.*
 .terraform/
+data/audit/

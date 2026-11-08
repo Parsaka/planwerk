@@ -2,11 +2,12 @@
   Row-level security per cost-centre owner.
   * Snowflake: a ROW ACCESS POLICY on the cost-centre marts, mapping CURRENT_USER() to the
     cost centres in reference.cost_centre_access (controllers and management see all).
-  * DuckDB (local): the semantic view filters on var('planwerk_user') so the same logic can
+  * DuckDB (local): the semantic view filters on the session variable planwerk_user
+    (SET VARIABLE planwerk_user = '...'), default var('planwerk_user'), so the same logic can
     be tested without Snowflake.
 #}
 {% macro current_planwerk_user() -%}
-    {%- if target.type == 'snowflake' -%}current_user(){%- else -%}'{{ var("planwerk_user") }}'{%- endif -%}
+    {%- if target.type == 'snowflake' -%}current_user(){%- else -%}coalesce(getvariable('planwerk_user'), '{{ var("planwerk_user") }}'){%- endif -%}
 {%- endmacro %}
 
 {% macro apply_cost_centre_policy(relation, column='cost_centre') %}

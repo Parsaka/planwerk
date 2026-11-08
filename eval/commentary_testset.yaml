@@ -1,0 +1,395 @@
+# Frozen commentary test set (ADR-0001, Q3 criterion 1): 12 months of 2025 x company codes
+# 1000, 2000, 3000 (36) plus the consolidated view for Q4 (3) = 39 commentaries. Expected key figures
+# are SQL on the controlling marts; every other number must match the fact sheet (verifier).
+version: 1
+items:
+- id: c01
+  scope: '1000'
+  year: 2025
+  month: 1
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 1 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 1 and company_code = '1000'
+- id: c02
+  scope: '1000'
+  year: 2025
+  month: 2
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 2 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 2 and company_code = '1000'
+- id: c03
+  scope: '1000'
+  year: 2025
+  month: 3
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 3 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 3 and company_code = '1000'
+- id: c04
+  scope: '1000'
+  year: 2025
+  month: 4
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 4 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 4 and company_code = '1000'
+- id: c05
+  scope: '1000'
+  year: 2025
+  month: 5
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 5 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 5 and company_code = '1000'
+- id: c06
+  scope: '1000'
+  year: 2025
+  month: 6
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 6 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 6 and company_code = '1000'
+- id: c07
+  scope: '1000'
+  year: 2025
+  month: 7
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 7 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 7 and company_code = '1000'
+- id: c08
+  scope: '1000'
+  year: 2025
+  month: 8
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 8 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 8 and company_code = '1000'
+- id: c09
+  scope: '1000'
+  year: 2025
+  month: 9
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 9 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 9 and company_code = '1000'
+- id: c10
+  scope: '1000'
+  year: 2025
+  month: 10
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 10 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 10 and company_code = '1000'
+- id: c11
+  scope: '1000'
+  year: 2025
+  month: 11
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 11 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 11 and company_code = '1000'
+- id: c12
+  scope: '1000'
+  year: 2025
+  month: 12
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 12 and company_code = '1000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 12 and company_code = '1000'
+- id: c13
+  scope: '2000'
+  year: 2025
+  month: 1
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 1 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 1 and company_code = '2000'
+- id: c14
+  scope: '2000'
+  year: 2025
+  month: 2
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 2 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 2 and company_code = '2000'
+- id: c15
+  scope: '2000'
+  year: 2025
+  month: 3
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 3 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 3 and company_code = '2000'
+- id: c16
+  scope: '2000'
+  year: 2025
+  month: 4
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 4 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 4 and company_code = '2000'
+- id: c17
+  scope: '2000'
+  year: 2025
+  month: 5
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 5 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 5 and company_code = '2000'
+- id: c18
+  scope: '2000'
+  year: 2025
+  month: 6
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 6 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 6 and company_code = '2000'
+- id: c19
+  scope: '2000'
+  year: 2025
+  month: 7
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 7 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 7 and company_code = '2000'
+- id: c20
+  scope: '2000'
+  year: 2025
+  month: 8
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 8 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 8 and company_code = '2000'
+- id: c21
+  scope: '2000'
+  year: 2025
+  month: 9
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 9 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 9 and company_code = '2000'
+- id: c22
+  scope: '2000'
+  year: 2025
+  month: 10
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 10 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 10 and company_code = '2000'
+- id: c23
+  scope: '2000'
+  year: 2025
+  month: 11
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 11 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 11 and company_code = '2000'
+- id: c24
+  scope: '2000'
+  year: 2025
+  month: 12
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 12 and company_code = '2000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 12 and company_code = '2000'
+- id: c25
+  scope: '3000'
+  year: 2025
+  month: 1
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 1 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 1 and company_code = '3000'
+- id: c26
+  scope: '3000'
+  year: 2025
+  month: 2
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 2 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 2 and company_code = '3000'
+- id: c27
+  scope: '3000'
+  year: 2025
+  month: 3
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 3 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 3 and company_code = '3000'
+- id: c28
+  scope: '3000'
+  year: 2025
+  month: 4
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 4 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 4 and company_code = '3000'
+- id: c29
+  scope: '3000'
+  year: 2025
+  month: 5
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 5 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 5 and company_code = '3000'
+- id: c30
+  scope: '3000'
+  year: 2025
+  month: 6
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 6 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 6 and company_code = '3000'
+- id: c31
+  scope: '3000'
+  year: 2025
+  month: 7
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 7 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 7 and company_code = '3000'
+- id: c32
+  scope: '3000'
+  year: 2025
+  month: 8
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 8 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 8 and company_code = '3000'
+- id: c33
+  scope: '3000'
+  year: 2025
+  month: 9
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 9 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 9 and company_code = '3000'
+- id: c34
+  scope: '3000'
+  year: 2025
+  month: 10
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 10 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 10 and company_code = '3000'
+- id: c35
+  scope: '3000'
+  year: 2025
+  month: 11
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 11 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 11 and company_code = '3000'
+- id: c36
+  scope: '3000'
+  year: 2025
+  month: 12
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 12 and company_code = '3000'
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 12 and company_code = '3000'
+- id: c37
+  scope: GRUPPE
+  year: 2025
+  month: 10
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 10
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 10
+- id: c38
+  scope: GRUPPE
+  year: 2025
+  month: 11
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 11
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 11
+- id: c39
+  scope: GRUPPE
+  year: 2025
+  month: 12
+  expected:
+  - name: monat
+    sql: select sum(db2_eur) as db2_ist_eur from controlling.mart_db_statement_monthly where version = 'IST' and fiscal_year = 2025 and fiscal_month = 12
+  - name: kumuliert
+    sql: select sum(case when version = 'IST' then db2_eur end) as db2_ist_eur, sum(case when version = 'PLAN' then db2_eur end) as db2_plan_eur from controlling.mart_db_statement_monthly where fiscal_year
+      = 2025 and fiscal_month <= 12

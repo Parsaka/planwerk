@@ -1,0 +1,36 @@
+{
+  "n_scenarios": 200,
+  "n_miss": 67,
+  "n_no_miss": 133,
+  "straight_line": {
+    "median_detection_month": 6.0,
+    "detected_share": 1.0,
+    "false_alarm_rate": 0.11278195488721804,
+    "mape_months_1_11": 0.042700555270011674
+  },
+  "seasonal_naive": {
+    "median_detection_month": 4.0,
+    "detected_share": 1.0,
+    "false_alarm_rate": 0.0,
+    "mape_months_1_11": 0.04116198581794538
+  },
+  "ml": {
+    "median_detection_month": 5.0,
+    "detected_share": 1.0,
+    "false_alarm_rate": 0.0,
+    "mape_months_1_11": 0.038162414780818193
+  },
+  "lead_seasonal_naive_vs_straight_line": {
+    "median": 0.0,
+    "q25": -1.0,
+    "q75": 0.0,
+    "mean": -0.1791044776119403
+  },
+  "lead_ml_vs_straight_line": {
+    "median": 0.0,
+    "q25": -1.0,
+    "q75": 0.0,
+    "mean": -0.835820895522388
+  },
+  "h2_met": false
+}

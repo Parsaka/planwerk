@@ -129,7 +129,7 @@ def _cost_centres(cfg: GeneratorConfig) -> pd.DataFrame:
     managers = list(C.MANAGERS)
     rng.shuffle(managers)
     rows = []
-    for i, (bukrs, kostl, name, level, hc, wage, blue) in enumerate(C.COST_CENTRES):
+    for i, (bukrs, kostl, name, level, hc, _wage, _blue) in enumerate(C.COST_CENTRES):
         base = dict(KOKRS=C.CONTROLLING_AREA, KOSTL=kostl, BUKRS=bukrs, KTEXT=name[:20], LTEXT=name,
                     KOSAR={"HILF": "H", "DB2": "F", "DB3": "V", "UNT": "W"}[level],
                     CM_LEVEL=level, VERAK=managers[i % len(managers)],
@@ -228,7 +228,7 @@ def _materials(cfg: GeneratorConfig) -> tuple[pd.DataFrame, pd.DataFrame]:
                 continue
             pick = by_cls[cls].sample(n=k, random_state=int(rng.integers(0, 2**31 - 1)))
             w = rng.dirichlet(np.ones(k))
-            for (_, comp), wj in zip(pick.iterrows(), w):
+            for (_, comp), wj in zip(pick.iterrows(), w, strict=False):
                 value = target * weight_cls[cls] * wj
                 qty = max(value / comp["BASE_PRICE"], 0.01)
                 bom_rows.append(dict(MATNR=p["MATNR"], POSNR=f"{pos:04d}", IDNRK=comp["MATNR"],
@@ -242,7 +242,7 @@ def _materials(cfg: GeneratorConfig) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 def _marc(mara: pd.DataFrame) -> pd.DataFrame:
     rows = []
-    for bukrs, cc in C.COMPANY_CODES.items():
+    for _bukrs, cc in C.COMPANY_CODES.items():
         sub = mara[mara["MTART"] != "DIEN"]
         for _, m in sub.iterrows():
             rows.append(dict(MATNR=m["MATNR"], WERKS=cc["plant"],

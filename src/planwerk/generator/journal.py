@@ -101,8 +101,8 @@ def finalize(frames: list[pd.DataFrame], fx: dict[str, float]) -> tuple[pd.DataF
     if prefix.isna().any():
         raise KeyError(f"no number range for {docs.loc[prefix.isna(), 'BLART'].unique()}")
     docs["BELNR"] = (prefix.astype(np.int64) * 10**8 + seq).astype(str).str.zfill(10)
-    belnr = dict(zip(docs["DOC_KEY"], docs["BELNR"]))
-    budat = dict(zip(docs["DOC_KEY"], docs["BUDAT"]))
+    belnr = dict(zip(docs["DOC_KEY"], docs["BELNR"], strict=False))
+    budat = dict(zip(docs["DOC_KEY"], docs["BUDAT"], strict=False))
 
     df["BELNR"] = df["DOC_KEY"].map(belnr)
     df = df.sort_values(["BUKRS", "GJAHR", "BELNR", "BAL"], kind="stable").reset_index(drop=True)

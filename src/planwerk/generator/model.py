@@ -34,7 +34,7 @@ def shift_period(period: str, months: int) -> str:
 
 
 def fx_actual(drivers: pd.DataFrame) -> dict[str, float]:
-    return dict(zip(drivers["period"], drivers["eur_pln"]))
+    return dict(zip(drivers["period"], drivers["eur_pln"], strict=False))
 
 
 # --------------------------------------------------------------------------------------
@@ -310,7 +310,7 @@ def fixed_cost_expectations(md: MasterData, drivers: pd.DataFrame, scenario: Sce
     """
     params = cost_centre_params()
     rows = []
-    spot = dict(zip(drivers["period"], drivers["dayahead_eur_mwh"]))
+    spot = dict(zip(drivers["period"], drivers["dayahead_eur_mwh"], strict=False))
     fx = fx_actual(drivers)
     pers = periods(first, last) if plan_year is None else periods(f"{plan_year}-01", f"{plan_year}-12")
     for _, cc in params.iterrows():
