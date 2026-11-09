@@ -74,6 +74,36 @@ fluctuation, and one year of data cannot separate them. Price and cost effects, 
 document, are recovered reliably. **The verdict on H1 stays "not met".** The criterion was not
 loosened after the fact.
 
+### What can be measured after all: the lost customer (exploratory, not pre-registered)
+
+The group volume effect mixes two injected effects: the market level (0.97 instead of 1.00) and the
+lost framework contract in Austria. The second concerns one customer, and one customer's share of its
+cell is far more stable than the demand of the whole group. So it can be measured at customer level
+(`customer_loss_effect` in [q1_evaluation.py](../../src/planwerk/controlling/q1_evaluation.py)):
+
+    expected = budget DB I of the customer's cell (company code × customer group), April to December
+               × the customer's share of that cell's DB I in the twelve months before the loss
+    effect   = the customer's DB I in those months at plan prices and standard cost − expected
+
+| Run | Injected | Measured | Within ±10 % |
+|---|---:|---:|---|
+| Seed 42 (main) | −1.34 M | −1.42 M | yes |
+| Seed 7 | −1.89 M | −1.79 M | yes |
+| Seed 123 | −2.27 M | −2.70 M | **no** |
+| Seed 2024 | −1.57 M | −1.62 M | yes |
+| Seed 31415 | −1.74 M | −1.60 M | yes |
+| Seed 42 without demand noise | −1.34 M | −1.30 M | yes |
+
+The method was written while looking at seed 42 only; the four other seeds are the independent check,
+and it holds in three of them. What is left of the volume effect after taking out the customer (the
+market level, injected −4.6 M EUR) is measured between −0.5 M and −6.7 M EUR and is within tolerance
+in **0 of 6** runs. That is the part no method can recover from one year of data.
+
+For the controller this is a practical rule: report a lost customer as its own line, measured at
+customer level, and treat the rest of the volume effect as market plus ordinary fluctuation.
+**H1 stays "not met"**: criterion 2 is judged on the combined volume effect as registered, and the
+split is not part of it ([q1_evaluation.json](q1_evaluation.json), key `exploratory_volume_split`).
+
 ---
 
 ## Q2: Does the ML forecast warn earlier?
