@@ -6,7 +6,7 @@
 # Creates, in an allowed EU region of Azure for Students (swedencentral):
 #   - resource group rg-planwerk
 #   - Azure OpenAI account with Entra ID sign-in only (no API keys) and one small chat model
-#     (gpt-5-mini if available) capped at 30k tokens per minute
+#     (gpt-4o-mini, or a newer one if Azure refuses it) capped at 30k tokens per minute
 #   - an app registration that GitHub Actions of Parsaka/planwerk (environment "eval") can use via
 #     OIDC, with the role "Cognitive Services OpenAI User" on that account only
 # Prints seven values at the end. None of them is a secret. Safe to run twice.
@@ -15,10 +15,11 @@ set -euo pipefail
 LOC="${LOC:-swedencentral}"
 RG="${RG:-rg-planwerk}"
 REPO="${REPO:-Parsaka/planwerk}"
-# Models are tried in this order. gpt-4o-mini and gpt-4.1-mini are "Deprecated" in Azure since 2026:
-# a subscription that has never deployed them cannot deploy them any more, so they come last and
-# only work on older subscriptions. Override with MODELS="name:version ..." if needed.
-MODELS="${MODELS:-gpt-5-mini:2025-08-07 gpt-5-nano:2025-08-07 gpt-4.1-mini:2025-04-14 gpt-4o-mini:2024-07-18}"
+# Models are tried in this order. gpt-4o-mini is the model this setup was first deployed with; Microsoft
+# lists it and gpt-4.1-mini as deprecated (retirement 14 April 2027) and says subscriptions without an
+# earlier deployment may be refused, so the GA models gpt-5-mini and gpt-5-nano follow as fallback.
+# Override with MODELS="name:version ..." if needed.
+MODELS="${MODELS:-gpt-4o-mini:2024-07-18 gpt-4.1-mini:2025-04-14 gpt-5-mini:2025-08-07 gpt-5-nano:2025-08-07}"
 # thousand tokens per minute; a hard throughput cap, not a price (billing is per token)
 CAPACITIES="${CAPACITIES:-30 10}"
 APP_NAME="${APP_NAME:-planwerk-github-eval}"

@@ -21,11 +21,11 @@ variable "github_oidc_subject" {
 }
 
 variable "openai_model" {
-  description = "Small chat model. gpt-4o-mini and gpt-4.1-mini are deprecated in Azure: subscriptions that never deployed them cannot deploy them any more."
+  description = "Small chat model. gpt-4o-mini retires on 14 April 2027; gpt-5-mini (2025-08-07) is the GA successor and is supported by the provider code."
   type        = object({ name = string, version = string })
   default = {
-    name    = "gpt-5-mini"
-    version = "2025-08-07"
+    name    = "gpt-4o-mini"
+    version = "2024-07-18"
   }
 }
 

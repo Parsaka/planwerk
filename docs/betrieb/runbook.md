@@ -101,8 +101,9 @@ an Snowflake-Eigenheiten scheitern; dann die Fehlermeldung des fehlgeschlagenen 
    `curl -fsSL https://raw.githubusercontent.com/Parsaka/planwerk/main/infra/azure/cloudshell_setup.sh | bash`.
    Das Skript legt ein Azure-OpenAI-Konto ohne API-Schlüssel (nur Entra ID) und ein Modell-Deployment
    `planwerk-chat` an und richtet die Anmeldung von GitHub Actions per OIDC ein. Es probiert der Reihe nach
-   `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1-mini`, `gpt-4o-mini`: Die beiden letzten sind in Azure seit 2026 abgekündigt
-   und lassen sich in einem Abonnement, das sie nie bereitgestellt hatte, nicht mehr anlegen.
+   `gpt-4o-mini`, `gpt-4.1-mini`, `gpt-5-mini`, `gpt-5-nano`. Die beiden ersten führt Microsoft als abgekündigt
+   (Abschaltung 14.04.2027) und kann sie neuen Abonnements verweigern; am 09.11.2026 ließ sich `gpt-4o-mini`
+   in diesem Abonnement noch anlegen. Spätestens zur Abschaltung auf `gpt-5-mini` wechseln.
    Alternative: Terraform, `cd infra/terraform/azure && terraform apply -var subscription_id=...`.
 2. Die sieben Zeilen der Ausgabe (keine Geheimnisse) als Datei `infra/azure/planwerk.env` einchecken oder als
    Repository-Variablen anlegen: `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT`, `AZURE_OPENAI_MODEL`,
