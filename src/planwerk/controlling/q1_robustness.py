@@ -36,6 +36,19 @@ def run_seed(seed: int, noise_level: float = 1.0) -> Path:
     return d / "q1.json"
 
 
+def _split(v: dict | None) -> dict | None:
+    """Customer-level split of the volume effect of one run (see q1_evaluation.customer_loss_effect)."""
+    if not v or not v["customer_loss"]:
+        return None
+    c = v["customer_loss"]
+    return dict(customer_loss=dict(injected=round(sum(x["injected_eur"] for x in c), 2),
+                                   measured=round(sum(x["measured_eur"] for x in c), 2),
+                                   recovered=all(x["recovered"] for x in c)),
+                market_volume=dict(injected=v["market_volume"]["injected_eur"],
+                                   measured=v["market_volume"]["measured_eur"],
+                                   recovered=v["market_volume"]["recovered"]))
+
+
 def collect(main_result: Path = REPO_ROOT / "docs" / "ergebnisse" / "q1_evaluation.json") -> dict:
     runs = []
     sources = [("seed42 (main)", main_result)] + [(p.parent.name, p) for p in sorted(EXPLORE.glob("*/q1.json"))]
@@ -49,12 +62,16 @@ def collect(main_result: Path = REPO_ROOT / "docs" / "ergebnisse" / "q1_evaluati
                          bridge_closes=r["criteria"]["c1_bridge_closes"],
                          cost_centre_coverage=r["criteria"]["c3_cost_centre_coverage"],
                          effects={e["effect"]: dict(injected=e["injected_eur"], measured=e["measured_eur"],
-                                                    recovered=e["recovered"]) for e in r["recovery"]}))
+                                                    recovered=e["recovered"]) for e in r["recovery"]},
+                         volume_split=_split(r.get("exploratory_volume_split"))))
     names = sorted({k for r in runs for k in r["effects"]})
     summary = {n: f"{sum(r['effects'][n]['recovered'] for r in runs if n in r['effects'])}/"
                   f"{sum(n in r['effects'] for r in runs)}" for n in names}
+    with_split = [r for r in runs if r["volume_split"]]
+    split_summary = {k: f"{sum(r['volume_split'][k]['recovered'] for r in with_split)}/{len(with_split)}"
+                     for k in ("customer_loss", "market_volume")} if with_split else {}
     return dict(note="Exploratory, not pre-registered. The H1 verdict stays as in q1_evaluation.json.",
-                runs=runs, recovered_per_effect=summary)
+                runs=runs, recovered_per_effect=summary, volume_split_recovered=split_summary)
 
 
 def main(argv: list[str] | None = None) -> dict:
@@ -72,6 +89,7 @@ def main(argv: list[str] | None = None) -> dict:
         flags = " ".join(f"{k.split()[0]}={'OK' if v['recovered'] else 'miss'}" for k, v in r["effects"].items())
         print(f"{r['run']:<22} realisation {r['revenue_realisation_vs_expected']:+.2%}  {flags}")
     print(res["recovered_per_effect"])
+    print("exploratory volume split:", res["volume_split_recovered"])
     return res
 
 

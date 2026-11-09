@@ -59,20 +59,68 @@ make assistant Q="Warum liegt der DB II in Österreich unter Plan?"
 
 ## 6. Ersteinrichtung Cloud
 
+Beide Cloud-Läufe sind optional und einmalig. Es gibt je zwei Wege: ein Skript für den Browser
+(ohne lokale Werkzeuge) oder Terraform. Nur einen der beiden Wege verwenden.
+
 ### Snowflake (Trial, 30 Tage)
+
 1. Konto anlegen (Region AWS/Azure EU Frankfurt), Admin-User mit MFA.
-2. Schlüsselpaare erzeugen: `openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out ci_key.p8`,
-   `openssl rsa -in ci_key.p8 -pubout -out ci_key.pub` (dasselbe für den Assistenten).
-3. `cd infra/terraform/snowflake && terraform init && terraform apply -var loader_rsa_public_key=... -var assistant_rsa_public_key=...`
-4. GitHub: Secret `SNOWFLAKE_PRIVATE_KEY` (Inhalt `ci_key.p8`) in Environment `snowflake`, Variablen
-   `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER=PLANWERK_CI`.
-5. `python -m planwerk.load.snowflake` und `PLANWERK_TARGET=snowflake make dbt`.
+2. Schlüsselpaare erzeugen und das Einrichtungsskript füllen: `python scripts/snowflake_keys.py`
+   schreibt `keys/planwerk_ci.p8`, `keys/planwerk_assistant.p8` (privat, nie einchecken) und
+   `keys/bootstrap.rendered.sql` (enthält nur öffentliche Schlüssel).
+3. `keys/bootstrap.rendered.sql` in ein Snowsight-Worksheet kopieren, Rolle `ACCOUNTADMIN`, „Run all“.
+   Die letzte Ergebniszeile zeigt den Konto-Bezeichner (`ORG-KONTO`). Alternative: Terraform,
+   `cd infra/terraform/snowflake && terraform apply -var loader_rsa_public_key=... -var assistant_rsa_public_key=...`.
+4. GitHub, Settings → Environments → `snowflake` anlegen:
+   Secret `SNOWFLAKE_PRIVATE_KEY` = Inhalt von `keys/planwerk_ci.p8`, Variable `SNOWFLAKE_ACCOUNT` = Konto-Bezeichner
+   (optional `SNOWFLAKE_USER`, Standard `PLANWERK_CI`). Der private Schlüssel gehört nur in dieses Secret,
+   nicht in einen Chat, ein Ticket oder eine Datei im Repository.
+5. Actions → „snowflake-run“ → Run workflow. Zuerst Profil `ci` (rund 2 Minuten), danach `dev`.
+   Der Lauf erzeugt die Daten, lädt `S4_RAW`, baut und testet dbt auf Snowflake, baut dasselbe Projekt
+   auf DuckDB und vergleicht 71 Kennzahlen aus 18 Tabellen beider Warehouses (`planwerk.load.snowflake_compare`).
+   Ergebnis: `docs/ergebnisse/snowflake_run.json` und die Zusammenfassung des Laufs.
+
+Lokal statt über GitHub: `SNOWFLAKE_ACCOUNT=... SNOWFLAKE_USER=PLANWERK_CI SNOWFLAKE_PRIVATE_KEY_PATH=keys/planwerk_ci.p8`
+setzen, dann `python -m planwerk.load.snowflake`, `PLANWERK_TARGET=snowflake make dbt`,
+`python -m planwerk.load.snowflake_compare`.
+
+Stand: Der Snowflake-Pfad ist ohne Konto so weit geprüft, wie es ohne Konto geht (dbt parst das Projekt für
+das Ziel `snowflake`, Ladeanweisungen und Vergleichslogik sind getestet). Der erste echte Lauf kann trotzdem
+an Snowflake-Eigenheiten scheitern; dann die Fehlermeldung des fehlgeschlagenen Schritts prüfen.
+
+| Symptom im Lauf | Ursache | Maßnahme |
+|---|---|---|
+| `JWT token is invalid` | Öffentlicher Schlüssel am Benutzer passt nicht zum Secret, oder Konto-Bezeichner falsch | `desc user PLANWERK_CI` (Feld `RSA_PUBLIC_KEY_FP`) prüfen, Schritte 2 bis 4 wiederholen |
+| `invalid identifier 'PERIOD'` in einem Staging-Modell | `S4_RAW` wurde mit einem Loader vor dem 09.11.2026 geladen (Spalten klein geschrieben) | Laden wiederholen; `create or replace` ersetzt die Tabellen |
+| Vergleich meldet Abweichung | Unterschiedliches SQL-Verhalten der beiden Engines | Betroffenes Modell in `snowflake_run.json` ablesen, Ausdruck portabel formulieren, Test ergänzen |
+| Marts leer für einen Fachbenutzer | Benutzername fehlt in `dbt/seeds/cost_centre_access.csv` | Zeile ergänzen, `dbt seed` und `dbt build`; die dbt-Rolle selbst ist von der Zeilenberechtigung ausgenommen |
 
 ### Azure OpenAI
-1. Subscription mit Zugriff auf Azure OpenAI; `cd infra/terraform/azure && terraform apply -var subscription_id=...`.
-2. GitHub-Environment `eval` anlegen (Reviewer erforderlich), Variablen aus den Terraform-Outputs:
-   `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT`.
-3. Workflow „eval-azure-openai“ manuell starten.
+
+1. Im Azure-Portal die Cloud Shell (Bash) öffnen und ausführen:
+   `curl -fsSL https://raw.githubusercontent.com/Parsaka/planwerk/main/infra/azure/cloudshell_setup.sh | bash`.
+   Das Skript legt ein Azure-OpenAI-Konto ohne API-Schlüssel (nur Entra ID) und ein Modell-Deployment
+   `planwerk-chat` an und richtet die Anmeldung von GitHub Actions per OIDC ein. Es probiert der Reihe nach
+   `gpt-5-mini`, `gpt-5-nano`, `gpt-4.1-mini`, `gpt-4o-mini`: Die beiden letzten sind in Azure seit 2026 abgekündigt
+   und lassen sich in einem Abonnement, das sie nie bereitgestellt hatte, nicht mehr anlegen.
+   Alternative: Terraform, `cd infra/terraform/azure && terraform apply -var subscription_id=...`.
+2. Die sieben Zeilen der Ausgabe (keine Geheimnisse) als Datei `infra/azure/planwerk.env` einchecken oder als
+   Repository-Variablen anlegen: `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT`, `AZURE_OPENAI_MODEL`,
+   `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` (`AZURE_OPENAI_SKU` ist nur Information).
+3. GitHub-Environment `eval` anlegen (Reviewer empfohlen).
+4. Actions → „eval-azure-openai“ starten (startet auch von selbst, wenn `infra/azure/planwerk.env` sich ändert).
+   Dauer rund 20 Minuten bei 30.000 Tokens pro Minute, Kosten deutlich unter 1 EUR. Ergebnis:
+   `docs/ergebnisse/q3_eval_azure.json`.
+
+Lesen des Ergebnisses: `usage.fallbacks` zählt Modellaufrufe, die nach sechs Wiederholungen (Drosselung,
+Zeitüberschreitung, Störung) ohne Modell beantwortet wurden, also mit dem regelbasierten Router oder dem
+Vorlagentext. Die Zahlen bleiben dann richtig, der Lauf sagt aber weniger über das Modell. Bei einem Wert
+über null den Lauf wiederholen oder die Kapazität des Deployments erhöhen.
+
+Das Modell muss weder Temperatur noch `max_tokens` unterstützen: Der Anbieter-Baustein erkennt
+Reasoning-Modelle (`gpt-5*`, `o*`) am Modellnamen und sonst an der Fehlermeldung des Dienstes und sendet dann
+`max_completion_tokens`. Einstellungen: `AZURE_OPENAI_API_VERSION` (Standard `v1`), `AZURE_OPENAI_MODEL_FAMILY`,
+`AZURE_OPENAI_REASONING_EFFORT` (Standard `low`).
 
 ### Schlüsselrotation
 Halbjährlich: neues Schlüsselpaar, `rsa_public_key_2` setzen, Secret tauschen, alten Schlüssel entfernen.

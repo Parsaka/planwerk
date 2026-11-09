@@ -58,6 +58,31 @@
     "db2_actual_eur": 93928796.56,
     "db2_expected_eur": 90511053.05
   },
+  "exploratory_volume_split": {
+    "note": "Exploratory, not pre-registered. H1 is judged on 'recovery' and 'criteria' only.",
+    "customer_loss": [
+      {
+        "effect": "customer_loss_2000_03",
+        "injected_eur": -1342366.23,
+        "customer": "0002000003",
+        "share_of_cell_before_loss": 0.3999,
+        "expected_db1_eur": 1668287.32,
+        "actual_db1_eur": 244828.58,
+        "measured_eur": -1423458.74,
+        "difference_eur": -81092.51,
+        "tolerance_eur": 134236.62,
+        "recovered": true
+      }
+    ],
+    "market_volume": {
+      "injected_eur": -4591498.35,
+      "measured_eur": -507379.46,
+      "difference_eur": 4084118.89,
+      "tolerance_eur": 459149.83,
+      "recovered": false,
+      "how": "group volume effect minus the customer-level effects above"
+    }
+  },
   "criteria": {
     "c1_bridge_closes": true,
     "c2_effects_recovered": false,

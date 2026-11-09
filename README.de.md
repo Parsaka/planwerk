@@ -56,7 +56,10 @@ Die Ergebnisse liegen danach in `reports/out/` und `docs/ergebnisse/`. Details s
 
 ## Noch offen
 
-SAP HANA Cloud, Datasphere, CAP-Service auf BTP und SAC-Story brauchen SAP-Testzugänge. Snowflake- und
-Azure-Läufe brauchen Konten. Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI Search sind
+SAP HANA Cloud, Datasphere, CAP-Service auf BTP und SAC-Story brauchen SAP-Testzugänge. Der Snowflake-Lauf
+(Workflow `snowflake-run`: laden, dbt bauen und testen, 71 Kennzahlen mit DuckDB vergleichen) und die
+Auswertung mit Azure OpenAI (Workflow `eval-azure-openai`) sind vorbereitet und ohne Konto getestet, aber noch
+nicht gegen ein echtes Konto gelaufen; die Einrichtung steht im [Runbook](docs/betrieb/runbook.md), Abschnitt 6.
+Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI Search sind
 geplant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen gesucht
 ([docs/outreach](docs/outreach)).

@@ -82,19 +82,28 @@ planwerk-mcp                                 # MCP server (stdio) with read-only
    only `SELECT` on an allow-list of views. Row-level security is enforced in the database.
 3. Results become a fact sheet. The model writes text with placeholders such as `{{f:db2_ist}}`;
    numbers are filled in by code, never typed by the model.
-4. A verifier parses every number in the final text (German format, units, rounding) and
-   rejects the answer if any number is not in the fact sheet. After two failed rewrites the
-   assistant falls back to a template answer.
+4. A verifier parses every number in the final text and rejects the answer unless each figure
+   is written exactly as the fact sheet renders one of its facts. Any other notation
+   ("6 Millionen Euro", "EUR 6 Mio.", figures in words) was typed by the model and is refused.
+   After two failed rewrites the assistant falls back to a template answer.
 
-The evaluation runs a second, deliberately hostile model that invents numbers and swaps years.
-It must not get a single wrong figure through. It did not.
+The evaluation runs a second, deliberately hostile model that appends invented figures in eight
+notations. It must not get a single one through. With the current verifier it does not; an earlier
+version of the verifier let figures in non-standard notation pass
+([details](docs/ergebnisse/README.md#q3-can-ai-write-the-month-end-commentary-with-correct-figures)).
+What no number check can catch is a real figure under the wrong label; labels are fixed by the
+templates.
 
 ## Not built yet (needs accounts or a real client)
 
 - SAP HANA Cloud, Datasphere and a CAP service on BTP: need SAP trial accounts.
 - SAC Planning: model design and import files are ready ([sac](sac)); building the story and data actions needs an SAC tenant.
-- Snowflake run: the dbt project and loader are Snowflake-ready; needs a Snowflake account.
-- Azure OpenAI evaluation in CI: workflow exists ([eval-azure.yml](.github/workflows/eval-azure.yml)); needs an Azure subscription and GitHub environment.
+- Snowflake run: one manual workflow ([snowflake.yml](.github/workflows/snowflake.yml)) loads the data, builds
+  dbt on Snowflake and compares 71 figures with the DuckDB build. It has not run yet: it needs a Snowflake
+  account and the key in the GitHub environment `snowflake` ([runbook](docs/betrieb/runbook.md), section 6).
+- Azure OpenAI evaluation: workflow exists ([eval-azure.yml](.github/workflows/eval-azure.yml)) and the provider
+  is tested against a fake client; it has not run against a real deployment yet. Needs an Azure subscription
+  and the GitHub environment `eval`.
 - Teams via Copilot Studio, Power Automate approval, RAG over Azure AI Search: planned, not built.
 - Time-saving measurement (Q3): needs a practising controller.
 

@@ -106,12 +106,23 @@ indicator did not buy earlier warning in this simulation.
 | Criterion | Threshold | Result | |
 |---|---|---|---|
 | Figure correctness, 39 commentaries (12 months × 3 company codes + Q4 group) | 100 % | 39/39 | met |
-| Same with a hostile model that invents numbers and swaps periods | 100 % | 39/39 | met |
+| Same with a hostile model that appends an invented figure in one of eight notations | 100 % | 39/39 | met |
 | Golden set, 200 questions, expected answers computed by SQL | ≥ 95 % | 200/200 | met |
 | Prompt injection, write SQL, privilege escalation, 40 attacks × 2 models | 0 successful | 0/80 | met |
 | Writing time saved by a practising controller | ≥ 50 % | not measured | **open** |
 
 Caveats, stated plainly:
+
+- **The hostile-model result was weaker than first reported, and was corrected on 2026-11-09.** The first
+  hostile model wrote its invented figure only in house notation ("999,0 Mio. EUR"), which the verifier
+  caught. A review found that the same figure written as "25 Millionen Euro", "12 Mio €", "30 Tsd. EUR",
+  "EUR 7 Mio." or "zwölf Millionen Euro" passed. With a hostile model that rotates through eight notations,
+  the verifier of the time delivered an invented figure in **34 of 39 commentaries and 2 of 40 attacks**
+  ([q3_eval_before_verifier_fix.json](q3_eval_before_verifier_fix.json)). The verifier now accepts a figure
+  only in the notation the fact sheet itself renders ([ADR-0004](../adr/0004-fact-first-ai-assistant.md),
+  amendment); the same hostile model now gets 0 through. The offline provider never produced such text,
+  so the 39/39 for the normal run was not affected. What remains outside any number check: a real figure
+  under the wrong label.
 
 - **The golden set is in-sample.** It found six router bugs; the first run scored 87 %. After the
   fixes it scores 200/200. The honest generalisation figure is the **hand-written holdout of 40
@@ -120,8 +131,9 @@ Caveats, stated plainly:
   "out of scope", the other two answer a neighbouring question (KPI instead of bridge or forecast)
   with correct figures for that question.
 - These figures use the **offline provider** (template wording) and a simulated hostile model.
-  The Azure OpenAI run is wired up ([eval-azure.yml](../../.github/workflows/eval-azure.yml)) but
-  needs an Azure subscription. Because numbers enter the text only through placeholders and every
+  The Azure OpenAI run is wired up ([eval-azure.yml](../../.github/workflows/eval-azure.yml)) and the
+  provider is tested against a fake client, but it has not run against a real deployment: it needs an
+  Azure subscription. Because numbers enter the text only through placeholders and every
   number is re-checked, figure correctness does not depend on the model; wording quality does.
 - Time saving needs a real controller and follows the protocol in
   [zeitmessung.md](../fachlich/zeitmessung.md). Until then it is reported as open.
