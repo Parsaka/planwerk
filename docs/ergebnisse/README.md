@@ -8,9 +8,9 @@ before any analysis ran. A result that misses its threshold is reported as misse
 |---|---|
 | H1: the DB II gap splits without residual, injected effects are recovered within ±10 %, ≥ 90 % of the cost deviation sits on named cost centres | **Not met** (2 of 3 criteria met) |
 | H2: the ML forecast flags a missed target ≥ 2 months earlier (median) than straight-line, without more false alarms | **Not met** |
-| H3: 100 % correct figures, ≥ 95 % golden-set accuracy, 0 successful attacks, ≥ 50 % time saving | **Met on three criteria, time saving open** |
+| H3: 100 % correct figures, ≥ 95 % golden-set accuracy, 0 successful attacks, ≥ 50 % time saving | **Met on three criteria, time saving open** (offline and with Azure OpenAI gpt-4o-mini) |
 
-Regenerate everything with `make all`. The raw numbers are in the JSON files next to this page.
+Regenerate everything with `make all`. The same warehouse also runs on Snowflake ([below](#the-same-warehouse-on-snowflake)). The raw numbers are in the JSON files next to this page.
 
 ---
 
@@ -119,14 +119,41 @@ Caveats, stated plainly:
   routing misses (e.g. "Auftragslage" not recognised as order intake); three of them fall back to
   "out of scope", the other two answer a neighbouring question (KPI instead of bridge or forecast)
   with correct figures for that question.
-- These figures use the **offline provider** (template wording) and a simulated hostile model.
-  The Azure OpenAI run is wired up ([eval-azure.yml](../../.github/workflows/eval-azure.yml)) but
-  needs an Azure subscription. Because numbers enter the text only through placeholders and every
-  number is re-checked, figure correctness does not depend on the model; wording quality does.
+- The table above uses the **offline provider** (template wording) and a simulated hostile model.
+  The real-model run is below.
 - Time saving needs a real controller and follows the protocol in
   [zeitmessung.md](../fachlich/zeitmessung.md). Until then it is reported as open.
 
 Latency (offline): median 5.8 ms per answer, 24.7 ms per commentary. Cost per answer offline: 0 EUR.
+
+### With the real model: Azure OpenAI gpt-4o-mini
+
+[q3_eval_azure.json](q3_eval_azure.json), run in GitHub Actions on 2026-11-09 against
+gpt-4o-mini (2024-07-18, Data Zone EU, Sweden Central), signed in through OIDC with no API key.
+
+| Criterion | Threshold | First run | Final run | |
+|---|---|---|---|---|
+| Figure correctness, 39 commentaries | 100 % | 39/39 | 39/39 | met |
+| Same with the hostile model | 100 % | 39/39 | 39/39 | met |
+| Golden set, 200 questions | ≥ 95 % | 91/200 (45.5 %) | 199/200 (99.5 %) | met |
+| Prompt injection, 40 attacks × 2 models | 0 successful | 0/80 | 0/80 | met |
+| Holdout, 40 paraphrases, full routing chain | reported, no threshold | – | 36/40 (parser alone 35/40) | |
+
+The **first run failed** ([q3_eval_azure_first_run.json](q3_eval_azure_first_run.json)). The model
+did the routing alone: it sent 49 recognisable questions out of scope and read "April 2025" as
+"January to April". The fix is architectural, not a prompt tweak. The rule-based parser now
+routes every question it recognises (235 of 253 in the final run). The model only routes what the
+parser leaves out of scope (18), and its intent still has to pass the closed-vocabulary
+validation and the consistency check. The one remaining golden-set miss (g095) is a rewrite that
+dropped plan and actual from a bridge answer. The verifier only blocks invented numbers, so the
+answer went out without them.
+
+The golden set is still in-sample for the parser, so 199/200 mostly measures the parser plus the
+model's wording. The honest figure is the holdout through the full chain: **36/40**. The model
+fixed two paraphrases the parser missed and broke one the parser had right.
+
+Latency with the model: median 3.0 s per answer (p95 6.6 s), 12 s per commentary. Cost: about
+0.003 EUR per answer, 0.95 EUR for the whole run (list-price estimate).
 
 ---
 

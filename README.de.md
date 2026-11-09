@@ -19,7 +19,7 @@ und wurden vor der ersten Auswertung festgelegt.
 |---|---|---|
 | Q1 | Woraus besteht die Lücke von 4,5 Mio. EUR im DB II gegenüber Plan (Preis, Menge, Mix, Kosten; welche Kostenstelle)? | Die Abweichungsbrücke schließt auf den Cent, 100 % der Kostenabweichung liegen auf benannten Kostenstellen. Von vier eingespielten Effekten werden drei innerhalb der Toleranz wiedergefunden, der Mengeneffekt nicht. **H1 nicht erfüllt.** |
 | Q2 | Wie viele Monate früher erkennt ein rollierender ML-Forecast eine Zielverfehlung als die lineare Hochrechnung? | Über 200 simulierte Szenarien: Vorsprung im Median 0 Monate (Ziel 2). Der ML-Forecast hat keine Fehlalarme, die lineare Hochrechnung 11,3 %. **H2 nicht erfüllt.** |
-| Q3 | Schreibt eine KI den deutschen Monatskommentar mit 100 % korrekten Zahlen und halbiert sie die Schreibzeit? | 39 von 39 Kommentaren mit ausschließlich korrekten Zahlen, auch mit einem absichtlich feindlichen Modell; 200 von 200 Fragen im Golden Set; 0 von 80 Angriffen erfolgreich. Die Zeitersparnis braucht einen praktizierenden Controller: **offen.** |
+| Q3 | Schreibt eine KI den deutschen Monatskommentar mit 100 % korrekten Zahlen und halbiert sie die Schreibzeit? | 39 von 39 Kommentaren mit ausschließlich korrekten Zahlen, auch mit einem absichtlich feindlichen Modell; 200 von 200 Fragen im Golden Set; 0 von 80 Angriffen erfolgreich. Mit Azure OpenAI gpt-4o-mini: 39 von 39 Kommentaren korrekt, 199 von 200 im Golden Set, 36 von 40 bei zurückgehaltenen Umformulierungen. Die Zeitersparnis braucht einen praktizierenden Controller: **offen.** |
 
 Negative Ergebnisse werden als negativ berichtet, Schwellen wurden nicht verschoben.
 
@@ -28,7 +28,7 @@ Negative Ergebnisse werden als negativ berichtet, Schwellen wurden nicht verscho
 - **Datengenerator** (`src/planwerk/generator`): S/4HANA-Tabellen (ACDOCA, ACDOCP, BKPF/BSEG, VBAK/VBAP,
   VBRK/VBRP, EKKO/EKPO, AFKO, MARA/MARC/MBEW, KNA1, LFA1, CSKS u. a.), rund 2,4 Mio. Buchungszeilen
   über 36 Monate, mit Ground-Truth-Manifest der eingespielten Effekte.
-- **Data Warehouse** (`dbt`): DuckDB lokal, auf Snowflake übertragbar. Kimball-Modell, SCD2 für
+- **Data Warehouse** (`dbt`): DuckDB lokal, zusätzlich auf Snowflake gelaufen. Kimball-Modell, SCD2 für
   Kostenstellen, Datenverträge, Zeilenberechtigung je Kostenstellenverantwortlichem.
 - **Controlling-Logik**: BAB mit Umlage, Deckungsbeitragsrechnung DB I bis III, Preis-Mengen-Mix-Abweichung,
   Kostenabweichung je Kostenstelle und Kostenart, GuV nach Gesamtkostenverfahren (HGB § 275 Abs. 2) mit
@@ -54,9 +54,20 @@ make forecast backtest liquidity q1 eval reports
 
 Die Ergebnisse liegen danach in `reports/out/` und `docs/ergebnisse/`. Details stehen im [Runbook](docs/betrieb/runbook.md).
 
+## In der Cloud
+
+- **Snowflake** (Testkonto, AWS eu-central-1): `make snowflake` lädt 27 Tabellen (6,27 Mio. Zeilen) über
+  einen Service-User mit Schlüsselpaar, dasselbe dbt-Projekt läuft mit 98 von 98 grün. Alle vergleichbaren
+  Tabellen stimmen centgenau mit DuckDB überein, und die Row Access Policy zeigt jedem
+  Kostenstellenverantwortlichen nur seine Kostenstellen.
+- **Azure OpenAI** (gpt-4o-mini, EU-Datenzone, ohne API-Schlüssel): Die Q3-Auswertung läuft in GitHub
+  Actions über OIDC. Der erste Lauf scheiterte mit 91 von 200, weil das Modell allein geroutet hat.
+  Mit regelbasiertem Router zuerst erreicht der endgültige Lauf 199 von 200. Details stehen in
+  [docs/ergebnisse](docs/ergebnisse/README.md).
+
 ## Noch offen
 
-SAP HANA Cloud, Datasphere, CAP-Service auf BTP und SAC-Story brauchen SAP-Testzugänge. Snowflake- und
-Azure-Läufe brauchen Konten. Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI Search sind
-geplant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen gesucht
-([docs/outreach](docs/outreach)).
+SAP HANA Cloud, Datasphere, Deployment des CAP-Service ([sap/cap](sap/cap), gebaut und getestet) auf BTP
+und die SAC-Story brauchen SAP-Testzugänge. Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI
+Search sind geplant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen
+gesucht ([docs/outreach](docs/outreach)).

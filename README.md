@@ -17,7 +17,7 @@ Planwerk answers three questions that were fixed, with thresholds, before any an
 |---|---|---|
 | Q1 | Where does the 4.5 M EUR gap in contribution margin II against plan come from (price, volume, mix, cost; which cost centre)? | Bridge closes to the cent, 100 % of the cost deviation sits on named cost centres. Of four injected effects, three are recovered within tolerance; the volume effect is not, because one year's demand fluctuation swamps it (shown over six runs). **H1 not met.** |
 | Q2 | How many months earlier does a rolling ML forecast flag a missed annual target than straight-line extrapolation? | Over 200 simulated scenarios the median lead is 0 months (target: 2). ML has no false alarms against 11.3 % for straight-line. **H2 not met.** |
-| Q3 | Can AI write the German month-end commentary with 100 % correct figures and save half the controller's time? | 39/39 commentaries with every figure correct, also with a deliberately hostile model; 200/200 golden-set questions; 0 of 80 injection attempts succeeded. Time saving needs a practising controller: **open.** |
+| Q3 | Can AI write the German month-end commentary with 100 % correct figures and save half the controller's time? | 39/39 commentaries with every figure correct, also with a deliberately hostile model; 200/200 golden-set questions; 0 of 80 injection attempts succeeded. With Azure OpenAI gpt-4o-mini: 39/39 commentaries correct, 199/200 golden set, 36/40 on held-out paraphrases. Time saving needs a practising controller: **open.** |
 
 Negative results are reported as negative; thresholds were not moved. Details, caveats and
 the multi-seed robustness check are on the [results page](docs/ergebnisse/README.md).
@@ -28,7 +28,7 @@ the multi-seed robustness check are on the [results page](docs/ergebnisse/README
 SAP S/4HANA-shaped tables (ACDOCA, ACDOCP, BKPF/BSEG, VBAK/VBAP/VBRK/VBRP, EKKO/EKPO, AFKO, MARA/MARC/MBEW, KNA1, LFA1, CSKS ...)
         │  src/planwerk/generator   seeded simulation, real macro drivers, ground-truth manifest
         ▼
-dbt (DuckDB locally, Snowflake-portable)
+dbt (DuckDB locally, also run on Snowflake)
         staging → intermediate (BAB allocation, costed sales items) → core (Kimball, SCD2 cost centres)
         → controlling marts (DB I–III, PVM bridge, cost variance, HGB GKV P&L, order intake)
         → semantic views with row-level security per cost-centre owner
@@ -89,12 +89,21 @@ planwerk-mcp                                 # MCP server (stdio) with read-only
 The evaluation runs a second, deliberately hostile model that invents numbers and swaps years.
 It must not get a single wrong figure through. It did not.
 
+## Running in the cloud
+
+- **Snowflake** (trial, AWS eu-central-1): `make snowflake` loads 27 tables (6.27 million rows) with a
+  key-pair service user, and the same dbt project builds 98/98 green. Every comparable relation
+  matches DuckDB to the cent, and the row access policy shows each cost-centre owner only their own
+  cost centres ([details](docs/ergebnisse/README.md#the-same-warehouse-on-snowflake)).
+- **Azure OpenAI** (gpt-4o-mini, EU data zone, no API keys): the Q3 evaluation runs in GitHub Actions
+  through OIDC ([eval-azure.yml](.github/workflows/eval-azure.yml)). The first run failed at
+  91/200 because the model was routing alone. The final run has the rule parser first and scores
+  199/200 ([details](docs/ergebnisse/README.md#with-the-real-model-azure-openai-gpt-4o-mini)).
+
 ## Not built yet (needs accounts or a real client)
 
-- SAP HANA Cloud, Datasphere and a CAP service on BTP: need SAP trial accounts.
+- SAP HANA Cloud, Datasphere and deploying the CAP service ([sap/cap](sap/cap), built and tested) to BTP: need SAP trial accounts.
 - SAC Planning: model design and import files are ready ([sac](sac)); building the story and data actions needs an SAC tenant.
-- Snowflake run: the dbt project and loader are Snowflake-ready; needs a Snowflake account.
-- Azure OpenAI evaluation in CI: workflow exists ([eval-azure.yml](.github/workflows/eval-azure.yml)); needs an Azure subscription and GitHub environment.
 - Teams via Copilot Studio, Power Automate approval, RAG over Azure AI Search: planned, not built.
 - Time-saving measurement (Q3): needs a practising controller.
 
