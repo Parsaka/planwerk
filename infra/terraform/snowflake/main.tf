@@ -4,13 +4,14 @@
 
 locals {
   schemas = {
-    S4_RAW      = "S/4HANA extracts as loaded (Parquet -> tables)"
-    STAGING     = "dbt staging views"
-    CORE        = "Kimball dimensions and facts"
-    CONTROLLING = "Controlling marts (DB I-III, BAB, PVM, GKV)"
-    SEMANTIC    = "Semantic views for SAC and the AI assistant"
-    FORECAST    = "Rolling forecast and liquidity outputs"
-    REFERENCE   = "Seeds: access list, DB scheme, GKV mapping"
+    S4_RAW       = "S/4HANA extracts as loaded (Parquet -> tables)"
+    STAGING      = "dbt staging views"
+    INTERMEDIATE = "dbt intermediate tables (BAB allocation, costed sales items)"
+    CORE         = "Kimball dimensions and facts"
+    CONTROLLING  = "Controlling marts (DB I-III, BAB, PVM, GKV)"
+    SEMANTIC     = "Semantic views for SAC and the AI assistant"
+    FORECAST     = "Rolling forecast and liquidity outputs"
+    REFERENCE    = "Seeds: access list, DB scheme, GKV mapping"
   }
 }
 
@@ -116,12 +117,18 @@ resource "snowflake_grant_privileges_to_account_role" "transformer_raw_read" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "transformer_schemas" {
-  for_each          = toset(["STAGING", "CORE", "CONTROLLING", "SEMANTIC", "FORECAST", "REFERENCE"])
+  for_each          = toset(["STAGING", "INTERMEDIATE", "CORE", "CONTROLLING", "SEMANTIC", "FORECAST", "REFERENCE"])
   account_role_name = snowflake_account_role.transformer.name
   privileges        = ["USAGE", "CREATE TABLE", "CREATE VIEW", "CREATE ROW ACCESS POLICY"]
   on_schema {
     schema_name = "\"${snowflake_database.db.name}\".\"${snowflake_schema.s[each.key].name}\""
   }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "transformer_apply_rap" {
+  account_role_name = snowflake_account_role.transformer.name
+  privileges        = ["APPLY ROW ACCESS POLICY"]
+  on_account        = true
 }
 
 resource "snowflake_grant_privileges_to_account_role" "transformer_raw_usage" {

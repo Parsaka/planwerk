@@ -1,12 +1,17 @@
 name: eval-azure-openai
 
-# Model-quality part of the Q3 eval with the real Azure OpenAI deployment. Manual only (costs
-# money), runs in the protected environment "eval", authenticates with OIDC (no stored secret).
+# Model-quality part of the Q3 eval with the real Azure OpenAI deployment. Runs in the environment
+# "eval" and authenticates with OIDC (no stored secret). Manual, plus once whenever the deployment
+# settings in infra/azure/planwerk.env change. Cost: a few cents with gpt-4o-mini.
+# Settings come from repository variables, or from infra/azure/planwerk.env (non-secret IDs).
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [infra/azure/planwerk.env]
 
 permissions:
-  contents: read
+  contents: write # commits docs/ergebnisse/q3_eval_azure.json
   id-token: write
 
 jobs:
@@ -14,23 +19,37 @@ jobs:
     runs-on: ubuntu-latest
     environment: eval
     timeout-minutes: 30
-    env:
-      AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
-      AZURE_OPENAI_DEPLOYMENT: ${{ vars.AZURE_OPENAI_DEPLOYMENT }}
     steps:
       - uses: actions/checkout@v4
+      - name: Read deployment settings
+        run: |
+          if [ -f infra/azure/planwerk.env ]; then grep -E '^[A-Z_]+=' infra/azure/planwerk.env >> "$GITHUB_ENV"; fi
+          for v in AZURE_OPENAI_ENDPOINT AZURE_OPENAI_DEPLOYMENT AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
+            override=$(jq -r --arg k "$v" '.[$k] // empty' <<< '${{ toJSON(vars) }}')
+            if [ -n "$override" ]; then echo "$v=$override" >> "$GITHUB_ENV"; fi
+          done
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - uses: azure/login@v2
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
       - run: pip install -e ".[dbt,assistant,azure,dev]"
       - run: make generate dbt forecast PROFILE=ci
-      - run: python -m planwerk.assistant.eval --provider azure --out q3-eval-azure.json
+      - name: Q3 eval with Azure OpenAI
+        run: python -m planwerk.assistant.eval --provider azure --out docs/ergebnisse/q3_eval_azure.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: q3-eval-azure
-          path: q3-eval-azure.json
+          path: docs/ergebnisse/q3_eval_azure.json
+      - name: Commit the result
+        if: always()
+        run: |
+          [ -f docs/ergebnisse/q3_eval_azure.json ] || exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898289+github-actions[bot]@users.noreply.github.com"
+          git add docs/ergebnisse/q3_eval_azure.json
+          git commit -m "Q3 eval with Azure OpenAI (${AZURE_OPENAI_DEPLOYMENT})" || exit 0
+          git pull --rebase origin main && git push origin HEAD:main
