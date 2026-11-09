@@ -19,3 +19,4 @@ data/audit/
 sac/import/
 data/explore/
 keys/
+dbt/.user.yml
