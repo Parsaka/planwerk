@@ -5,19 +5,23 @@
 #
 # Creates, in an allowed EU region of Azure for Students (swedencentral):
 #   - resource group rg-planwerk
-#   - Azure OpenAI account with Entra ID sign-in only (no API keys) and a gpt-4o-mini deployment
-#     capped at 10k tokens per minute
+#   - Azure OpenAI account with Entra ID sign-in only (no API keys) and one small chat model
+#     (gpt-5-mini if available) capped at 30k tokens per minute
 #   - an app registration that GitHub Actions of Parsaka/planwerk (environment "eval") can use via
 #     OIDC, with the role "Cognitive Services OpenAI User" on that account only
-# Prints five values at the end. None of them is a secret. Safe to run twice.
+# Prints seven values at the end. None of them is a secret. Safe to run twice.
 set -euo pipefail
 
 LOC="${LOC:-swedencentral}"
 RG="${RG:-rg-planwerk}"
 REPO="${REPO:-Parsaka/planwerk}"
-MODEL="${MODEL:-gpt-4o-mini}"
-MODEL_VERSION="${MODEL_VERSION:-2024-07-18}"
-DEPLOYMENT="${DEPLOYMENT:-gpt-4o-mini}"
+# Models are tried in this order. gpt-4o-mini and gpt-4.1-mini are "Deprecated" in Azure since 2026:
+# a subscription that has never deployed them cannot deploy them any more, so they come last and
+# only work on older subscriptions. Override with MODELS="name:version ..." if needed.
+MODELS="${MODELS:-gpt-5-mini:2025-08-07 gpt-5-nano:2025-08-07 gpt-4.1-mini:2025-04-14 gpt-4o-mini:2024-07-18}"
+DEPLOYMENT="${DEPLOYMENT:-planwerk-chat}"
+# thousand tokens per minute; a hard throughput cap, not a price (billing is per token)
+CAPACITIES="${CAPACITIES:-30 10}"
 APP_NAME="${APP_NAME:-planwerk-github-eval}"
 
 SUB=$(az account show --query id -o tsv)
@@ -42,16 +46,30 @@ ENDPOINT=$(az cognitiveservices account show -n "$AOAI" -g "$RG" --query propert
 
 # EU data zone first; student subscriptions sometimes only offer the global or regional SKU.
 if ! az cognitiveservices account deployment show -n "$AOAI" -g "$RG" --deployment-name "$DEPLOYMENT" -o none 2>/dev/null; then
-  for SKU in DataZoneStandard GlobalStandard Standard; do
-    if az cognitiveservices account deployment create -n "$AOAI" -g "$RG" --deployment-name "$DEPLOYMENT" \
-         --model-name "$MODEL" --model-version "$MODEL_VERSION" --model-format OpenAI \
-         --sku-name "$SKU" --sku-capacity 10 -o none 2>/dev/null; then
-      echo "Deployment $DEPLOYMENT created with SKU $SKU"; break
-    fi
-    echo "SKU $SKU not available here, trying the next one"
+  CREATED=""
+  for M in $MODELS; do
+    for SKU in DataZoneStandard GlobalStandard Standard; do
+      for CAP in $CAPACITIES; do
+        if ERR=$(az cognitiveservices account deployment create -n "$AOAI" -g "$RG" --deployment-name "$DEPLOYMENT" \
+             --model-name "${M%%:*}" --model-version "${M##*:}" --model-format OpenAI \
+             --sku-name "$SKU" --sku-capacity "$CAP" -o none 2>&1); then
+          echo "Deployment $DEPLOYMENT created: model ${M%%:*} (${M##*:}), SKU $SKU, ${CAP}k tokens per minute"
+          CREATED=1; break 3
+        fi
+        LAST_ERR="$ERR"
+      done
+    done
+    echo "Model ${M%%:*} is not available to this subscription here, trying the next one"
   done
+  if [ -z "$CREATED" ]; then
+    echo "ERROR: no model could be deployed in $LOC. Last message from Azure:" >&2
+    echo "$LAST_ERR" >&2
+    echo "Check the quota under Azure AI Foundry > Quotas, or run again with another region: LOC=<region> bash ..." >&2
+    exit 1
+  fi
 fi
 SKU_USED=$(az cognitiveservices account deployment show -n "$AOAI" -g "$RG" --deployment-name "$DEPLOYMENT" --query sku.name -o tsv)
+MODEL_USED=$(az cognitiveservices account deployment show -n "$AOAI" -g "$RG" --deployment-name "$DEPLOYMENT" --query properties.model.name -o tsv)
 
 # You yourself may call the model too (for local tests with az login)
 ME=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || true)
@@ -83,6 +101,7 @@ echo
 echo "===== Planwerk Azure setup done. Copy everything between the lines and send it back. ====="
 echo "AZURE_OPENAI_ENDPOINT=$ENDPOINT"
 echo "AZURE_OPENAI_DEPLOYMENT=$DEPLOYMENT"
+echo "AZURE_OPENAI_MODEL=$MODEL_USED"
 echo "AZURE_OPENAI_SKU=$SKU_USED"
 echo "AZURE_CLIENT_ID=$CLIENT_ID"
 echo "AZURE_TENANT_ID=$TENANT"

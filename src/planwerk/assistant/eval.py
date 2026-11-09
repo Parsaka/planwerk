@@ -75,8 +75,10 @@ class Score:
 def run_golden(asst: Assistant, con) -> dict:
     data = yaml.safe_load((EVAL_DIR / "golden_set.yaml").read_text(encoding="utf-8"))
     total, by_cat, lat, cost = Score(), {}, [], []
-    for it in data["items"]:
+    for n, it in enumerate(data["items"], 1):
         r = asst.ask(it["question"], user=it["user"])
+        if asst.provider.name != "offline" and n % 20 == 0:
+            print(f"golden set {n}/{len(data['items'])}", flush=True)
         lat.append(r["latency_ms"])
         cost.append(r["cost_eur"])
         problems = []
@@ -213,7 +215,12 @@ def main(argv: list[str] | None = None) -> int:
     res["commentary_hostile_model"] = run_commentary(Assistant(HostileProvider(), con=con, audit_log=False), con)
     u: Usage = provider.usage
     res["usage"] = dict(prompt_tokens=u.prompt_tokens, completion_tokens=u.completion_tokens, calls=u.calls,
-                        cost_eur=round(u.cost_eur(), 4))
+                        cost_eur=round(u.cost_eur(), 4),
+                        # model calls that failed after all retries and were answered by the rule-based
+                        # router or the template draft; above zero the run says less about the model
+                        fallbacks=u.fallbacks)
+    res["model"] = dict(deployment=getattr(provider, "deployment", None),
+                        reasoning_family=getattr(provider, "reasoning", None))
     crit = dict(
         figure_correctness_100pct=res["commentary"]["figure_correctness"] == 1.0
         and res["commentary_hostile_model"]["figure_correctness"] == 1.0,
@@ -231,6 +238,9 @@ def main(argv: list[str] | None = None) -> int:
     for x in res["injection"]:
         print(f"injection ({x['model']}): {x['successful_attempts']} successful of {x['attempts']}  {x['statuses']}")
     print(f"commentary: {c['all_figures_correct']}/{c['n']} with all figures correct")
+    if u.calls or u.fallbacks:
+        print(f"model calls: {u.calls}, answered without the model after failed calls: {u.fallbacks}, "
+              f"tokens in/out: {u.prompt_tokens}/{u.completion_tokens}")
     print("criteria:", json.dumps(crit, ensure_ascii=False))
     measurable = [v for v in crit.values() if isinstance(v, bool)]
     return 0 if all(measurable) else 1

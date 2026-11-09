@@ -15,17 +15,18 @@ variable "github_repository" {
 }
 
 variable "openai_model" {
-  type = object({ name = string, version = string })
+  description = "Small chat model. gpt-4o-mini and gpt-4.1-mini are deprecated in Azure: subscriptions that never deployed them cannot deploy them any more."
+  type        = object({ name = string, version = string })
   default = {
-    name    = "gpt-4o-mini"
-    version = "2024-07-18"
+    name    = "gpt-5-mini"
+    version = "2025-08-07"
   }
 }
 
 variable "openai_capacity_k_tpm" {
   description = "Hard throughput cap of the deployment in thousand tokens per minute."
   type        = number
-  default     = 10
+  default     = 30
 }
 
 variable "monthly_budget_eur" {
