@@ -56,10 +56,11 @@ Die Ergebnisse liegen danach in `reports/out/` und `docs/ergebnisse/`. Details s
 
 ## Noch offen
 
-SAP HANA Cloud, Datasphere, CAP-Service auf BTP und SAC-Story brauchen SAP-Testzugänge. Der Snowflake-Lauf
-(Workflow `snowflake-run`: laden, dbt bauen und testen, 71 Kennzahlen mit DuckDB vergleichen) und die
-Auswertung mit Azure OpenAI (Workflow `eval-azure-openai`) sind vorbereitet und ohne Konto getestet, aber noch
-nicht gegen ein echtes Konto gelaufen; die Einrichtung steht im [Runbook](docs/betrieb/runbook.md), Abschnitt 6.
+SAP HANA Cloud, Datasphere, CAP-Service auf BTP und SAC-Story brauchen SAP-Testzugänge. Der Snowflake-Lauf ist am
+09.11.2026 von Hand erfolgt ([snowflake_run.json](docs/ergebnisse/snowflake_run.json)); der Workflow
+`snowflake-run`, der ihn wiederholt und 71 Kennzahlen mit DuckDB vergleicht, ist noch nicht gelaufen. Die
+Auswertung mit Azure OpenAI läuft über den Workflow `eval-azure-openai`; Einrichtung im
+[Runbook](docs/betrieb/runbook.md), Abschnitt 6.
 Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI Search sind
 geplant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen gesucht
 ([docs/outreach](docs/outreach)).

@@ -1,8 +1,10 @@
 name: snowflake-run
 
-# One-off portability run (ADR-0003): generate the simulated data, load it into Snowflake schema
+# Repeatable portability run (ADR-0003): generate the simulated data, load it into Snowflake schema
 # S4_RAW, build and test the dbt project on Snowflake, build the same project on DuckDB and compare
 # the figures of both warehouses. Manual start only. All company data is simulated.
+# The first run was done by hand on 2026-11-09 (docs/ergebnisse/snowflake_run.json); this workflow
+# repeats it without a workstation and writes docs/ergebnisse/snowflake_workflow_run.json.
 #
 # Needs the GitHub environment "snowflake" with
 #   secret   SNOWFLAKE_PRIVATE_KEY   content of keys/planwerk_ci.p8 (scripts/snowflake_keys.py)
@@ -18,12 +20,12 @@ on:
         options: [ci, dev]
         default: ci
       commit_result:
-        description: "Commit docs/ergebnisse/snowflake_run.json to main"
+        description: "Commit docs/ergebnisse/snowflake_workflow_run.json to main"
         type: boolean
         default: true
 
 permissions:
-  contents: write # commits docs/ergebnisse/snowflake_run.json
+  contents: write # commits docs/ergebnisse/snowflake_workflow_run.json
 
 concurrency:
   group: snowflake-run
@@ -58,18 +60,18 @@ jobs:
       - name: Generate the simulated data and build the DuckDB reference
         run: make generate dbt PROFILE="$PROFILE"
       - name: Load S4_RAW (row counts are checked against the manifest)
-        run: python -m planwerk.load.snowflake
-      - name: dbt seed and build on Snowflake (all tests)
-        run: PLANWERK_TARGET=snowflake make dbt
+        run: make snowflake-load
+      - name: dbt build on Snowflake (seeds, models, all tests)
+        run: make snowflake-dbt
       - name: Compare Snowflake with DuckDB
-        run: python -m planwerk.load.snowflake_compare --out docs/ergebnisse/snowflake_run.json
+        run: python -m planwerk.load.snowflake_compare --out docs/ergebnisse/snowflake_workflow_run.json
       - name: Summary
         if: always()
         run: |
-          [ -f docs/ergebnisse/snowflake_run.json ] || { echo "No comparison result (an earlier step failed)." >> "$GITHUB_STEP_SUMMARY"; exit 0; }
+          [ -f docs/ergebnisse/snowflake_workflow_run.json ] || { echo "No comparison result (an earlier step failed)." >> "$GITHUB_STEP_SUMMARY"; exit 0; }
           python - >> "$GITHUB_STEP_SUMMARY" <<'PY'
           import json
-          r = json.load(open("docs/ergebnisse/snowflake_run.json"))
+          r = json.load(open("docs/ergebnisse/snowflake_workflow_run.json"))
           print(f"### Snowflake run, profile `{r['profile']}`, seed {r['seed']} (simulated data)")
           print(f"- dbt on Snowflake: {r['dbt']}")
           print(f"- figures equal on DuckDB and Snowflake: **{r['checks'] - r['differences']} of {r['checks']}**")
@@ -82,7 +84,7 @@ jobs:
         with:
           name: snowflake-run
           path: |
-            docs/ergebnisse/snowflake_run.json
+            docs/ergebnisse/snowflake_workflow_run.json
             dbt/target/run_results.json
           if-no-files-found: ignore
       - name: Remove the key
@@ -93,6 +95,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898289+github-actions[bot]@users.noreply.github.com"
-          git add docs/ergebnisse/snowflake_run.json
+          git add docs/ergebnisse/snowflake_workflow_run.json
           git commit -m "Snowflake portability run (profile ${PROFILE})" || exit 0
           git pull --rebase origin main && git push origin HEAD:main

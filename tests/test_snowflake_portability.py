@@ -14,9 +14,9 @@ def test_loader_creates_upper_case_columns_for_every_file(ci_data, capsys):
     stmts = [s for s in capsys.readouterr().out.splitlines() if s]
     creates = [s for s in stmts if s.startswith("create or replace table")]
     assert len(creates) == len(list(out.glob("*.parquet"))) == 27
-    # drivers.parquet has lower-case column names; without ignore_case Snowflake would create
-    # quoted lower-case columns that dbt's unquoted identifiers cannot find
-    assert all("ignore_case => true" in s for s in creates)
+    # drivers.parquet has lower-case column names; without upper-casing Snowflake creates quoted
+    # lower-case columns that dbt's unquoted identifiers cannot find (seen in the first real run)
+    assert all("upper(column_name)" in s for s in creates)
     assert any(s.startswith("create or replace table S4_RAW.DRIVERS ") for s in creates)
     assert sum(s.startswith("copy into S4_RAW.") for s in stmts) == len(creates)
 
@@ -75,7 +75,15 @@ def test_models_avoid_engine_specific_sql(path):
         assert token not in sql, f"{path.name}: {token} is DuckDB-only"
 
 
-def test_row_access_policy_exempts_the_building_role():
-    macro = (REPO_ROOT / "dbt" / "macros" / "row_access.sql").read_text(encoding="utf-8")
-    assert "is_role_in_session('{{ target.role | upper }}')" in macro
-    assert "current_user()" in macro
+def test_policy_protected_mart_is_compared_as_a_named_user():
+    sql = snowflake_compare.statement("controlling.mart_cost_variance", ["variance_cc_eur"])
+    wrapped = snowflake_compare.snowflake_statement("controlling.mart_cost_variance", sql)
+    assert wrapped == f"execute using policy_context(current_user => 'CONTROLLER') as {sql}"
+    plain = snowflake_compare.statement("controlling.mart_kpi_monthly", ["actual_eur"])
+    assert snowflake_compare.snowflake_statement("controlling.mart_kpi_monthly", plain) == plain
+    seen = []
+    snowflake_compare.compare(lambda q: {"row_count": 1.0, "variance_cc_eur": 2.0},
+                              lambda q: seen.append(q) or {"row_count": 1.0, "variance_cc_eur": 2.0},
+                              checks={"controlling.mart_cost_variance": ["variance_cc_eur"]},
+                              candidate_sql=snowflake_compare.snowflake_statement)
+    assert seen == [wrapped]

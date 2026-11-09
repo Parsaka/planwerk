@@ -127,6 +127,57 @@ the simplest method, detects earliest. For the steering committee the recommenda
 straight-line and ML side by side and to escalate only when both agree. Order intake as a leading
 indicator did not buy earlier warning in this simulation.
 
+### The same question at equal false-alarm rate (exploratory, not pre-registered)
+
+The registered rule flags a year when a forecast falls below 98 % of the target, for every method
+alike. Straight-line extrapolation runs low early in the year (seasonality). That bias produces its
+false alarms in healthy years and, by the same mechanism, its early flags in bad years. A steering
+committee would ask a different question: *if every method may raise the same share of false alarms,
+which one warns first?*
+
+Protocol, fixed before the new scenarios were generated ([q2_matched.py](../../src/planwerk/forecast/q2_matched.py),
+[q2_matched_false_alarm.json](q2_matched_false_alarm.json)): per method, the highest flag threshold whose
+false-alarm rate stays within 5 % on the 200 registered scenarios; then measured on 200 fresh scenarios
+(66 with a true miss).
+
+| On the 200 fresh scenarios | Threshold | False alarms | Detection month, median | mean | Misses flagged by December |
+|---|---:|---:|---:|---:|---:|
+| **Registered rule (98 % for all)** | | | | | |
+| Straight-line | 98.0 % | 8.2 % | 1 | 3.7 | 100 % |
+| Seasonal naive | 98.0 % | 0.75 % | 1 | 4.0 | 100 % |
+| Gradient boosting | 98.0 % | 0.75 % | 4 | 5.5 | 100 % |
+| **Same false-alarm budget** | | | | | |
+| Straight-line | 97.0 % | 2.2 % | 3 | 5.2 | 86 % |
+| Seasonal naive | 99.0 % | 2.2 % | 1 | 3.2 | 100 % |
+| Gradient boosting | 99.0 % | 2.2 % | 3 | 4.3 | 100 % |
+
+Detection months have two clusters (a flag from January on, or from the month the shock starts), so
+the median jumps between scenario sets: for straight-line it is 6 on the registered scenarios and 1 on
+the fresh ones, with means of 4.5 and 3.7. The mean is the steadier figure. A miss that is never flagged
+counts as month 13.
+
+Lead of ML over straight-line on the fresh scenarios:
+
+| | Median | Mean | ML earlier | ML later |
+|---|---:|---:|---:|---:|
+| Registered rule | −1 month | −1.8 months | 11 % of misses | 64 % |
+| Same false-alarm budget | 0 months | +0.9 months | 44 % | 24 % |
+
+Reading:
+
+- The registered result replicates on fresh scenarios: under the 98 % rule ML is later than straight-line.
+  **H2 stays "not met"**, and it would not be met under the matched comparison either (median lead 0, target 2).
+- Most of straight-line's head start is its bias. Held to the same false-alarm rate it loses it, and it
+  then fails to flag one true miss in seven at all, while both other methods flag every one.
+- Seasonal naive is the best early-warning signal in both comparisons: under the registered rule it is about
+  as early as straight-line (mean month 4.0 against 3.7) with a tenth of the false alarms, and at the same
+  false-alarm budget it flags two months earlier than straight-line on average. The recommendation for the steering
+  committee changes accordingly: seasonal naive as the warning signal, the ML forecast as the more accurate
+  point estimate; straight-line adds false alarms and no information.
+
+The thresholds were chosen on the registered scenarios and applied unchanged to the fresh ones; the
+false-alarm rates there (2.2 %) are what came out, not what was fitted.
+
 ---
 
 ## Q3: Can AI write the month-end commentary with correct figures?

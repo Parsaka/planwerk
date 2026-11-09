@@ -14,15 +14,8 @@ variable "github_repository" {
   default     = "Parsaka/planwerk"
 }
 
-variable "github_oidc_subject" {
-  description = "Subject of the GitHub OIDC token. Repositories created after 15 July 2026 send the immutable form with numeric ids; set null for an older repository (repo:OWNER/NAME:environment:eval)."
-  type        = string
-  default     = "repo:Parsaka@115464667/planwerk@1449783613:environment:eval"
-}
-
 variable "openai_model" {
-  description = "Small chat model. gpt-4o-mini retires on 14 April 2027; gpt-5-mini (2025-08-07) is the GA successor and is supported by the provider code."
-  type        = object({ name = string, version = string })
+  type = object({ name = string, version = string })
   default = {
     name    = "gpt-4o-mini"
     version = "2024-07-18"
@@ -32,7 +25,7 @@ variable "openai_model" {
 variable "openai_capacity_k_tpm" {
   description = "Hard throughput cap of the deployment in thousand tokens per minute."
   type        = number
-  default     = 30
+  default     = 10
 }
 
 variable "monthly_budget_eur" {
@@ -56,4 +49,10 @@ variable "budget_start_date" {
   description = "First day of the budget period (RFC 3339, first of a month)."
   type        = string
   default     = "2026-12-01T00:00:00Z"
+}
+
+variable "github_subject_ids" {
+  description = "ID-format subject part '<owner>@<owner_id>/<repo>@<repo_id>' if the repository uses immutable-ID OIDC subject claims; empty to skip."
+  type        = string
+  default     = "Parsaka@115464667/planwerk@1449783613"
 }

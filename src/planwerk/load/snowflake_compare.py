@@ -1,12 +1,17 @@
 """Portability check (ADR-0003): the Snowflake build must give the same figures as the DuckDB build.
 
-    python -m planwerk.load.snowflake_compare [--out docs/ergebnisse/snowflake_run.json]
+    python -m planwerk.load.snowflake_compare [--out docs/ergebnisse/snowflake_workflow_run.json]
 
 Both warehouses are built from the same Parquet files by the same dbt project. For a fixed list
 of core tables and controlling marts the row count and the sum of every measure are read from
 both engines and compared. Sums of floating-point columns may differ in the last digits because
 the engines add in a different order, so a measure counts as equal when it differs by at most
 1 EUR or 1e-9 of its size, whichever is larger. Exit code 1 on any difference.
+
+``controlling.mart_cost_variance`` carries the row access policy and the service user is not a
+cost-centre owner, so it reads zero rows there. That relation is read as the user CONTROLLER
+through ``EXECUTE USING POLICY_CONTEXT``, as in the first manual run (snowflake_run.json).
+The semantic views that filter on ``CURRENT_USER()`` themselves are left out for that reason.
 
 Credentials come only from the environment, as in :mod:`planwerk.load.snowflake`.
 """
@@ -47,6 +52,9 @@ CHECKS: dict[str, list[str]] = {
     "semantic.sem_abweichungsbruecke": ["plan_db2_eur", "ist_db2_eur"],
 }
 
+# relations behind the row access policy -> user whose view of the rows is compared
+POLICY_CONTEXT = {"controlling.mart_cost_variance": "CONTROLLER"}
+
 ABS_TOL_EUR = 1.0
 REL_TOL = 1e-9
 
@@ -62,12 +70,20 @@ def equal(a: float, b: float) -> bool:
     return abs(a - b) <= max(ABS_TOL_EUR, REL_TOL * max(abs(a), abs(b)))
 
 
-def compare(reference: Runner, candidate: Runner, checks: dict[str, list[str]] | None = None) -> dict:
-    """Run every check on both engines. ``reference`` is DuckDB, ``candidate`` is Snowflake."""
+def snowflake_statement(relation: str, sql: str) -> str:
+    """The statement as Snowflake has to run it: policy-protected relations as a named user."""
+    user = POLICY_CONTEXT.get(relation)
+    return f"execute using policy_context(current_user => '{user}') as {sql}" if user else sql
+
+
+def compare(reference: Runner, candidate: Runner, checks: dict[str, list[str]] | None = None,
+            candidate_sql: Callable[[str, str], str] = lambda _relation, sql: sql) -> dict:
+    """Run every check on both engines. ``reference`` is DuckDB, ``candidate`` is Snowflake;
+    ``candidate_sql`` adapts a statement for the candidate (see :func:`snowflake_statement`)."""
     rows = []
     for relation, measures in (checks or CHECKS).items():
         sql = statement(relation, measures)
-        ref, cand = reference(sql), candidate(sql)
+        ref, cand = reference(sql), candidate(candidate_sql(relation, sql))
         for key in ["row_count", *measures]:
             a, b = ref[key], cand[key]
             same = a == b if key == "row_count" else equal(a, b)
@@ -104,7 +120,7 @@ def dbt_summary(target_dir: Path) -> dict | None:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", type=Path, default=REPO_ROOT / "docs" / "ergebnisse" / "snowflake_run.json")
+    ap.add_argument("--out", type=Path, default=REPO_ROOT / "docs" / "ergebnisse" / "snowflake_workflow_run.json")
     ap.add_argument("--raw", type=Path, default=Path(os.environ.get("PLANWERK_RAW", REPO_ROOT / "data" / "raw")))
     ap.add_argument("--dbt-target", type=Path, default=REPO_ROOT / "dbt" / "target")
     a = ap.parse_args(argv)
@@ -117,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
     snow = _connect()
     cur = snow.cursor()
     cur.execute(f"use database {DATABASE}")
-    res = compare(cursor_runner(duck.execute), cursor_runner(cur.execute))
+    res = compare(cursor_runner(duck.execute), cursor_runner(cur.execute), candidate_sql=snowflake_statement)
     version = cur.execute("select current_version(), current_region()").fetchone()
     snow.close()
 
