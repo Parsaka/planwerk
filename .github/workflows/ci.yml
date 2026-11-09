@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install "ruff>=0.5"
-      - run: ruff check src tests eval
+      - run: ruff check src tests eval scripts
 
   test:
     # generator (CI profile) -> dbt build with all tests -> forecast, liquidity -> assistant eval
@@ -42,6 +42,20 @@ jobs:
         with:
           name: q3-eval-ci
           path: eval-ci.json
+
+  cap:
+    # SAP CAP service: tests with mocked users, then the HANA (HDI) build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sap/cap
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: sap/cap/package-lock.json }
+      - run: npm ci
+      - run: npm test
+      - run: npx cds build --production
 
   terraform:
     runs-on: ubuntu-latest

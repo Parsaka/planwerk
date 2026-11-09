@@ -21,7 +21,7 @@ test:                ## unit, data and logic tests (CI profile)
 	pytest
 
 lint:
-	ruff check src tests eval
+	ruff check src tests eval scripts
 
 forecast:            ## rolling forecast 3+9 / 6+6 / 9+3 for the main scenario
 	python -m planwerk.forecast.rolling
