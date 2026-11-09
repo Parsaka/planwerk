@@ -66,15 +66,26 @@ if [ -z "$CLIENT_ID" ]; then
   CLIENT_ID=$(az ad app create --display-name "$APP_NAME" --query appId -o tsv)
 fi
 az ad sp show --id "$CLIENT_ID" -o none 2>/dev/null || az ad sp create --id "$CLIENT_ID" -o none
-SUBJECT="repo:${REPO}:environment:eval"
-if ! az ad app federated-credential list --id "$CLIENT_ID" --query "[?subject=='$SUBJECT'].name" -o tsv | grep -q .; then
-  az ad app federated-credential create --id "$CLIENT_ID" --parameters "{
-    \"name\": \"github-planwerk-eval\",
-    \"issuer\": \"https://token.actions.githubusercontent.com\",
-    \"subject\": \"$SUBJECT\",
-    \"audiences\": [\"api://AzureADTokenExchange\"]
-  }" -o none
+# GitHub sends either the name-format subject or, when the repo uses immutable-ID subject claims,
+# repo:<owner>@<owner_id>/<repo>@<repo_id>:environment:eval. Register both.
+IDS=$(curl -fsS "https://api.github.com/repos/${REPO}" | python3 -c 'import json,sys; r=json.load(sys.stdin); print(r["owner"]["login"], r["owner"]["id"], r["name"], r["id"])' || true)
+SUBJECTS=("repo:${REPO}:environment:eval")
+if [ -n "$IDS" ]; then
+  read -r O_LOGIN O_ID R_NAME R_ID <<<"$IDS"
+  SUBJECTS+=("repo:${O_LOGIN}@${O_ID}/${R_NAME}@${R_ID}:environment:eval")
 fi
+i=0
+for SUBJECT in "${SUBJECTS[@]}"; do
+  NAME="github-planwerk-eval"; [ $i -gt 0 ] && NAME="github-planwerk-eval-ids"; i=$((i+1))
+  if ! az ad app federated-credential list --id "$CLIENT_ID" --query "[?subject=='$SUBJECT'].name" -o tsv | grep -q .; then
+    az ad app federated-credential create --id "$CLIENT_ID" --parameters "{
+      \"name\": \"$NAME\",
+      \"issuer\": \"https://token.actions.githubusercontent.com\",
+      \"subject\": \"$SUBJECT\",
+      \"audiences\": [\"api://AzureADTokenExchange\"]
+    }" -o none
+  fi
+done
 SP_ID=$(az ad sp show --id "$CLIENT_ID" --query id -o tsv)
 az role assignment create --assignee-object-id "$SP_ID" --assignee-principal-type ServicePrincipal \
   --role "Cognitive Services OpenAI User" --scope "$AOAI_ID" -o none 2>/dev/null || true

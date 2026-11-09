@@ -104,6 +104,17 @@ resource "azurerm_federated_identity_credential" "main" {
   subject             = "repo:${var.github_repository}:environment:eval"
 }
 
+# Repos with immutable-ID subject claims send repo:<owner>@<owner_id>/<repo>@<repo_id>:environment:eval.
+resource "azurerm_federated_identity_credential" "main_ids" {
+  count               = var.github_subject_ids == "" ? 0 : 1
+  name                = "github-main-ids"
+  resource_group_name = azurerm_resource_group.rg.name
+  parent_id           = azurerm_user_assigned_identity.ci.id
+  audience            = ["api://AzureADTokenExchange"]
+  issuer              = "https://token.actions.githubusercontent.com"
+  subject             = "repo:${var.github_subject_ids}:environment:eval"
+}
+
 resource "azurerm_role_assignment" "ci_openai_user" {
   scope                = azurerm_cognitive_account.openai.id
   role_definition_name = "Cognitive Services OpenAI User" # inference only, cannot change the resource

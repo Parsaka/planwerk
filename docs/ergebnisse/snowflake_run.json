@@ -1,0 +1,56 @@
+{
+  "run_date": "2026-11-09",
+  "data": "SIMULATED (Nordwerk GmbH), generator profile dev, seed 42",
+  "account": {
+    "region": "AWS_EU_CENTRAL_1",
+    "edition": "trial"
+  },
+  "auth": "key-pair (JWT) service user PLANWERK_CI, no password; roles PLANWERK_LOADER (load) and PLANWERK_TRANSFORMER (dbt)",
+  "load": {
+    "tables": 27,
+    "rows_total": 6272044,
+    "row_counts_match_manifest": true,
+    "largest": {
+      "ACDOCA": 2363766,
+      "BSEG": 2363766,
+      "BKPF": 613706
+    }
+  },
+  "dbt_build": {
+    "nodes": 98,
+    "pass": 98,
+    "error": 0,
+    "seeds": 4,
+    "table_models": 27,
+    "view_models": 25,
+    "data_tests": 42,
+    "runtime_seconds": 25.2
+  },
+  "fixes_needed_for_snowflake": [
+    "loader: upper-case column names in CREATE TABLE USING TEMPLATE (lower-case Parquet columns of the drivers file were created quoted)"
+  ],
+  "parity_vs_duckdb": {
+    "method": "row count and rounded sums of up to 12 numeric columns per relation, tolerance 0.01 EUR",
+    "identical": 54,
+    "notes": [
+      "mart_cost_variance carries the row access policy: compared under POLICY_CONTEXT(current_user => 'CONTROLLER'), 9,420 rows, identical sums",
+      "sem_kostenstellen and sem_kostenarten additionally filter on CURRENT_USER() in the view (defence in depth), so they cannot be simulated with POLICY_CONTEXT; they are pure aggregations of mart_cost_variance",
+      "forecast schema (rolling forecast, 13-week liquidity, sem_prognose) is written by Python on DuckDB and is not part of the Snowflake dbt run"
+    ],
+    "relations_in_duckdb": 60,
+    "relations_in_snowflake": 56,
+    "not_comparable_by_design": 2,
+    "python_only_not_in_snowflake": 4
+  },
+  "row_access_policy": {
+    "service_user_PLANWERK_CI_sees_rows": 0,
+    "LEITUNG_INSTANDHALTUNG_sees_cost_centres": [
+      "1410"
+    ],
+    "LEITUNG_FERTIGUNG_PUMPEN_sees_cost_centres": [
+      "1500",
+      "1520"
+    ],
+    "CONTROLLER_sees_rows": 9420
+  }
+}

@@ -26,7 +26,9 @@ def statements(table: str, path: Path) -> list[str]:
     return [
         f"create temporary stage if not exists {t}_STAGE file_format = (type = parquet)",
         f"put 'file://{path.resolve()}' @{t}_STAGE auto_compress = false overwrite = true",
-        (f"create or replace table {SCHEMA}.{t} using template (select array_agg(object_construct(*)) "
+        # Column names are upper-cased so that lower-case Parquet columns (drivers) resolve unquoted in dbt.
+        (f"create or replace table {SCHEMA}.{t} using template (select array_agg(object_insert("
+         f"object_construct(*), 'COLUMN_NAME', upper(column_name), true)) "
          f"from table(infer_schema(location => '@{t}_STAGE', file_format => 'PLANWERK_PARQUET')))"),
         (f"copy into {SCHEMA}.{t} from @{t}_STAGE file_format = (format_name = 'PLANWERK_PARQUET') "
          f"match_by_column_name = case_insensitive on_error = abort_statement"),

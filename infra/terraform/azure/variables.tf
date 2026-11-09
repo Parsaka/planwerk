@@ -50,3 +50,9 @@ variable "budget_start_date" {
   type        = string
   default     = "2026-12-01T00:00:00Z"
 }
+
+variable "github_subject_ids" {
+  description = "ID-format subject part '<owner>@<owner_id>/<repo>@<repo_id>' if the repository uses immutable-ID OIDC subject claims; empty to skip."
+  type        = string
+  default     = "Parsaka@115464667/planwerk@1449783613"
+}
