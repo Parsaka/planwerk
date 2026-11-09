@@ -1,0 +1,47 @@
+{
+  "name": "planwerk-cap",
+  "version": "0.1.0",
+  "description": "Planwerk controlling service (SAP CAP): read-only OData V4 on the controlling marts, cost-centre owners see only their cost centres. Data is SIMULATED (fictional Nordwerk GmbH).",
+  "license": "MIT",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@sap/cds": "~10.1.1",
+    "@sap/xssec": "^4",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/cds-test": "^1.0.2",
+    "@cap-js/sqlite": "~3.1.1",
+    "@sap/cds-dk": "~10.1.1"
+  },
+  "optionalDependencies": {
+    "@cap-js/hana": "~3.1.1"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch": "cds watch",
+    "data": "python ../../scripts/export_cap_data.py",
+    "test": "node --test test/*.test.js"
+  },
+  "cds": {
+    "requires": {
+      "db": { "kind": "sqlite", "credentials": { "url": ":memory:" } },
+      "auth": {
+        "kind": "mocked",
+        "users": {
+          "controller": { "password": "", "roles": ["Controller"] },
+          "geschaeftsfuehrung": { "password": "", "roles": ["Controller"] },
+          "leitung_instandhaltung": { "password": "", "roles": ["CostCentreOwner"], "attr": { "kostenstelle": ["1410"] } },
+          "leitung_fertigung_pumpen": { "password": "", "roles": ["CostCentreOwner"], "attr": { "kostenstelle": ["1500", "1520"] } },
+          "gast": { "password": "", "roles": [] }
+        }
+      },
+      "[production]": {
+        "db": "hana",
+        "auth": "xsuaa"
+      }
+    },
+    "sql": { "native_hana_associations": false }
+  }
+}
