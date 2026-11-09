@@ -53,3 +53,20 @@ only through placeholders that code fills in, so a correct text never needs anot
 Remaining limit, by construction: a real figure under the wrong label passes, as does a bare
 integer up to 31 or a year without a unit. Labels are fixed by the templates.
 
+## Amendment 2026-11-10: rules route first, the model routes what the rules cannot place
+
+The first evaluation with a real model (Azure OpenAI gpt-4o-mini, `docs/ergebnisse/q3_eval_azure.json`)
+had the model route every question through function calling. All 39 commentaries were correct in
+every figure and no attack succeeded, but only 91 of 200 golden-set questions were answered
+correctly: 50 routings failed validation or contradicted the question, 35 chose the wrong
+evaluation, 24 the right evaluation with a wrong slot (15 of them year to date for a single month).
+
+Changed decision: `Assistant(router="rules_first")` is the default. The deterministic rule-based
+router decides; the model is asked only when the rules return no intent, and its answer passes the
+same validation and consistency check as before. `router="model"` keeps the old behaviour and is
+used for the hostile model in the evaluation, so that wrong routings stay under test.
+
+Consequences: fewer model calls per answer; the model's weakness in routing no longer reaches
+users for questions the rules cover; the golden set stops measuring the model's routing (use
+`--router model` for that). Not yet measured with a real model.
+

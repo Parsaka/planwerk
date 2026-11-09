@@ -8,7 +8,7 @@ before any analysis ran. A result that misses its threshold is reported as misse
 |---|---|
 | H1: the DB II gap splits without residual, injected effects are recovered within ±10 %, ≥ 90 % of the cost deviation sits on named cost centres | **Not met** (2 of 3 criteria met) |
 | H2: the ML forecast flags a missed target ≥ 2 months earlier (median) than straight-line, without more false alarms | **Not met** |
-| H3: 100 % correct figures, ≥ 95 % golden-set accuracy, 0 successful attacks, ≥ 50 % time saving | **Met on three criteria, time saving open** |
+| H3: 100 % correct figures, ≥ 95 % golden-set accuracy, 0 successful attacks, ≥ 50 % time saving | **Offline provider: met on three criteria. First run with a real model: figures and attacks met, golden set not met (45.5 %). Time saving open** |
 
 Regenerate everything with `make all`. The raw numbers are in the JSON files next to this page.
 
@@ -218,5 +218,44 @@ Caveats, stated plainly:
   number is re-checked, figure correctness does not depend on the model; wording quality does.
 - Time saving needs a real controller and follows the protocol in
   [zeitmessung.md](../fachlich/zeitmessung.md). Until then it is reported as open.
+
+### First run with a real model (Azure OpenAI, gpt-4o-mini, 2026-11-09)
+
+[q3_eval_azure.json](q3_eval_azure.json). In this run the model routed every question and worded every
+answer. 387 model calls, 283 k prompt and 46 k completion tokens, 27 minutes.
+
+| Criterion | Threshold | Result | |
+|---|---|---|---|
+| Figure correctness, 39 commentaries written by the model | 100 % | 39/39 | met |
+| Golden set, 200 questions | ≥ 95 % | 91/200 (45.5 %) | **not met** |
+| Attacks (40 against the model, 40 against the hostile model) | 0 successful | 0/80 | met |
+
+Where the 109 wrong answers come from:
+
+| Cause | Count |
+|---|---:|
+| Answered "out of scope": the model's routing failed validation or contradicted the question | 50 |
+| Wrong evaluation chosen (18 times a KPI answer to a product-group question, 7 times a commentary instead of the bridge) | 35 |
+| Right evaluation, a single month asked, year to date answered | 15 |
+| Right evaluation, group answered instead of the company code asked | 7 |
+| Right evaluation, wrong cost block | 2 |
+
+No answer carried a wrong figure. Every answer that was given consisted of verified figures, but in 59
+cases for another question than the one asked, and in 50 cases the assistant declined. By category:
+product group 0/25, forecast 2/10, bridge 5/20, order intake 5/15, cost centre 5/15, month KPI 20/45.
+
+Reading: the claim that figure correctness does not depend on the model held with a real model. Routing by
+gpt-4o-mini through function calling did not: it is far below the rule-based router (200/200 in sample,
+35/40 on the holdout).
+
+Change made afterwards, **not yet measured with a real model**: the assistant now routes with the rules
+first and asks the model only for questions the rules cannot place (`router="rules_first"`, the default;
+`--router model` reproduces the run above). Two things follow for the next run:
+
+- Under `rules_first` the golden set says little about the model, because the rule-based router is in
+  sample there. The figure to watch is the holdout through the assistant (`holdout_router_assistant`):
+  the rules alone place 35 of 40, the model now gets the five they cannot place.
+- A model's own routing is measured with `--router model`. Improving the router prompt against the
+  golden set would be tuning on the test set and needs a fresh question set.
 
 Latency (offline): median 5.8 ms per answer, 24.7 ms per commentary. Cost per answer offline: 0 EUR.

@@ -182,3 +182,65 @@ def test_audit_log_written(warehouse, tmp_path, monkeypatch):
     Assistant(OfflineProvider()).ask("Wie hoch war der Umsatz 2025?", user="controller")
     e = json.loads(log.read_text().splitlines()[-1])
     assert e["user"] == "controller" and e["verified"] and e["sql"] and "answer_sha256" in e and "answer" not in e
+
+
+class _ModelRouter:
+    """Stands in for a language model that routes: counts its calls and always answers ``reply``."""
+
+    name = "azure_openai"
+
+    def __init__(self, reply):
+        from planwerk.assistant.llm import Usage
+
+        self.reply, self.asked, self.usage = reply, [], Usage()
+
+    def route(self, question, as_of, cost_centres):
+        self.asked.append(question)
+        if isinstance(self.reply, Exception):
+            raise self.reply
+        return self.reply
+
+    def rewrite(self, system, user, draft):
+        return draft
+
+
+def test_rules_route_first_and_the_model_only_what_they_cannot_place(warehouse):
+    from planwerk.assistant.graph import Assistant
+
+    wrong = Intent(name="kpi", scope="GRUPPE", year=2025, month=6, ytd=True, kpi="db2", month_given=True)
+    model = _ModelRouter(wrong)
+    asst = Assistant(model, audit_log=False)
+    # the rules know this question: the model's (wrong) routing is never asked for
+    i = asst.route("Wie hoch war der Umsatz in Polen im März 2025?")
+    assert (i.name, i.scope, i.month, i.kpi, i.ytd) == ("kpi", "3000", 3, "umsatz", False) and model.asked == []
+    # the rules cannot place this paraphrase: now the model decides, and its answer is still checked
+    model.reply = Intent(name="order_intake", scope="2000", year=2025, month=12, month_given=True)
+    q = "Wie ist die Auftragslage in Österreich im Dezember 2025?"
+    assert parse(q).name == "out_of_scope"
+    assert asst.route(q).name == "order_intake" and model.asked == [q]
+    # a routing that contradicts the question (other year) is refused, as is an invalid one
+    model.reply = Intent(name="order_intake", scope="2000", year=2023, month=12, month_given=True)
+    assert asst.route(q).name == "out_of_scope"
+    model.reply = Intent(name="order_intake", scope="9999")
+    assert asst.route(q).name == "out_of_scope"
+    model.reply = RuntimeError("no tool call")
+    assert asst.route(q).name == "out_of_scope"
+
+
+def test_model_router_can_still_route_everything(warehouse):
+    from planwerk.assistant.graph import Assistant
+
+    model = _ModelRouter(Intent(name="kpi", scope="3000", year=2025, month=3, kpi="db1", month_given=True))
+    asst = Assistant(model, audit_log=False, router="model")
+    i = asst.route("Wie hoch war der Umsatz in Polen im März 2025?")
+    assert i.kpi == "db1" and len(model.asked) == 1
+    with pytest.raises(ValueError):
+        Assistant(model, audit_log=False, router="llm")
+
+
+def test_end_to_end_answer_with_a_model_provider_uses_rule_routing(warehouse):
+    from planwerk.assistant.graph import Assistant
+
+    model = _ModelRouter(Intent(name="out_of_scope"))
+    r = Assistant(model, audit_log=False).ask("Wie hoch war der Umsatz in Polen im März 2025?")
+    assert r["status"] == "answered" and r["verified"] and r["intent"]["kpi"] == "umsatz" and model.asked == []
