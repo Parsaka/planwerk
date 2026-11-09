@@ -101,7 +101,7 @@ resource "azurerm_federated_identity_credential" "main" {
   parent_id           = azurerm_user_assigned_identity.ci.id
   audience            = ["api://AzureADTokenExchange"]
   issuer              = "https://token.actions.githubusercontent.com"
-  subject             = "repo:${var.github_repository}:environment:eval"
+  subject             = coalesce(var.github_oidc_subject, "repo:${var.github_repository}:environment:eval")
 }
 
 resource "azurerm_role_assignment" "ci_openai_user" {

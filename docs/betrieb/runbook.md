@@ -112,6 +112,19 @@ an Snowflake-Eigenheiten scheitern; dann die Fehlermeldung des fehlgeschlagenen 
    Dauer rund 20 Minuten bei 30.000 Tokens pro Minute, Kosten deutlich unter 1 EUR. Ergebnis:
    `docs/ergebnisse/q3_eval_azure.json`.
 
+Schlägt die Anmeldung im Workflow mit `AADSTS700213 No matching federated identity record` fehl, passt der
+Betreff des GitHub-Tokens nicht zum hinterlegten Eintrag: Repositories, die nach dem 15.07.2026 angelegt
+wurden, senden die unveränderliche Form mit numerischen Kennungen
+(`repo:Parsaka@115464667/planwerk@1449783613:environment:eval`). Das Skript ab dem 09.11.2026 trägt beide
+Formen ein; für eine ältere Einrichtung genügt es, das Skript erneut auszuführen (es ändert nichts
+Bestehendes) oder den Eintrag einzeln anzulegen:
+
+```bash
+az ad app federated-credential create --id <AZURE_CLIENT_ID> --parameters '{"name":"github-planwerk-eval-immutable",
+  "issuer":"https://token.actions.githubusercontent.com","audiences":["api://AzureADTokenExchange"],
+  "subject":"repo:Parsaka@115464667/planwerk@1449783613:environment:eval"}'
+```
+
 Lesen des Ergebnisses: `usage.fallbacks` zählt Modellaufrufe, die nach sechs Wiederholungen (Drosselung,
 Zeitüberschreitung, Störung) ohne Modell beantwortet wurden, also mit dem regelbasierten Router oder dem
 Vorlagentext. Die Zahlen bleiben dann richtig, der Lauf sagt aber weniger über das Modell. Bei einem Wert
@@ -119,7 +132,7 @@ Vorlagentext. Die Zahlen bleiben dann richtig, der Lauf sagt aber weniger über 
 
 Das Modell muss weder Temperatur noch `max_tokens` unterstützen: Der Anbieter-Baustein erkennt
 Reasoning-Modelle (`gpt-5*`, `o*`) am Modellnamen und sonst an der Fehlermeldung des Dienstes und sendet dann
-`max_completion_tokens`. Einstellungen: `AZURE_OPENAI_API_VERSION` (Standard `v1`), `AZURE_OPENAI_MODEL_FAMILY`,
+`max_completion_tokens`. Einstellungen: `AZURE_OPENAI_API_VERSION` (Standard `2024-10-21`; `v1` für den versionslosen Endpunkt), `AZURE_OPENAI_MODEL_FAMILY`,
 `AZURE_OPENAI_REASONING_EFFORT` (Standard `low`).
 
 ### Schlüsselrotation

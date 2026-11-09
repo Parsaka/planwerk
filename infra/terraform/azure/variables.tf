@@ -14,6 +14,12 @@ variable "github_repository" {
   default     = "Parsaka/planwerk"
 }
 
+variable "github_oidc_subject" {
+  description = "Subject of the GitHub OIDC token. Repositories created after 15 July 2026 send the immutable form with numeric ids; set null for an older repository (repo:OWNER/NAME:environment:eval)."
+  type        = string
+  default     = "repo:Parsaka@115464667/planwerk@1449783613:environment:eval"
+}
+
 variable "openai_model" {
   description = "Small chat model. gpt-4o-mini and gpt-4.1-mini are deprecated in Azure: subscriptions that never deployed them cannot deploy them any more."
   type        = object({ name = string, version = string })

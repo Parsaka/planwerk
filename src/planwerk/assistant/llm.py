@@ -98,8 +98,8 @@ class AzureOpenAIProvider:
 
     Needs AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT, and either AZURE_OPENAI_API_KEY or an
     Entra ID identity (``az login``, managed identity, or OIDC federation in GitHub Actions).
-    Optional: AZURE_OPENAI_API_VERSION (default ``v1`` = the versionless endpoint; a dated value
-    such as ``2024-10-21`` uses the classic endpoint), AZURE_OPENAI_MODEL (model behind the
+    Optional: AZURE_OPENAI_API_VERSION (default ``2024-10-21``, the classic endpoint; ``v1`` uses
+    the versionless ``/openai/v1/`` endpoint), AZURE_OPENAI_MODEL (model behind the
     deployment), AZURE_OPENAI_MODEL_FAMILY (``reasoning`` | ``classic``; default from the model or
     deployment name, corrected automatically if the deployment rejects the parameters) and
     AZURE_OPENAI_REASONING_EFFORT (default ``low``; empty = do not send it).
@@ -126,7 +126,7 @@ class AzureOpenAIProvider:
         import openai
 
         endpoint = os.environ["AZURE_OPENAI_ENDPOINT"].rstrip("/")
-        api_version = os.environ.get("AZURE_OPENAI_API_VERSION", "v1")
+        api_version = os.environ.get("AZURE_OPENAI_API_VERSION", "2024-10-21")
         common = dict(max_retries=self.max_retries, timeout=self.timeout_s)
         key = os.environ.get("AZURE_OPENAI_API_KEY")
         if not key:  # keyless: Entra ID token (managed identity in Azure, OIDC federation in GitHub Actions)

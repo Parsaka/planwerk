@@ -19,7 +19,6 @@ REPO="${REPO:-Parsaka/planwerk}"
 # a subscription that has never deployed them cannot deploy them any more, so they come last and
 # only work on older subscriptions. Override with MODELS="name:version ..." if needed.
 MODELS="${MODELS:-gpt-5-mini:2025-08-07 gpt-5-nano:2025-08-07 gpt-4.1-mini:2025-04-14 gpt-4o-mini:2024-07-18}"
-DEPLOYMENT="${DEPLOYMENT:-planwerk-chat}"
 # thousand tokens per minute; a hard throughput cap, not a price (billing is per token)
 CAPACITIES="${CAPACITIES:-30 10}"
 APP_NAME="${APP_NAME:-planwerk-github-eval}"
@@ -43,6 +42,10 @@ az resource update -g "$RG" -n "$AOAI" --resource-type Microsoft.CognitiveServic
   --set properties.disableLocalAuth=true -o none
 AOAI_ID=$(az cognitiveservices account show -n "$AOAI" -g "$RG" --query id -o tsv)
 ENDPOINT=$(az cognitiveservices account show -n "$AOAI" -g "$RG" --query properties.endpoint -o tsv)
+
+# Reuse the deployment of an earlier run of this script, whatever it is called.
+EXISTING=$(az cognitiveservices account deployment list -n "$AOAI" -g "$RG" --query "[0].name" -o tsv 2>/dev/null || true)
+DEPLOYMENT="${DEPLOYMENT:-${EXISTING:-planwerk-chat}}"
 
 # EU data zone first; student subscriptions sometimes only offer the global or regional SKU.
 if ! az cognitiveservices account deployment show -n "$AOAI" -g "$RG" --deployment-name "$DEPLOYMENT" -o none 2>/dev/null; then
@@ -84,14 +87,30 @@ if [ -z "$CLIENT_ID" ]; then
   CLIENT_ID=$(az ad app create --display-name "$APP_NAME" --query appId -o tsv)
 fi
 az ad sp show --id "$CLIENT_ID" -o none 2>/dev/null || az ad sp create --id "$CLIENT_ID" -o none
-SUBJECT="repo:${REPO}:environment:eval"
-if ! az ad app federated-credential list --id "$CLIENT_ID" --query "[?subject=='$SUBJECT'].name" -o tsv | grep -q .; then
-  az ad app federated-credential create --id "$CLIENT_ID" --parameters "{
-    \"name\": \"github-planwerk-eval\",
-    \"issuer\": \"https://token.actions.githubusercontent.com\",
-    \"subject\": \"$SUBJECT\",
-    \"audiences\": [\"api://AzureADTokenExchange\"]
-  }" -o none
+# GitHub signs the token with a subject. Repositories created, renamed or transferred after
+# 15 July 2026 send the immutable form with the numeric owner and repository ids
+# ("repo:owner@123/name@456:environment:eval"); older ones send "repo:owner/name:environment:eval"
+# unless they opted in. Entra ID matches the subject literally, so both are registered. Without
+# the right one the login fails with AADSTS700213.
+GH_JSON=$(curl -fsSL "https://api.github.com/repos/${REPO}" 2>/dev/null || true)
+OWNER_ID="${GITHUB_OWNER_ID:-$(printf '%s' "$GH_JSON" | jq -r '.owner.id // empty' 2>/dev/null || true)}"
+REPO_ID="${GITHUB_REPO_ID:-$(printf '%s' "$GH_JSON" | jq -r '.id // empty' 2>/dev/null || true)}"
+add_subject() {  # name, subject
+  if ! az ad app federated-credential list --id "$CLIENT_ID" --query "[?subject=='$2'].name" -o tsv | grep -q .; then
+    az ad app federated-credential create --id "$CLIENT_ID" --parameters "{
+      \"name\": \"$1\",
+      \"issuer\": \"https://token.actions.githubusercontent.com\",
+      \"subject\": \"$2\",
+      \"audiences\": [\"api://AzureADTokenExchange\"]
+    }" -o none
+  fi
+}
+add_subject github-planwerk-eval "repo:${REPO}:environment:eval"
+if [ -n "$OWNER_ID" ] && [ -n "$REPO_ID" ]; then
+  add_subject github-planwerk-eval-immutable "repo:${REPO%%/*}@${OWNER_ID}/${REPO##*/}@${REPO_ID}:environment:eval"
+else
+  echo "WARNING: could not read the ids of ${REPO} from api.github.com; if the workflow fails with" >&2
+  echo "AADSTS700213, run again with GITHUB_OWNER_ID=<id> GITHUB_REPO_ID=<id> (both are in the error text)." >&2
 fi
 SP_ID=$(az ad sp show --id "$CLIENT_ID" --query id -o tsv)
 az role assignment create --assignee-object-id "$SP_ID" --assignee-principal-type ServicePrincipal \
