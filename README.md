@@ -17,7 +17,7 @@ Planwerk answers three questions that were fixed, with thresholds, before any an
 |---|---|---|
 | Q1 | Where does the 4.5 M EUR gap in contribution margin II against plan come from (price, volume, mix, cost; which cost centre)? | Bridge closes to the cent, 100 % of the cost deviation sits on named cost centres. Of four injected effects, three are recovered within tolerance; the volume effect is not, because one year's demand fluctuation swamps it (shown over six runs). **H1 not met.** |
 | Q2 | How many months earlier does a rolling ML forecast flag a missed annual target than straight-line extrapolation? | Over 200 simulated scenarios the median lead is 0 months (target: 2). ML has no false alarms against 11.3 % for straight-line. **H2 not met.** |
-| Q3 | Can AI write the German month-end commentary with 100 % correct figures and save half the controller's time? | 39/39 commentaries with every figure correct, also with a deliberately hostile model; 200/200 golden-set questions; 0 of 80 injection attempts succeeded. Time saving needs a practising controller: **open.** |
+| Q3 | Can AI write the German month-end commentary with 100 % correct figures and save half the controller's time? | Offline (rule-based routing, template wording): 39/39 commentaries with every figure correct, also with a deliberately hostile model; 200/200 golden-set questions; 0 of 80 injection attempts succeeded. First run with Azure OpenAI gpt-4o-mini: again 39/39 and no successful attack, but only 91/200 golden-set questions, because the model routed questions badly; routing now uses the rules first (not yet re-measured). Time saving needs a practising controller: **open.** |
 
 Negative results are reported as negative; thresholds were not moved. Details, caveats and
 the multi-seed robustness check are on the [results page](docs/ergebnisse/README.md).
@@ -82,19 +82,28 @@ planwerk-mcp                                 # MCP server (stdio) with read-only
    only `SELECT` on an allow-list of views. Row-level security is enforced in the database.
 3. Results become a fact sheet. The model writes text with placeholders such as `{{f:db2_ist}}`;
    numbers are filled in by code, never typed by the model.
-4. A verifier parses every number in the final text (German format, units, rounding) and
-   rejects the answer if any number is not in the fact sheet. After two failed rewrites the
-   assistant falls back to a template answer.
+4. A verifier parses every number in the final text and rejects the answer unless each figure
+   is written exactly as the fact sheet renders one of its facts. Any other notation
+   ("6 Millionen Euro", "EUR 6 Mio.", figures in words) was typed by the model and is refused.
+   After two failed rewrites the assistant falls back to a template answer.
 
-The evaluation runs a second, deliberately hostile model that invents numbers and swaps years.
-It must not get a single wrong figure through. It did not.
+The evaluation runs a second, deliberately hostile model that appends invented figures in eight
+notations. It must not get a single one through. With the current verifier it does not; an earlier
+version of the verifier let figures in non-standard notation pass
+([details](docs/ergebnisse/README.md#q3-can-ai-write-the-month-end-commentary-with-correct-figures)).
+What no number check can catch is a real figure under the wrong label; labels are fixed by the
+templates.
 
 ## Not built yet (needs accounts or a real client)
 
 - SAP HANA Cloud, Datasphere and a CAP service on BTP: need SAP trial accounts.
 - SAC Planning: model design and import files are ready ([sac](sac)); building the story and data actions needs an SAC tenant.
-- Snowflake run: the dbt project and loader are Snowflake-ready; needs a Snowflake account.
-- Azure OpenAI evaluation in CI: workflow exists ([eval-azure.yml](.github/workflows/eval-azure.yml)); needs an Azure subscription and GitHub environment.
+- Snowflake: the run was done by hand on 2026-11-09 ([snowflake_run.json](docs/ergebnisse/snowflake_run.json)).
+  A workflow that repeats it and compares 71 figures with DuckDB exists ([snowflake.yml](.github/workflows/snowflake.yml))
+  but has not run yet; it needs the key in the GitHub environment `snowflake` ([runbook](docs/betrieb/runbook.md), section 6).
+- Azure OpenAI evaluation: the first run is in `docs/ergebnisse/q3_eval_azure_first_run.json`; the routing
+  change made after it has not been measured with a real model yet ([eval-azure.yml](.github/workflows/eval-azure.yml)).
+  Support for reasoning models (gpt-5 family) is tested against a fake client only.
 - Teams via Copilot Studio, Power Automate approval, RAG over Azure AI Search: planned, not built.
 - Time-saving measurement (Q3): needs a practising controller.
 

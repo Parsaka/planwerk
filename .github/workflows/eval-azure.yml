@@ -2,8 +2,9 @@ name: eval-azure-openai
 
 # Model-quality part of the Q3 eval with the real Azure OpenAI deployment. Runs in the environment
 # "eval" and authenticates with OIDC (no stored secret). Manual, plus once whenever the deployment
-# settings in infra/azure/planwerk.env change. Cost: a few cents with gpt-4o-mini.
+# settings in infra/azure/planwerk.env change. Cost: well under 1 EUR with a mini model.
 # Settings come from repository variables, or from infra/azure/planwerk.env (non-secret IDs).
+# Duration: about 20 minutes at 30k tokens per minute; the client waits when the service throttles.
 on:
   workflow_dispatch:
   push:
@@ -18,16 +19,26 @@ jobs:
   eval:
     runs-on: ubuntu-latest
     environment: eval
-    timeout-minutes: 30
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - name: Read deployment settings
+        env:
+          VARS_JSON: ${{ toJSON(vars) }}
         run: |
           if [ -f infra/azure/planwerk.env ]; then grep -E '^[A-Z_]+=' infra/azure/planwerk.env >> "$GITHUB_ENV"; fi
-          for v in AZURE_OPENAI_ENDPOINT AZURE_OPENAI_DEPLOYMENT AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
-            override=$(jq -r --arg k "$v" '.[$k] // empty' <<< '${{ toJSON(vars) }}')
+          for v in AZURE_OPENAI_ENDPOINT AZURE_OPENAI_DEPLOYMENT AZURE_OPENAI_MODEL AZURE_OPENAI_API_VERSION \
+                   AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
+            override=$(jq -r --arg k "$v" '.[$k] // empty' <<< "$VARS_JSON")
             if [ -n "$override" ]; then echo "$v=$override" >> "$GITHUB_ENV"; fi
           done
+      - name: Check the settings
+        run: |
+          missing=0
+          for v in AZURE_OPENAI_ENDPOINT AZURE_OPENAI_DEPLOYMENT AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
+            if [ -z "${!v:-}" ]; then echo "::error::$v is not set (repository variable or infra/azure/planwerk.env)"; missing=1; fi
+          done
+          exit "$missing"
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - uses: azure/login@v2
@@ -39,6 +50,20 @@ jobs:
       - run: make generate dbt forecast PROFILE=ci
       - name: Q3 eval with Azure OpenAI
         run: python -m planwerk.assistant.eval --provider azure --out docs/ergebnisse/q3_eval_azure.json
+      - name: Summary
+        if: always()
+        run: |
+          [ -f docs/ergebnisse/q3_eval_azure.json ] || { echo "No result (an earlier step failed)." >> "$GITHUB_STEP_SUMMARY"; exit 0; }
+          python - >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json
+          r = json.load(open("docs/ergebnisse/q3_eval_azure.json"))
+          g, c, u = r["golden_set"], r["commentary"], r["usage"]
+          print(f"### Q3 eval with Azure OpenAI, deployment `{r['model']['deployment']}` (simulated data)")
+          print(f"- golden set: **{g['correct']}/{g['n']}** ({g['accuracy']:.1%})")
+          print(f"- commentaries with every figure correct: **{c['all_figures_correct']}/{c['n']}**")
+          print(f"- successful attacks: {sum(x['successful_attempts'] for x in r['injection'])}")
+          print(f"- model calls {u['calls']}, answered without the model after failed calls {u['fallbacks']}, cost about {u['cost_eur']} EUR")
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:

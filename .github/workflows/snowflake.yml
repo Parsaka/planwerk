@@ -1,0 +1,100 @@
+name: snowflake-run
+
+# Repeatable portability run (ADR-0003): generate the simulated data, load it into Snowflake schema
+# S4_RAW, build and test the dbt project on Snowflake, build the same project on DuckDB and compare
+# the figures of both warehouses. Manual start only. All company data is simulated.
+# The first run was done by hand on 2026-11-09 (docs/ergebnisse/snowflake_run.json); this workflow
+# repeats it without a workstation and writes docs/ergebnisse/snowflake_workflow_run.json.
+#
+# Needs the GitHub environment "snowflake" with
+#   secret   SNOWFLAKE_PRIVATE_KEY   content of keys/planwerk_ci.p8 (scripts/snowflake_keys.py)
+#   variable SNOWFLAKE_ACCOUNT       account identifier, e.g. MYORG-MYACCOUNT
+#   variable SNOWFLAKE_USER          optional, default PLANWERK_CI
+# Cost: a few minutes on an XS warehouse; the resource monitor caps the month at 10 credits.
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Data volume: ci (small, about 2 min) or dev (2.4 M journal lines, about 10 min)"
+        type: choice
+        options: [ci, dev]
+        default: ci
+      commit_result:
+        description: "Commit docs/ergebnisse/snowflake_workflow_run.json to main"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write # commits docs/ergebnisse/snowflake_workflow_run.json
+
+concurrency:
+  group: snowflake-run
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    environment: snowflake
+    timeout-minutes: 45
+    env:
+      SNOWFLAKE_ACCOUNT: ${{ vars.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{ vars.SNOWFLAKE_USER || 'PLANWERK_CI' }}
+      PROFILE: ${{ inputs.profile }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the configuration
+        env:
+          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+        run: |
+          missing=0
+          if [ -z "$SNOWFLAKE_ACCOUNT" ]; then echo "::error::Variable SNOWFLAKE_ACCOUNT is not set in the environment 'snowflake'"; missing=1; fi
+          if [ -z "$SNOWFLAKE_PRIVATE_KEY" ]; then echo "::error::Secret SNOWFLAKE_PRIVATE_KEY is not set in the environment 'snowflake'"; missing=1; fi
+          [ "$missing" -eq 0 ] || exit 1
+          # the key lives only in the runner's temp directory for this job
+          umask 077
+          printf '%s\n' "$SNOWFLAKE_PRIVATE_KEY" > "$RUNNER_TEMP/planwerk_ci.p8"
+          echo "SNOWFLAKE_PRIVATE_KEY_PATH=$RUNNER_TEMP/planwerk_ci.p8" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -e ".[dbt,snowflake,snowflake-load]"
+      - name: Generate the simulated data and build the DuckDB reference
+        run: make generate dbt PROFILE="$PROFILE"
+      - name: Load S4_RAW (row counts are checked against the manifest)
+        run: make snowflake-load
+      - name: dbt build on Snowflake (seeds, models, all tests)
+        run: make snowflake-dbt
+      - name: Compare Snowflake with DuckDB
+        run: python -m planwerk.load.snowflake_compare --out docs/ergebnisse/snowflake_workflow_run.json
+      - name: Summary
+        if: always()
+        run: |
+          [ -f docs/ergebnisse/snowflake_workflow_run.json ] || { echo "No comparison result (an earlier step failed)." >> "$GITHUB_STEP_SUMMARY"; exit 0; }
+          python - >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json
+          r = json.load(open("docs/ergebnisse/snowflake_workflow_run.json"))
+          print(f"### Snowflake run, profile `{r['profile']}`, seed {r['seed']} (simulated data)")
+          print(f"- dbt on Snowflake: {r['dbt']}")
+          print(f"- figures equal on DuckDB and Snowflake: **{r['checks'] - r['differences']} of {r['checks']}**")
+          for x in r["rows"]:
+              if not x["equal"]:
+                  print(f"- different: `{x['relation']}.{x['measure']}` DuckDB {x['duckdb']:,.2f}, Snowflake {x['snowflake']:,.2f}")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: snowflake-run
+          path: |
+            docs/ergebnisse/snowflake_workflow_run.json
+            dbt/target/run_results.json
+          if-no-files-found: ignore
+      - name: Remove the key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/planwerk_ci.p8"
+      - name: Commit the result
+        if: ${{ success() && inputs.commit_result }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898289+github-actions[bot]@users.noreply.github.com"
+          git add docs/ergebnisse/snowflake_workflow_run.json
+          git commit -m "Snowflake portability run (profile ${PROFILE})" || exit 0
+          git pull --rebase origin main && git push origin HEAD:main

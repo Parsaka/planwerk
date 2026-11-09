@@ -40,6 +40,48 @@ def test_verifier_accepts_rendered_and_rejects_invented():
     assert not verify("Es sind 437 Kunden.", s).ok
 
 
+@pytest.mark.parametrize("invented", [
+    "Der Umsatz beträgt 25 Millionen Euro.",   # small integers used to pass as day or month numbers
+    "Das sind 12 Mio € mehr.", "Kosten von 30 Tsd. EUR.", "Es fehlen EUR 7 Mio.", "Plus 950 T€.", "Rund 28 k€.",
+    "Umsatz 9 Milliarden.", "Marge 12 Prozentpunkte.", "Der Verlust beträgt zwölf Millionen Euro.",
+    "Die Marge sank um drei Prozent.", "Eine halbe Million Euro fehlt.", "Etwa fünfundzwanzig TEUR.",
+    "DB II 6 Mio. EUR.",                       # coarser than the fact sheet writes it: typed, not rendered
+    "DB II 6,41 Mio. EUR.", "DB II 6.412.345 EUR.",
+])
+def test_verifier_rejects_figures_in_any_other_notation(invented):
+    s = FactSheet()
+    s.add("ist", "Ist", 6_412_345.0)
+    s.add("plan", "Plan", 7_000_000.0)
+    s.add("pct", "Abw", -0.116, "PCT")
+    ok = s.render("DB II {{f:ist}}, Plan {{f:plan}} ({{f:pct|signed}}) im Juni 2025.")
+    assert verify(ok, s).ok
+    assert not verify(ok + " " + invented, s).ok
+
+
+def test_verifier_keeps_accepting_ids_dates_and_plain_words():
+    s = FactSheet()
+    s.add("ist", "Ist", 6_412_345.0)
+    s.allowed_tokens.update({"1410", "701000"})
+    text = s.render("Kostenstelle 1410, Konto 701000, am 12. Juni 2025: {{f:ist}}. Jeder Euro zählt, in Europa "
+                    "wie in Polen; ein Kunde, eine Abweichung, 30 Minuten.")
+    assert verify(text, s).ok
+
+
+def test_parser_reads_every_unit_spelling():
+    toks = parse_numbers("7 Millionen Euro, 1 Million Euro, 3 Mio €, 950 T€, 30 Tsd. EUR, EUR 12 Mio., 2 Mrd. EUR, "
+                         "5 Prozent, 2 Prozentpunkte, 40 Euro, 15 Minuten")
+    assert [(t.unit, t.value) for t in toks] == [
+        ("EUR", 7e6), ("EUR", 1e6), ("EUR", 3e6), ("EUR", 950e3), ("EUR", 30e3), ("EUR", 12e6), ("EUR", 2e9),
+        ("PCT", 0.05), ("PCT", 0.02), ("EUR", 40.0), ("NONE", 15.0)]
+
+
+def test_sql_guard_limits_unions_too():
+    u = "select jahr from sem_kennzahlen_monat union all select jahr from sem_kennzahlen_monat"
+    assert validate(u).endswith("LIMIT 500")
+    assert validate(u + " limit 100000").endswith("LIMIT 500")
+    assert validate(validate(u)) == validate(u)
+
+
 def test_unknown_placeholder_raises():
     with pytest.raises(KeyError):
         FactSheet().render("{{f:nope}}")
@@ -53,6 +95,10 @@ def test_unknown_placeholder_raises():
     "attach 'x.db'",
     "select getvariable('planwerk_user')",
     "select * from semantic.sem_kennzahlen_monat union all select * from main.cost_centre_access",
+    "select getenv('HOME') from semantic.sem_kennzahlen_monat",
+    "select current_setting('access_mode')",
+    "select * from other_db.semantic.sem_kennzahlen_monat",
+    "select * from semantic.sem_kennzahlen_monat cross join range(100000000)",
 ])
 def test_sql_guard_rejects(sql):
     with pytest.raises(SQLRejected):

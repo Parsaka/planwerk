@@ -19,7 +19,7 @@ und wurden vor der ersten Auswertung festgelegt.
 |---|---|---|
 | Q1 | Woraus besteht die Lücke von 4,5 Mio. EUR im DB II gegenüber Plan (Preis, Menge, Mix, Kosten; welche Kostenstelle)? | Die Abweichungsbrücke schließt auf den Cent, 100 % der Kostenabweichung liegen auf benannten Kostenstellen. Von vier eingespielten Effekten werden drei innerhalb der Toleranz wiedergefunden, der Mengeneffekt nicht. **H1 nicht erfüllt.** |
 | Q2 | Wie viele Monate früher erkennt ein rollierender ML-Forecast eine Zielverfehlung als die lineare Hochrechnung? | Über 200 simulierte Szenarien: Vorsprung im Median 0 Monate (Ziel 2). Der ML-Forecast hat keine Fehlalarme, die lineare Hochrechnung 11,3 %. **H2 nicht erfüllt.** |
-| Q3 | Schreibt eine KI den deutschen Monatskommentar mit 100 % korrekten Zahlen und halbiert sie die Schreibzeit? | 39 von 39 Kommentaren mit ausschließlich korrekten Zahlen, auch mit einem absichtlich feindlichen Modell; 200 von 200 Fragen im Golden Set; 0 von 80 Angriffen erfolgreich. Die Zeitersparnis braucht einen praktizierenden Controller: **offen.** |
+| Q3 | Schreibt eine KI den deutschen Monatskommentar mit 100 % korrekten Zahlen und halbiert sie die Schreibzeit? | Offline (regelbasierte Zuordnung, Vorlagentext): 39 von 39 Kommentaren mit ausschließlich korrekten Zahlen, auch mit einem absichtlich feindlichen Modell; 200 von 200 Fragen im Golden Set; 0 von 80 Angriffen erfolgreich. Erster Lauf mit Azure OpenAI gpt-4o-mini: wieder 39 von 39 und kein erfolgreicher Angriff, aber nur 91 von 200 Fragen im Golden Set, weil das Modell Fragen schlecht zuordnete; die Zuordnung läuft jetzt zuerst über die Regeln (noch nicht neu gemessen). Die Zeitersparnis braucht einen praktizierenden Controller: **offen.** |
 
 Negative Ergebnisse werden als negativ berichtet, Schwellen wurden nicht verschoben.
 
@@ -56,7 +56,11 @@ Die Ergebnisse liegen danach in `reports/out/` und `docs/ergebnisse/`. Details s
 
 ## Noch offen
 
-SAP HANA Cloud, Datasphere, CAP-Service auf BTP und SAC-Story brauchen SAP-Testzugänge. Snowflake- und
-Azure-Läufe brauchen Konten. Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI Search sind
+SAP HANA Cloud, Datasphere, CAP-Service auf BTP und SAC-Story brauchen SAP-Testzugänge. Der Snowflake-Lauf ist am
+09.11.2026 von Hand erfolgt ([snowflake_run.json](docs/ergebnisse/snowflake_run.json)); der Workflow
+`snowflake-run`, der ihn wiederholt und 71 Kennzahlen mit DuckDB vergleicht, ist noch nicht gelaufen. Die
+Auswertung mit Azure OpenAI läuft über den Workflow `eval-azure-openai`; Einrichtung im
+[Runbook](docs/betrieb/runbook.md), Abschnitt 6.
+Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI Search sind
 geplant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen gesucht
 ([docs/outreach](docs/outreach)).

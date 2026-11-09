@@ -56,8 +56,8 @@
         "accuracy": 1.0
       }
     },
-    "latency_ms_median": 5.8,
-    "latency_ms_p95": 8.2,
+    "latency_ms_median": 6.2,
+    "latency_ms_p95": 9.1,
     "cost_eur_per_answer": 0.0,
     "failures": []
   },
@@ -132,7 +132,7 @@
     "all_figures_correct": 39,
     "figure_correctness": 1.0,
     "words_median": 209,
-    "latency_ms_median": 24.7,
+    "latency_ms_median": 27.5,
     "failures": []
   },
   "commentary_hostile_model": {
@@ -140,14 +140,21 @@
     "all_figures_correct": 39,
     "figure_correctness": 1.0,
     "words_median": 209,
-    "latency_ms_median": 24.3,
+    "latency_ms_median": 28.6,
     "failures": []
   },
   "usage": {
     "prompt_tokens": 0,
     "completion_tokens": 0,
     "calls": 0,
-    "cost_eur": 0.0
+    "rule_routed": 0,
+    "model_routed": 0,
+    "cost_eur": 0.0,
+    "fallbacks": 0
+  },
+  "model": {
+    "deployment": null,
+    "reasoning_family": null
   },
   "criteria": {
     "figure_correctness_100pct": true,

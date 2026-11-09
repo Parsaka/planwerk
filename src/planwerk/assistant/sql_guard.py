@@ -35,9 +35,13 @@ def validate(sql: str, dialect: str = "duckdb") -> str:
         if isinstance(node, (exp.Insert, exp.Update, exp.Delete, exp.Drop, exp.Create, exp.Alter, exp.Command,
                              exp.Merge, exp.Copy, exp.Attach if hasattr(exp, "Attach") else exp.Command)):
             raise SQLRejected("Schreibende Anweisung erkannt")
+        if isinstance(node, exp.Anonymous):
+            # a function sqlglot does not know: engine-specific (getenv, current_setting, pragma_*,
+            # query_table ...). The fixed queries need none of them.
+            raise SQLRejected(f"Funktion nicht erlaubt: {node.name.lower()}")
         if isinstance(node, exp.Func):
             name = (node.sql_name() if hasattr(node, "sql_name") else type(node).__name__).lower()
-            if name in FORBIDDEN_FUNCTIONS or (isinstance(node, exp.Anonymous) and node.name.lower() in FORBIDDEN_FUNCTIONS):
+            if name in FORBIDDEN_FUNCTIONS:
                 raise SQLRejected(f"Funktion nicht erlaubt: {name}")
     ctes = {c.alias_or_name.lower() for c in tree.find_all(exp.CTE)}
     for t in tree.find_all(exp.Table):
@@ -48,17 +52,19 @@ def validate(sql: str, dialect: str = "duckdb") -> str:
             raise SQLRejected(f"Tabelle nicht freigegeben: {t.sql()}")
         if t.db and t.db.lower() != ALLOWED_SCHEMA:
             raise SQLRejected(f"Schema nicht freigegeben: {t.db}")
+        if t.catalog:
+            raise SQLRejected(f"Datenbank nicht freigegeben: {t.catalog}")
         if not t.db:
             t.set("db", exp.to_identifier(ALLOWED_SCHEMA))
-    if isinstance(tree, exp.Select):
-        lim = tree.args.get("limit")
-        if lim is None:
+    # row limit on SELECT and on UNION alike (a UNION without one would return every row)
+    lim = tree.args.get("limit")
+    if lim is None:
+        tree = tree.limit(MAX_ROWS)
+    else:
+        try:
+            n = int(lim.expression.name)
+        except (AttributeError, ValueError):
+            n = MAX_ROWS + 1
+        if n > MAX_ROWS:
             tree = tree.limit(MAX_ROWS)
-        else:
-            try:
-                n = int(lim.expression.name)
-            except (AttributeError, ValueError):
-                n = MAX_ROWS + 1
-            if n > MAX_ROWS:
-                tree = tree.limit(MAX_ROWS)
     return tree.sql(dialect=dialect)
