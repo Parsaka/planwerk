@@ -31,7 +31,7 @@ Group DB II 2025: plan 98.42 M EUR, actual 93.93 M EUR, gap **−4.49 M EUR (−
 
 | Criterion | Result | |
 |---|---|---|
-| 1. Bridge closes (< 0.01 EUR) | residual 1.2 × 10⁻⁷ EUR | met |
+| 1. Bridge closes (< 0.01 EUR) | residual below 10⁻⁶ EUR (floating-point rounding) | met |
 | 2. Each injected effect within ±10 % (min. ±50 k EUR) | 3 of 4 | **not met** |
 | 3. ≥ 90 % of cost deviation on named cost centres | 100 % | met |
 
