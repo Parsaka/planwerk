@@ -136,3 +136,29 @@ def test_audit_log_written(warehouse, tmp_path, monkeypatch):
     Assistant(OfflineProvider()).ask("Wie hoch war der Umsatz 2025?", user="controller")
     e = json.loads(log.read_text().splitlines()[-1])
     assert e["user"] == "controller" and e["verified"] and e["sql"] and "answer_sha256" in e and "answer" not in e
+
+
+def test_azure_router_is_deterministic_first():
+    """Recognised questions never reach the model; only unrecognised paraphrases do."""
+    import json
+    from types import SimpleNamespace
+
+    from planwerk.assistant.llm import AzureOpenAIProvider, Usage
+
+    calls = []
+
+    def create(**kw):
+        calls.append(kw)
+        args = json.dumps({"name": "order_intake", "scope": "2000", "year": 2025, "month": 12, "ytd": False,
+                           "kpi": "db2", "product_group": None})
+        msg = SimpleNamespace(tool_calls=[SimpleNamespace(function=SimpleNamespace(arguments=args))])
+        return SimpleNamespace(choices=[SimpleNamespace(message=msg)], usage=None)
+
+    p = AzureOpenAIProvider.__new__(AzureOpenAIProvider)
+    p.deployment, p.usage = "test", Usage()
+    p.client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+    i = p.route("Wie hoch war der DB II im März 2025 in Polen?", (2025, 12), {})
+    assert (i.name, i.scope, i.month, i.ytd) == ("kpi", "3000", 3, False) and not calls
+    i = p.route("Wie ist die Auftragslage in Österreich im Dezember 2025?", (2025, 12), {"1410": "Instandhaltung"})
+    assert i.name == "order_intake" and len(calls) == 1 and "1410 Instandhaltung" in calls[0]["messages"][0]["content"]
+    assert (p.usage.rule_routed, p.usage.model_routed) == (1, 1)
