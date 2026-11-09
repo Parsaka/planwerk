@@ -5,7 +5,7 @@ export PLANWERK_RAW ?= $(CURDIR)/data/raw
 export PLANWERK_DUCKDB ?= $(CURDIR)/data/warehouse/planwerk.duckdb
 DBT_FLAGS = --project-dir $(CURDIR)/dbt --profiles-dir $(CURDIR)/dbt
 
-.PHONY: install generate dbt test lint forecast backtest liquidity assistant mcp q1 q1-robustness sac eval reports all clean
+.PHONY: install generate dbt test lint forecast backtest liquidity assistant mcp q1 q1-robustness snowflake-load snowflake-dbt snowflake sac eval reports all clean
 
 install:
 	pip install -e ".[dbt,reporting,assistant,dev]"
@@ -46,6 +46,16 @@ q1:                  ## Q1: variance bridge evaluation against the injected grou
 
 q1-robustness:       ## exploratory: Q1 over four more seeds (about 12 min)
 	python -m planwerk.controlling.q1_robustness
+
+SNOWFLAKE_USER ?= PLANWERK_CI
+
+snowflake-load:      ## load data/raw into PLANWERK.S4_RAW (needs SNOWFLAKE_ACCOUNT, SNOWFLAKE_PRIVATE_KEY_PATH)
+	SNOWFLAKE_USER=$(SNOWFLAKE_USER) SNOWFLAKE_ROLE=PLANWERK_LOADER python -m planwerk.load.snowflake
+
+snowflake-dbt:       ## the same dbt project on Snowflake (role PLANWERK_TRANSFORMER)
+	SNOWFLAKE_USER=$(SNOWFLAKE_USER) PLANWERK_TARGET=snowflake dbt build $(DBT_FLAGS)
+
+snowflake: snowflake-load snowflake-dbt
 
 sac:                 ## SAC Planning import files (dimensions, facts, driver basis)
 	python -m planwerk.sac.export
