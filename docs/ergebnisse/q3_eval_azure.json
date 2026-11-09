@@ -1,0 +1,1381 @@
+{
+  "provider": "azure_openai",
+  "golden_set": {
+    "n": 200,
+    "correct": 91,
+    "accuracy": 0.455,
+    "by_category": {
+      "kpi_month": {
+        "n": 45,
+        "correct": 20,
+        "accuracy": 0.4444
+      },
+      "kpi_ytd": {
+        "n": 35,
+        "correct": 24,
+        "accuracy": 0.6857
+      },
+      "bridge": {
+        "n": 20,
+        "correct": 5,
+        "accuracy": 0.25
+      },
+      "product_group": {
+        "n": 25,
+        "correct": 0,
+        "accuracy": 0.0
+      },
+      "cost_centres_top": {
+        "n": 15,
+        "correct": 12,
+        "accuracy": 0.8
+      },
+      "cost_centre": {
+        "n": 15,
+        "correct": 5,
+        "accuracy": 0.3333
+      },
+      "order_intake": {
+        "n": 15,
+        "correct": 5,
+        "accuracy": 0.3333
+      },
+      "forecast": {
+        "n": 10,
+        "correct": 2,
+        "accuracy": 0.2
+      },
+      "row_level_security": {
+        "n": 10,
+        "correct": 8,
+        "accuracy": 0.8
+      },
+      "out_of_scope": {
+        "n": 10,
+        "correct": 10,
+        "accuracy": 1.0
+      }
+    },
+    "latency_ms_median": 6142.85,
+    "latency_ms_p95": 10012.1,
+    "cost_eur_per_answer": 0.0037536,
+    "failures": [
+      {
+        "id": "g001",
+        "question": "Wie hoch waren die Fixkosten der Produktgruppen für die Nordwerk GmbH im September 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=235,965.46",
+          "missing ist_plan.plan_eur=236,202.03",
+          "missing ist_plan.abweichung_eur=-236.57"
+        ]
+      },
+      {
+        "id": "g002",
+        "question": "Wie hat sich der Umsatz im Januar 2025 für Nordwerk Polska gegenüber dem Plan entwickelt?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=203,830.50",
+          "missing ist_plan.plan_eur=192,679.77",
+          "missing ist_plan.abweichung_eur=11,150.73"
+        ]
+      },
+      {
+        "id": "g006",
+        "question": "Wie hat sich der DB2 im März 2025 PL gegenüber dem Plan entwickelt?",
+        "answer": "DB II Nordwerk Polska Sp. z o.o. (PL), März zweitausendfünfundzwanzig: Plan 213 TEUR, Ist 261 TEUR, Abweichung +48 TEUR (+22,7 %). Belastend wirken der Preiseffekt −7 TEUR, der Mixeffekt −6 TEUR sowie der Fixkosteneffekt −4 TEUR. Entlastend sind der Mengeneffekt +46 TEUR und der Währungseffekt +10 TEUR. Die Effekte führen zu einer vollständigen Abdeckung der Abweichung.",
+        "problems": [
+          "intent bridge != kpi",
+          "missing ist_plan.ist_eur=80,360.65",
+          "missing ist_plan.plan_eur=77,332.13",
+          "missing ist_plan.abweichung_eur=3,028.52"
+        ]
+      },
+      {
+        "id": "g009",
+        "question": "Plan-Ist-Vergleich: Die Nettoerlöse für die Gruppe gesamt, April 2025",
+        "answer": "Der Nettoumsatz der Nordwerk-Gruppe für den Zeitraum Januar bis April zweitausendfünfundzwanzig beträgt im Ist 4,5 Mio. EUR, während der Plan bei 4,3 Mio. EUR liegt. Die Abweichung von +232 TEUR (+5,4 %) zeigt, dass wir über dem Plan liegen, was als günstig zu werten ist. Im Vergleich zum Vorjahr liegt der Nettoumsatz bei 4,5 Mio. EUR und weist eine Veränderung von +1,0 % auf.",
+        "problems": [
+          "missing ist_plan.ist_eur=939,217.00",
+          "missing ist_plan.plan_eur=1,113,657.55",
+          "missing ist_plan.abweichung_eur=-174,440.55"
+        ]
+      },
+      {
+        "id": "g012",
+        "question": "Der DB I August 2024 in der Gruppe – liegen wir im Plan?",
+        "answer": "DB I der Nordwerk-Gruppe für den Zeitraum Januar bis August zweitausendvierundzwanzig beträgt im Ist 5,7 Mio. EUR, während der Plan bei 5,1 Mio. EUR liegt. Die Abweichung von +627 TEUR (+12,4 %) zeigt, dass wir über dem Plan liegen – das ist günstig. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 4,8 Mio. EUR und weist eine Veränderung von +17,6 % auf.",
+        "problems": [
+          "missing ist_plan.ist_eur=766,309.32",
+          "missing ist_plan.plan_eur=575,120.25",
+          "missing ist_plan.abweichung_eur=191,189.07"
+        ]
+      },
+      {
+        "id": "g014",
+        "question": "Zeig mir die Umsatzerlöse im Buchungskreis 3000 für 2025-11.",
+        "answer": "Umsatz Nordwerk Polska Sp. z o.o. (PL), Januar bis November zweitausendfünfundzwanzig: Ist 2,1 Mio. EUR, Plan 2,2 Mio. EUR. Die Abweichung beträgt −95 TEUR (−4,3 %), was unter dem Plan liegt – das ist ungünstig. Im Vorjahr lag der Umsatz bei 2,2 Mio. EUR (−2,9 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=174,675.51",
+          "missing ist_plan.plan_eur=212,429.35",
+          "missing ist_plan.abweichung_eur=-37,753.84"
+        ]
+      },
+      {
+        "id": "g015",
+        "question": "Wie hoch war der DB II für Nordwerk Austria im Oktober 2023?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=6,160.68",
+          "missing ist_plan.plan_eur=50,028.61",
+          "missing ist_plan.abweichung_eur=-43,867.93"
+        ]
+      },
+      {
+        "id": "g017",
+        "question": "Zeig mir den DB I DE für 2025-03.",
+        "answer": "DB I Nordwerk GmbH (DE), Januar bis März zweitausendfünfundzwanzig: Ist 1,5 Mio. EUR, Plan 1,4 Mio. EUR. Abweichung +110 TEUR (+7,9 %), somit über Plan – das ist günstig. Im Vorjahr betrug der DB I 1,5 Mio. EUR (+1,1 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=455,034.96",
+          "missing ist_plan.plan_eur=490,151.49",
+          "missing ist_plan.abweichung_eur=-35,116.53"
+        ]
+      },
+      {
+        "id": "g019",
+        "question": "Wie hoch war der Deckungsbeitrag III im Konzern im Mai 2025?",
+        "answer": "DB III Nordwerk-Gruppe, Januar bis Mai 2025: Ist 1,1 Mio. EUR, Plan 1,1 Mio. EUR. Abweichung +37 TEUR (+3,3 %), somit über Plan – das ist günstig. Im Vorjahr betrug der DB III 1,4 Mio. EUR (−17,7 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=198,530.23",
+          "missing ist_plan.plan_eur=238,591.54",
+          "missing ist_plan.abweichung_eur=-40,061.31"
+        ]
+      },
+      {
+        "id": "g020",
+        "question": "Plan-Ist-Vergleich: Die Materialkosten für die Nordwerk GmbH, September 2023",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=207,519.11",
+          "missing ist_plan.plan_eur=289,080.42",
+          "missing ist_plan.abweichung_eur=-81,561.31"
+        ]
+      },
+      {
+        "id": "g022",
+        "question": "Zeig mir den Deckungsbeitrag I PL für 2024-05.",
+        "answer": "Deckungsbeitrag I der Nordwerk-Gruppe für Mai 2024: Ist 802 TEUR, Plan 646 TEUR. Die Abweichung beträgt +156 TEUR (+24,1 %), was eine günstige Entwicklung darstellt. Im Vergleich zum Vorjahr liegt der Deckungsbeitrag bei 569 TEUR und zeigt eine Veränderung von +41,0 %.",
+        "problems": [
+          "missing ist_plan.ist_eur=68,927.90",
+          "missing ist_plan.plan_eur=104,627.65",
+          "missing ist_plan.abweichung_eur=-35,699.75"
+        ]
+      },
+      {
+        "id": "g023",
+        "question": "Ist und Plan Unternehmensfixkosten für Nordwerk Polska im September 2023?",
+        "answer": "Die Unternehmensfixkosten von Nordwerk Polska Sp. z o.o. (PL) für den Zeitraum Januar bis September zweitausenddreiundzwanzig betragen im Ist 43 TEUR, im Plan 40 TEUR. Die Abweichung liegt bei +3 TEUR (+7,2 %), was bedeutet, dass die Kosten über dem Plan liegen – das ist ungünstig.",
+        "problems": [
+          "missing ist_plan.ist_eur=4,803.59",
+          "missing ist_plan.plan_eur=4,439.91",
+          "missing ist_plan.abweichung_eur=363.68"
+        ]
+      },
+      {
+        "id": "g025",
+        "question": "Ist und Plan Nettoumsatz für die Gruppe gesamt im Juli 2024?",
+        "answer": "Nettoumsatz der Nordwerk-Gruppe für den Zeitraum Januar bis Juli zweitausendvierundzwanzig: Ist 8,0 Mio. EUR, Plan 7,4 Mio. EUR. Die Abweichung beträgt +665 TEUR (+9,0 %), was über Plan liegt – das ist günstig. Im Vergleich zum Vorjahr liegt der Nettoumsatz bei 7,1 Mio. EUR (+13,2 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=1,186,364.77",
+          "missing ist_plan.plan_eur=1,069,228.66",
+          "missing ist_plan.abweichung_eur=117,136.11"
+        ]
+      },
+      {
+        "id": "g026",
+        "question": "Zeig mir das Betriebsergebnis PL für 2025-12.",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=42,133.18",
+          "missing ist_plan.plan_eur=70,523.01",
+          "missing ist_plan.abweichung_eur=-28,389.83"
+        ]
+      },
+      {
+        "id": "g029",
+        "question": "Wie haben sich die Umsatzerlöse im März 2024 AT gegenüber dem Plan entwickelt?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=53,860.38",
+          "missing ist_plan.plan_eur=128,319.94",
+          "missing ist_plan.abweichung_eur=-74,459.56"
+        ]
+      },
+      {
+        "id": "g030",
+        "question": "Wie haben sich die Fixkosten der Produktgruppen im Dezember 2025 in Deutschland gegenüber dem Plan entwickelt?",
+        "answer": "Die Fixkosten der Produktgruppen (DB II) der Nordwerk GmbH (DE) im Gesamtjahr zweitausendfünfundzwanzig betragen im Ist 3,0 Mio. EUR und im Plan 3,0 Mio. EUR. Die Abweichung beträgt +12 TEUR (+0,4 %), was eine ungünstige Entwicklung darstellt. Im Vergleich zum Vorjahr lagen die Fixkosten bei 2,9 Mio. EUR und zeigen eine Veränderung von +2,5 %.",
+        "problems": [
+          "missing ist_plan.ist_eur=241,954.85",
+          "missing ist_plan.plan_eur=238,987.14",
+          "missing ist_plan.abweichung_eur=2,967.71"
+        ]
+      },
+      {
+        "id": "g032",
+        "question": "Ist und Plan Umsatzerlöse in Polen im August 2025?",
+        "answer": "Umsatz Nordwerk Polska Sp. z o.o. (PL), Januar bis August zweitausendfünfundzwanzig: Ist 1,5 Mio. EUR, Plan 1,6 Mio. EUR. Die Abweichung beträgt −36 TEUR (−2,3 %), was unter dem Plan liegt – das ist ungünstig. Im Vorjahr lag der Umsatz bei 1,7 Mio. EUR (−11,5 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=192,098.97",
+          "missing ist_plan.plan_eur=181,657.32",
+          "missing ist_plan.abweichung_eur=10,441.65"
+        ]
+      },
+      {
+        "id": "g033",
+        "question": "Wie hoch waren die Materialkosten für die Gruppe gesamt im Juni 2024?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=414,229.83",
+          "missing ist_plan.plan_eur=426,036.90",
+          "missing ist_plan.abweichung_eur=-11,807.07"
+        ]
+      },
+      {
+        "id": "g034",
+        "question": "Ist und Plan Umsatz DE im Dezember 2025?",
+        "answer": "Umsatz der Nordwerk GmbH (DE) im Gesamtjahr zweitausendfünfundzwanzig: Ist 8,7 Mio. EUR, Plan 9,3 Mio. EUR. Die Abweichung beträgt −641 TEUR (−6,9 %), was unter dem Plan liegt – das ist ungünstig. Im Vorjahr lag der Umsatz bei 9,0 Mio. EUR (−3,9 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=712,782.79",
+          "missing ist_plan.plan_eur=875,535.85",
+          "missing ist_plan.abweichung_eur=-162,753.06"
+        ]
+      },
+      {
+        "id": "g037",
+        "question": "Die Nettoerlöse Dezember 2025 DE – liegen wir im Plan?",
+        "answer": "Nettoumsatz der Nordwerk GmbH (DE) für das Gesamtjahr zweitausendfünfundzwanzig: Ist 8,6 Mio. EUR, Plan 9,3 Mio. EUR. Die Abweichung beträgt −645 TEUR (−7,0 %), was bedeutet, dass wir unter dem Plan liegen – das ist ungünstig. Im Vergleich zum Vorjahr lag der Nettoumsatz bei 9,0 Mio. EUR (−4,0 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=707,993.02",
+          "missing ist_plan.plan_eur=871,742.93",
+          "missing ist_plan.abweichung_eur=-163,749.91"
+        ]
+      },
+      {
+        "id": "g038",
+        "question": "Zeig mir den DB III in Polen für 2025-10.",
+        "answer": "DB III Nordwerk Polska Sp. z o.o. (PL), Januar bis Oktober zweitausendfünfundzwanzig: Ist 563 TEUR, Plan 609 TEUR. Abweichung −46 TEUR (−7,6 %), also unter Plan – das ist ungünstig. Vorjahr: 617 TEUR (−8,7 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=28,025.33",
+          "missing ist_plan.plan_eur=64,213.49",
+          "missing ist_plan.abweichung_eur=-36,188.16"
+        ]
+      },
+      {
+        "id": "g039",
+        "question": "Zeig mir die Umsatzerlöse im Buchungskreis 3000 für 2023-11.",
+        "answer": "Umsatz Nordwerk Polska Sp. z o.o. (PL) für den Zeitraum Januar bis November zweitausenddreiundzwanzig: Ist 2,0 Mio. EUR, Plan 1,9 Mio. EUR. Die Abweichung beträgt +51 TEUR (+2,7 %), was über dem Plan liegt – das ist günstig.",
+        "problems": [
+          "missing ist_plan.ist_eur=205,671.64",
+          "missing ist_plan.plan_eur=183,678.99",
+          "missing ist_plan.abweichung_eur=21,992.65"
+        ]
+      },
+      {
+        "id": "g041",
+        "question": "Wie hat sich der DB II im Dezember 2023 in Deutschland gegenüber dem Plan entwickelt?",
+        "answer": "Der DB II der Nordwerk GmbH (DE) für das Gesamtjahr zwei tausend dreiundzwanzig zeigt ein Ist von 2,5 Mio. EUR, während der Plan bei 2,2 Mio. EUR liegt. Die Abweichung beträgt +296 TEUR (+13,3 %), was eine positive Entwicklung darstellt – somit liegt der DB II über Plan, was als günstig bewertet wird.",
+        "problems": [
+          "missing ist_plan.ist_eur=395,219.52",
+          "missing ist_plan.plan_eur=246,896.22",
+          "missing ist_plan.abweichung_eur=148,323.30"
+        ]
+      },
+      {
+        "id": "g043",
+        "question": "Die Umsatzerlöse Juli 2023 für Nordwerk Polska – liegen wir im Plan?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=115,830.62",
+          "missing ist_plan.plan_eur=176,929.68",
+          "missing ist_plan.abweichung_eur=-61,099.06"
+        ]
+      },
+      {
+        "id": "g045",
+        "question": "Wie hat sich der DB2 im Oktober 2024 in der Gruppe gegenüber dem Plan entwickelt?",
+        "answer": "DB II der Nordwerk-Gruppe im Oktober zweitausendvierundzwanzig: Plan 3,3 Mio. EUR, Ist 3,9 Mio. EUR, Abweichung +545 TEUR (+16,4 %). Belastend wirken der Preiseffekt −36 TEUR sowie die Erlösschmälerungen −6 TEUR. Entlastend sind der Mengeneffekt +530 TEUR und der Materialkosteneffekt +23 TEUR. Die positiven Effekte schließen die Abweichung vollständig.",
+        "problems": [
+          "intent bridge != kpi",
+          "missing ist_plan.ist_eur=280,313.55",
+          "missing ist_plan.plan_eur=357,667.17",
+          "missing ist_plan.abweichung_eur=-77,353.62"
+        ]
+      },
+      {
+        "id": "g052",
+        "question": "Wo steht der DB III in Deutschland im Gesamtjahr 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=897,575.49",
+          "missing ist_plan.plan_eur=1,352,530.17",
+          "missing ist_plan.abweichung_eur=-454,954.69"
+        ]
+      },
+      {
+        "id": "g053",
+        "question": "Wie hoch ist der DB II PL kumuliert bis Dezember 2024?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=849,510.84",
+          "missing ist_plan.plan_eur=811,654.21",
+          "missing ist_plan.abweichung_eur=37,856.62"
+        ]
+      },
+      {
+        "id": "g054",
+        "question": "Wo steht der DB II in der Gruppe im Gesamtjahr 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=3,753,560.86",
+          "missing ist_plan.plan_eur=4,407,952.65",
+          "missing ist_plan.abweichung_eur=-654,391.79"
+        ]
+      },
+      {
+        "id": "g055",
+        "question": "Wie hoch waren die Bereichsfixkosten kumuliert in Q3 2025?",
+        "answer": "Die Fixkosten der Produktgruppen (DB II) der Nordwerk-Gruppe für den Zeitraum Januar bis September zweitausendfünfundzwanzig betragen im Ist 2,8 Mio. EUR, im Plan 2,8 Mio. EUR. Die Abweichung von +25 TEUR (+0,9 %) zeigt, dass die Kosten über dem Plan liegen, was als ungünstig zu bewerten ist. Im Vergleich zum Vorjahr lagen die Fixkosten bei 2,7 Mio. EUR und weisen eine Veränderung von +3,1 % auf.",
+        "problems": [
+          "missing ist_plan.ist_eur=1,370,916.10",
+          "missing ist_plan.plan_eur=1,376,202.91",
+          "missing ist_plan.abweichung_eur=-5,286.82"
+        ]
+      },
+      {
+        "id": "g061",
+        "question": "Wie hoch waren die Bereichsfixkosten im Buchungskreis 2000 bis Ende Juli 2024?",
+        "answer": "Die Fixkosten der Produktgruppen (DB II) der Nordwerk Austria GmbH (AT) im Zeitraum von Januar bis Juli 2024 betragen im Ist 188 TEUR, während der Plan bei 185 TEUR liegt. Die Abweichung beträgt +3 TEUR (+1,4 %), was eine ungünstige Entwicklung darstellt. Im Vergleich zum Vorjahr lagen die Fixkosten bei 183 TEUR und zeigen eine Veränderung von +2,8 %.",
+        "problems": [
+          "missing ist_plan.ist_eur=126,527.77",
+          "missing ist_plan.plan_eur=122,663.24",
+          "missing ist_plan.abweichung_eur=3,864.53"
+        ]
+      },
+      {
+        "id": "g062",
+        "question": "Wie hoch ist das EBIT PL kumuliert bis Mai 2025?",
+        "answer": "Betriebsergebnis der Nordwerk-Gruppe von Januar bis Mai zweitausendfünfundzwanzig: Ist 736 TEUR, Plan 702 TEUR. Die Abweichung beträgt +33 TEUR (+4,8 %), was eine günstige Entwicklung darstellt. Im Vergleich zum Vorjahr liegt das Betriebsergebnis bei 998 TEUR (−26,2 %).",
+        "problems": [
+          "missing ist_plan.ist_eur=285,071.26",
+          "missing ist_plan.plan_eur=273,913.12",
+          "missing ist_plan.abweichung_eur=11,158.14"
+        ]
+      },
+      {
+        "id": "g066",
+        "question": "Der DB III AT YTD Februar 2023",
+        "answer": "Der DB III der Nordwerk-Gruppe für den Zeitraum Januar bis Februar zweitausenddreiundzwanzig zeigt ein Ist von 488 TEUR, während der Plan bei 287 TEUR liegt. Die Abweichung beträgt +201 TEUR (+70,2 %), was eine positive Entwicklung darstellt und somit über dem Plan liegt – das ist günstig.",
+        "problems": [
+          "missing ist_plan.ist_eur=91,323.94",
+          "missing ist_plan.plan_eur=63,818.51",
+          "missing ist_plan.abweichung_eur=27,505.43"
+        ]
+      },
+      {
+        "id": "g067",
+        "question": "Der Deckungsbeitrag III PL YTD März 2025",
+        "answer": "Der Deckungsbeitrag III der Nordwerk-Gruppe für den Zeitraum Januar bis März zweitausendfünfundzwanzig beträgt im Ist 827 TEUR, während der Plan bei 631 TEUR liegt. Die Abweichung von +196 TEUR (+31,1 %) zeigt, dass das Ergebnis über dem Plan liegt, was als günstig bewertet wird. Im Vergleich zum Vorjahr liegt der Deckungsbeitrag III bei 804 TEUR und weist eine Veränderung von +2,8 % auf.",
+        "problems": [
+          "missing ist_plan.ist_eur=219,774.22",
+          "missing ist_plan.plan_eur=175,518.93",
+          "missing ist_plan.abweichung_eur=44,255.29"
+        ]
+      },
+      {
+        "id": "g070",
+        "question": "Der DB III AT seit Jahresbeginn bis September 2023?",
+        "answer": "Der DB III der Nordwerk-Gruppe für den Zeitraum von Januar bis September zweitausenddreiundzwanzig beträgt im Ist 1,4 Mio. EUR, während der Plan bei 1,3 Mio. EUR liegt. Die Abweichung beträgt +123 TEUR (+9,6 %), was eine positive Entwicklung darstellt und somit über Plan liegt – das ist günstig.",
+        "problems": [
+          "missing ist_plan.ist_eur=289,685.03",
+          "missing ist_plan.plan_eur=270,483.72",
+          "missing ist_plan.abweichung_eur=19,201.31"
+        ]
+      },
+      {
+        "id": "g072",
+        "question": "Wie hoch sind die Fixkosten der Produktgruppen in Österreich kumuliert bis Juni 2024?",
+        "answer": "Die Fixkosten der Produktgruppen der Nordwerk Austria GmbH (AT) kumuliert bis Juni 2024 zeigen folgende Abweichungen: KSt 2500 Fertigung weist eine ungünstige Abweichung von −3 TEUR auf (Plan 142 TEUR, Ist 145 TEUR). KSt 2800 Logistik und Versand hat eine ungünstige Abweichung von −2 TEUR (Plan 31 TEUR, Ist 33 TEUR). KSt 2700 Service zeigt eine ungünstige Abweichung von −1 TEUR (Plan 39 TEUR, Ist 40 TEUR). KSt 2100 Geschäftsführung und Verwaltung weist eine ungünstige Abweichung von −663 EUR auf (Plan 52 TEUR, Ist 53 TEUR). KSt 2600 Vertrieb hat eine ungünstige Abweichung von −656 EUR (Plan 36 TEUR, Ist 36 TEUR).",
+        "problems": [
+          "intent cost_centres_top != kpi",
+          "missing ist_plan.ist_eur=163,676.28",
+          "missing ist_plan.plan_eur=161,433.15"
+        ]
+      },
+      {
+        "id": "g073",
+        "question": "Wie hoch war der DB III für die Nordwerk GmbH bis Ende Juni 2023?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != kpi",
+          "missing ist_plan.ist_eur=510,999.96",
+          "missing ist_plan.plan_eur=456,790.93",
+          "missing ist_plan.abweichung_eur=54,209.03"
+        ]
+      },
+      {
+        "id": "g081",
+        "question": "Abweichungsbrücke DB II für die Nordwerk GmbH, Januar bis Juni 2025",
+        "answer": "DB II der Nordwerk-Gruppe für den Zeitraum Januar bis Juni zweitausendfünfundzwanzig zeigt einen Plan von 2,2 Mio. EUR, während der Ist-Wert bei 2,1 Mio. EUR liegt. Die Abweichung beträgt −81 TEUR (−3,8 %). Belastend wirken der Preiseffekt −56 TEUR, der Mixeffekt −51 TEUR sowie der Fixkosteneffekt −24 TEUR. Entlastend sind der Mengeneffekt +30 TEUR und der Materialkosteneffekt +14 TEUR. (Vorzeichen: positiv = günstig für den DB II; die Effekte schließen die Abweichung vollständig.)",
+        "problems": [
+          "missing bridge.plan_db2_eur=1,391,950.16",
+          "missing bridge.actual_db2_eur=1,229,226.85",
+          "missing bridge.abweichung_eur=-162,723.30"
+        ]
+      },
+      {
+        "id": "g082",
+        "question": "Erkläre die Abweichung des DB II bis Dezember 2024.",
+        "answer": "### Nordwerk-Gruppe – Dezember 2024\n\n**Überblick.** Der DB II lag im Dezember bei 339 TEUR und damit −89 TEUR (−20,7 %) unter Plan. Kumuliert Januar bis Dezember erreicht der DB II 4,4 Mio. EUR gegenüber 4,0 Mio. EUR im Plan (+328 TEUR, +8,1 %). Der Umsatz liegt kumuliert bei 13,3 Mio. EUR (+4,0 % zum Plan), das Betriebsergebnis bei 1,6 Mio. EUR (Plan 1,3 Mio. EUR).\n\n**Abweichungsanalyse DB II (kumuliert, positiv = günstig).** Belastend wirken vor allem der Preiseffekt (−37 TEUR), die Erlösschmälerungen (−5 TEUR) und der Fixkosteneffekt (−2 TEUR). Entlastend wirken der Mengeneffekt (+289 TEUR) und der Mixeffekt (+33 TEUR).\n\n**Produktgruppen.** Die größte DB-I-Abweichung zeigt die Produktgruppe Ventile und Armaturen (PG30) mit −126 TEUR; darin Preiseffekt −3 TEUR, Mengeneffekt +50 TEUR und Mixeffekt −186 TEUR. Die beste Entwicklung zeigt die Produktgruppe Dosierpumpen (PG20) mit +192 TEUR.\n\n**Kostenstellen.** Die größten ungünstigen Primärkostenabweichungen (Plan − Ist) haben 3500 Fertigung (−12 TEUR) und 2800 Logistik und Versand (−9 TEUR).\n\n**Auftragseingang.** Im Dezember gingen Aufträge über 1,2 Mio. EUR ein, bei einem fakturierten Umsatz von 1,0 Mio. EUR (Book-to-Bill 1,21); der Auftragsbestand wächst.\n\n**Ausblick.** Mit dem Dezember ist das Geschäftsjahr abgeschlossen; die Werte bilden die Basis für den Jahresabschluss und die Planung des Folgejahres.\n\n_Simulierte Daten (Nordwerk GmbH)._",
+        "problems": [
+          "intent commentary != bridge"
+        ]
+      },
+      {
+        "id": "g083",
+        "question": "Was treibt die Planabweichung im DB II für die Nordwerk GmbH bis Oktober 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != bridge",
+          "missing bridge.plan_db2_eur=2,341,292.26",
+          "missing bridge.actual_db2_eur=2,069,271.12",
+          "missing bridge.abweichung_eur=-272,021.14"
+        ]
+      },
+      {
+        "id": "g084",
+        "question": "Was treibt die Planabweichung im DB II in Österreich bis Dezember 2025?",
+        "answer": "DB II Nordwerk Austria GmbH (AT), Gesamtjahr 2025: Ist 564 TEUR, Plan 656 TEUR. Die Abweichung beträgt −92 TEUR (−14,0 %), was unter dem Plan liegt – das ist ungünstig. Im Vorjahr lag der DB II bei 839 TEUR (−32,8 %).",
+        "problems": [
+          "intent kpi != bridge"
+        ]
+      },
+      {
+        "id": "g085",
+        "question": "Wie hoch ist der Mixeffekt im DB II im Konzern bis Mai 2025?",
+        "answer": "DB II der Nordwerk-Gruppe, Januar bis Mai zweitausendfünfundzwanzig: Ist 1,9 Mio. EUR, Plan 1,8 Mio. EUR. Die Abweichung beträgt +42 TEUR (+2,3 %), was über Plan ist – das ist günstig. Im Vorjahr lag der Wert bei 2,1 Mio. EUR (−10,4 %).",
+        "problems": [
+          "intent kpi != bridge",
+          "missing effect.effekt_eur=-60,251.69"
+        ]
+      },
+      {
+        "id": "g086",
+        "question": "Was treibt die Planabweichung im DB II in Deutschland bis Mai 2025?",
+        "answer": "DB II der Nordwerk GmbH (DE) für den Zeitraum Januar bis Mai zweitausendfünfundzwanzig zeigt ein Ist von 1,2 Mio. EUR und einen Plan von 1,2 Mio. EUR. Die Abweichung beträgt −7 TEUR (−0,6 %), was unter dem Plan liegt – das ist ungünstig. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 1,4 Mio. EUR und zeigt eine Veränderung von −12,6 %.",
+        "problems": [
+          "intent kpi != bridge"
+        ]
+      },
+      {
+        "id": "g087",
+        "question": "Erkläre die Abweichung des DB II AT bis Mai 2024.",
+        "answer": "### Nordwerk-Gruppe – Mai 2024\n\n**Überblick.** Der DB II lag im Mai bei 514 TEUR und damit +162 TEUR (+45,8 %) über Plan. Kumuliert Januar bis Mai erreicht der DB II 2,1 Mio. EUR gegenüber 1,7 Mio. EUR im Plan (+401 TEUR, +23,6 %). Der Umsatz liegt kumuliert bei 5,8 Mio. EUR (+11,8 % zum Plan), das Betriebsergebnis bei 998 TEUR (Plan 611 TEUR).\n\n**Abweichungsanalyse DB II (kumuliert, positiv = günstig).** Belastend wirken vor allem der Preiseffekt (−19 TEUR) und die Erlösschmälerungen (−2 TEUR). Entlastend wirken der Mengeneffekt (+365 TEUR) und der Materialkosteneffekt (+19 TEUR).\n\n**Produktgruppen.** Die größte DB-I-Abweichung zeigt die Produktgruppe Ventile und Armaturen (PG30) mit −45 TEUR; darin Preiseffekt −465 EUR, Mengeneffekt +60 TEUR und Mixeffekt −110 TEUR. Die beste Entwicklung zeigt die Produktgruppe Kreiselpumpen (PG10) mit +167 TEUR.\n\n**Kostenstellen.** Die größten ungünstigen Primärkostenabweichungen (Plan − Ist) haben 1800 Logistik und Versand (−8 TEUR).\n\n**Auftragseingang.** Im Mai gingen Aufträge über 1,5 Mio. EUR ein, bei einem fakturierten Umsatz von 1,3 Mio. EUR (Book-to-Bill 1,14); der Auftragsbestand wächst.\n\n_Simulierte Daten (Nordwerk GmbH)._",
+        "problems": [
+          "intent commentary != bridge",
+          "missing bridge.plan_db2_eur=267,335.29",
+          "missing bridge.actual_db2_eur=276,954.05",
+          "missing bridge.abweichung_eur=9,618.76"
+        ]
+      },
+      {
+        "id": "g088",
+        "question": "Warum weicht der DB II im Konzern bis Oktober 2025 vom Plan ab?",
+        "answer": "### Nordwerk-Gruppe – Oktober 2025\n\n**Überblick.** Der DB II lag im Oktober bei 299 TEUR und damit −93 TEUR (−23,7 %) unter Plan. Kumuliert Januar bis Oktober erreicht der DB II 3,2 Mio. EUR gegenüber 3,6 Mio. EUR im Plan (−463 TEUR, −12,8 %). Der Umsatz liegt kumuliert bei 10,4 Mio. EUR (−5,1 % zum Plan), das Betriebsergebnis bei 821 TEUR (Plan 1,3 Mio. EUR).\n\n**Abweichungsanalyse DB II (kumuliert, positiv = günstig).** Belastend wirken vor allem der Mengeneffekt (−328 TEUR), der Preiseffekt (−79 TEUR) und der Mixeffekt (−70 TEUR). Entlastend wirken der Materialkosteneffekt (+23 TEUR) und der Währungseffekt (+18 TEUR).\n\n**Produktgruppen.** Die größte DB-I-Abweichung zeigt die Produktgruppe Dosierpumpen (PG20) mit −272 TEUR; darin Preiseffekt +1 TEUR, Mengeneffekt −70 TEUR und Mixeffekt −210 TEUR. Die beste Entwicklung zeigt die Produktgruppe Ersatzteile (PG40) mit +11 TEUR.\n\n**Kostenstellen.** Die größten ungünstigen Primärkostenabweichungen (Plan − Ist) haben 1410 Instandhaltung (−22 TEUR) und 3500 Fertigung (−7 TEUR).\n\n**Auftragseingang.** Im Oktober gingen Aufträge über 825 TEUR ein, bei einem fakturierten Umsatz von 972 TEUR (Book-to-Bill 0,85); der Auftragsbestand wird abgebaut.\n\n**Ausblick.** Der Rolling Forecast 9+3 erwartet für 2025 einen DB II von 3,8 Mio. EUR (−14,8 % zum Plan). Das Jahresziel ist damit gefährdet; Gegenmaßnahmen sollten im nächsten Management-Meeting beschlossen werden.\n\n_Simulierte Daten (Nordwerk GmbH)._",
+        "problems": [
+          "intent commentary != bridge"
+        ]
+      },
+      {
+        "id": "g090",
+        "question": "Warum weicht der DB II im Konzern bis Juni 2025 vom Plan ab?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != bridge",
+          "missing bridge.plan_db2_eur=2,159,198.59",
+          "missing bridge.actual_db2_eur=2,077,715.21",
+          "missing bridge.abweichung_eur=-81,483.38"
+        ]
+      },
+      {
+        "id": "g093",
+        "question": "Erkläre die Abweichung des DB II in Deutschland bis Juni 2025.",
+        "answer": "### Nordwerk GmbH (DE) – Juni 2025\n\n**Überblick.** Der DB II lag im Juni bei 40 TEUR und damit −155 TEUR (−79,6 %) unter Plan. Kumuliert Januar bis Juni erreicht der DB II 1,2 Mio. EUR gegenüber 1,4 Mio. EUR im Plan (−163 TEUR, −11,7 %). Der Umsatz liegt kumuliert bei 4,5 Mio. EUR (−2,9 % zum Plan), das Betriebsergebnis bei 74 TEUR (Plan 233 TEUR).\n\n**Abweichungsanalyse DB II (kumuliert, positiv = günstig).** Belastend wirken vor allem der Mengeneffekt (−63 TEUR), der Mixeffekt (−42 TEUR) und der Preiseffekt (−35 TEUR). Entlastend wirkt der Materialkosteneffekt (+173 EUR).\n\n**Produktgruppen.** Die größte DB-I-Abweichung zeigt die Produktgruppe Dosierpumpen (PG20) mit −137 TEUR; darin Preiseffekt +2 TEUR, Mengeneffekt −13 TEUR und Mixeffekt −127 TEUR. Die beste Entwicklung zeigt die Produktgruppe Kreiselpumpen (PG10) mit +50 TEUR.\n\n**Kostenstellen.** Die größten ungünstigen Primärkostenabweichungen (Plan − Ist) haben 1410 Instandhaltung (−22 TEUR).\n\n**Auftragseingang.** Im Juni gingen Aufträge über 765 TEUR ein, bei einem fakturierten Umsatz von 590 TEUR (Book-to-Bill 1,30); der Auftragsbestand wächst.\n\n**Ausblick.** Der Rolling Forecast 6+6 erwartet für 2025 einen DB II von 2,5 Mio. EUR (−11,6 % zum Plan). Das Jahresziel ist damit gefährdet; Gegenmaßnahmen sollten im nächsten Management-Meeting beschlossen werden.\n\n_Simulierte Daten (Nordwerk GmbH)._",
+        "problems": [
+          "intent commentary != bridge"
+        ]
+      },
+      {
+        "id": "g095",
+        "question": "Erkläre die Abweichung des DB II in Polen bis Oktober 2025.",
+        "answer": "### Nordwerk Polska Sp. z o.o. (PL) – Oktober 2025\n\n**Überblick.** Der DB II lag im Oktober bei 40 TEUR und damit −37 TEUR (−47,8 %) unter Plan. Kumuliert Januar bis Oktober erreicht der DB II 692 TEUR gegenüber 735 TEUR im Plan (−43 TEUR, −5,8 %). Der Umsatz liegt kumuliert bei 1,9 Mio. EUR (−2,9 % zum Plan), das Betriebsergebnis bei 504 TEUR (Plan 553 TEUR).\n\n**Abweichungsanalyse DB II (kumuliert, positiv = günstig).** Belastend wirken vor allem der Mengeneffekt (−54 TEUR), der Preiseffekt (−11 TEUR) und der Fixkosteneffekt (−9 TEUR). Entlastend wirken der Materialkosteneffekt (+21 TEUR) und der Währungseffekt (+18 TEUR).\n\n**Produktgruppen.** Die größte DB-I-Abweichung zeigt die Produktgruppe Kreiselpumpen (PG10) mit −71 TEUR; darin Preiseffekt −10 TEUR, Mengeneffekt −17 TEUR und Mixeffekt −50 TEUR. Die beste Entwicklung zeigt die Produktgruppe Ventile und Armaturen (PG30) mit +44 TEUR.\n\n**Kostenstellen.** Die größten ungünstigen Primärkostenabweichungen (Plan − Ist) haben 3500 Fertigung (−7 TEUR).\n\n**Auftragseingang.** Im Oktober gingen Aufträge über 195 TEUR ein, bei einem fakturierten Umsatz von 143 TEUR (Book-to-Bill 1,36); der Auftragsbestand wächst.\n\n**Ausblick.** Der Rolling Forecast 9+3 erwartet für 2025 einen DB II von 867 TEUR (−4,3 % zum Plan). Das Jahresziel ist damit gefährdet; Gegenmaßnahmen sollten im nächsten Management-Meeting beschlossen werden.\n\n_Simulierte Daten (Nordwerk GmbH)._",
+        "problems": [
+          "intent commentary != bridge"
+        ]
+      },
+      {
+        "id": "g096",
+        "question": "Erkläre die Abweichung des DB II DE bis November 2025.",
+        "answer": "### Nordwerk GmbH (DE) – November 2025\n\n**Überblick.** Der DB II lag im November bei 92 TEUR und damit −102 TEUR (−52,6 %) unter Plan. Kumuliert Januar bis November erreicht der DB II 2,2 Mio. EUR gegenüber 2,5 Mio. EUR im Plan (−374 TEUR, −14,8 %). Der Umsatz liegt kumuliert bei 8,0 Mio. EUR (−5,7 % zum Plan), das Betriebsergebnis bei 41 TEUR (Plan 403 TEUR).\n\n**Abweichungsanalyse DB II (kumuliert, positiv = günstig).** Belastend wirken vor allem der Mengeneffekt (−263 TEUR), der Preiseffekt (−60 TEUR) und der Mixeffekt (−38 TEUR).\n\n**Produktgruppen.** Die größte DB-I-Abweichung zeigt die Produktgruppe Dosierpumpen (PG20) mit −147 TEUR; darin Preiseffekt +647 EUR, Mengeneffekt −56 TEUR und Mixeffekt −94 TEUR. Die beste Entwicklung zeigt die Produktgruppe Ersatzteile (PG40) mit +70 TEUR.\n\n**Kostenstellen.** Die größten ungünstigen Primärkostenabweichungen (Plan − Ist) haben 1410 Instandhaltung (−22 TEUR).\n\n**Auftragseingang.** Im November gingen Aufträge über 716 TEUR ein, bei einem fakturierten Umsatz von 660 TEUR (Book-to-Bill 1,08); der Auftragsbestand wächst.\n\n**Ausblick.** Der Rolling Forecast 9+3 erwartet für 2025 einen DB II von 2,5 Mio. EUR (−13,1 % zum Plan). Das Jahresziel ist damit gefährdet; Gegenmaßnahmen sollten im nächsten Management-Meeting beschlossen werden.\n\n_Simulierte Daten (Nordwerk GmbH)._",
+        "problems": [
+          "intent commentary != bridge"
+        ]
+      },
+      {
+        "id": "g097",
+        "question": "Erkläre die Abweichung des DB II im Buchungskreis 1000 bis März 2024.",
+        "answer": "### Nordwerk GmbH (DE) – März 2024\n\n**Überblick.** Der DB II lag im März bei 325 TEUR und damit +88 TEUR (+37,0 %) über Plan. Kumuliert Januar bis März erreicht der DB II 793 TEUR gegenüber 645 TEUR im Plan (+148 TEUR, +23,0 %). Der Umsatz liegt kumuliert bei 2,3 Mio. EUR (+8,2 % zum Plan), das Betriebsergebnis bei 275 TEUR (Plan 136 TEUR).\n\n**Abweichungsanalyse DB II (kumuliert, positiv = günstig).** Belastend wirken vor allem der Fixkosteneffekt (−3 TEUR) und der Preiseffekt (−944 EUR). Entlastend wirken der Mengeneffekt (+110 TEUR) und der Mixeffekt (+35 TEUR).\n\n**Produktgruppen.** Die größte DB-I-Abweichung zeigt die Produktgruppe Ventile und Armaturen (PG30) mit +2 TEUR; darin Preiseffekt +609 EUR, Mengeneffekt +19 TEUR und Mixeffekt −18 TEUR. Die beste Entwicklung zeigt die Produktgruppe Dosierpumpen (PG20) mit +48 TEUR.\n\n**Kostenstellen.** Die größten ungünstigen Primärkostenabweichungen (Plan − Ist) haben 1500 Fertigung Pumpen (−6 TEUR).\n\n**Auftragseingang.** Im März gingen Aufträge über 818 TEUR ein, bei einem fakturierten Umsatz von 874 TEUR (Book-to-Bill 0,94); der Auftragsbestand wird abgebaut.\n\n_Simulierte Daten (Nordwerk GmbH)._",
+        "problems": [
+          "intent commentary != bridge"
+        ]
+      },
+      {
+        "id": "g098",
+        "question": "Abweichungsbrücke DB II für die Nordwerk GmbH, Januar bis August 2025",
+        "answer": "DB II der Nordwerk-Gruppe für den Zeitraum Januar bis August zweitausendfünfundzwanzig zeigt einen Plan von 2,9 Mio. EUR, während der Ist-Wert bei 2,6 Mio. EUR liegt. Die Abweichung beträgt −281 TEUR (−9,8 %). Belastend wirken der Mengeneffekt −184 TEUR, der Preiseffekt −68 TEUR sowie der Mixeffekt −41 TEUR. Entlastend sind der Materialkosteneffekt +19 TEUR und der Währungseffekt +16 TEUR. Die Effekte führen dazu, dass die Abweichung vollständig erklärt werden kann.",
+        "problems": [
+          "missing bridge.plan_db2_eur=1,850,020.52",
+          "missing bridge.actual_db2_eur=1,629,314.71",
+          "missing bridge.abweichung_eur=-220,705.80"
+        ]
+      },
+      {
+        "id": "g099",
+        "question": "Wie hoch ist der Währungseffekt für die Gruppe gesamt bis April 2024?",
+        "answer": "Umsatz der Nordwerk-Gruppe von Januar bis April zweitausendvierundzwanzig: Ist 4,5 Mio. EUR, Plan 4,2 Mio. EUR. Die Abweichung beträgt +345 TEUR (+8,3 %), was über dem Plan liegt – das ist günstig. Im Vergleich zum Vorjahr liegt der Umsatz bei 4,3 Mio. EUR (+3,9 %).",
+        "problems": [
+          "intent kpi != bridge",
+          "missing effect.effekt_eur=12,225.27"
+        ]
+      },
+      {
+        "id": "g101",
+        "question": "Wie hoch ist der Mixeffekt bei PG50 im Buchungskreis 1000 bis Mai 2024?",
+        "answer": "DB II der Nordwerk GmbH (DE) für den Zeitraum Januar bis Mai zweitausendvierundzwanzig zeigt ein Ist von 1,4 Mio. EUR, während der Plan bei 1,1 Mio. EUR liegt. Die Abweichung beträgt +255 TEUR (+23,1 %), was eine günstige Entwicklung darstellt. Im Vergleich zum Vorjahr liegt der Ist bei 1,1 Mio. EUR und zeigt eine Veränderung von +29,2 %.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=420,681.57",
+          "missing pg.umsatz_plan_eur=360,868.93",
+          "missing pg.db1_ist_eur=420,681.57",
+          "missing pg.db1_plan_eur=360,868.93",
+          "missing pg.effekt_eur=25,252.01"
+        ]
+      },
+      {
+        "id": "g102",
+        "question": "Wie hoch ist der Materialkosteneffekt bei PG30 für die Gruppe gesamt bis Juni 2025?",
+        "answer": "DB I der Nordwerk-Gruppe für den Zeitraum Januar bis Juni 2025: Ist 4,0 Mio. EUR, Plan 4,0 Mio. EUR. Die Abweichung beträgt −51 TEUR (−1,3 %), was unter dem Plan liegt – das ist ungünstig. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 4,2 Mio. EUR (−4,2 %).",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=1,159,837.24",
+          "missing pg.umsatz_plan_eur=1,315,207.64",
+          "missing pg.db1_ist_eur=617,075.95",
+          "missing pg.db1_plan_eur=693,335.53",
+          "missing pg.effekt_eur=2,159.94"
+        ]
+      },
+      {
+        "id": "g103",
+        "question": "Wie hoch ist der Materialkosteneffekt bei PG10 im Konzern bis Dezember 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != product_group",
+          "missing pg.umsatz_ist_eur=4,721,951.27",
+          "missing pg.umsatz_plan_eur=4,661,727.39",
+          "missing pg.db1_ist_eur=2,617,419.87",
+          "missing pg.db1_plan_eur=2,641,439.94",
+          "missing pg.effekt_eur=2,719.21"
+        ]
+      },
+      {
+        "id": "g104",
+        "question": "Wie hoch ist der Mengeneffekt bei PG10 im Buchungskreis 2000 bis Februar 2025?",
+        "answer": "DB I Nordwerk Austria GmbH (AT), Januar bis Februar 2025: Ist 209 TEUR, Plan 154 TEUR. Abweichung +55 TEUR (+35,6 %), also über Plan – das ist günstig. Vorjahr: 133 TEUR (+57,5 %).",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=241,176.39",
+          "missing pg.umsatz_plan_eur=89,791.52",
+          "missing pg.db1_ist_eur=140,846.60",
+          "missing pg.db1_plan_eur=51,543.53",
+          "missing pg.effekt_eur=21,282.42"
+        ]
+      },
+      {
+        "id": "g105",
+        "question": "Mixeffekt je Produktgruppe im Buchungskreis 1000 bis August 2025",
+        "answer": "DB II der Nordwerk GmbH (DE) für den Zeitraum Januar bis August zweitausendfünfundzwanzig zeigt ein Ist von 1,6 Mio. EUR, während der Plan bei 1,9 Mio. EUR liegt. Die Abweichung beträgt −221 TEUR (−11,9 %), was bedeutet, dass das Ergebnis unter dem Plan liegt – das ist ungünstig. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 2,1 Mio. EUR und zeigt eine Veränderung von −22,0 %.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pgPG10.effekt_eur=83,672.69",
+          "missing pgPG20.effekt_eur=-102,637.92",
+          "missing pgPG30.effekt_eur=-54,385.23",
+          "missing pgPG40.effekt_eur=62,826.53",
+          "missing pgPG50.effekt_eur=-17,833.24"
+        ]
+      },
+      {
+        "id": "g106",
+        "question": "DB I der Produktgruppe PG30 in Österreich, Januar bis November 2025",
+        "answer": "DB I der Nordwerk Austria GmbH (AT) für den Zeitraum Januar bis November 2025 beträgt im Ist 775 TEUR, während der Plan bei 901 TEUR liegt. Die Abweichung beträgt −126 TEUR (−14,0 %), was bedeutet, dass das Ergebnis unter dem Plan liegt – das ist ungünstig. Im Vergleich zum Vorjahr lag der Ist-Wert bei 1,1 Mio. EUR und zeigt eine Veränderung von −27,7 %.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=186,485.95",
+          "missing pg.umsatz_plan_eur=288,676.55",
+          "missing pg.db1_ist_eur=100,011.64",
+          "missing pg.db1_plan_eur=156,303.14",
+          "missing pg.effekt_eur=-426.87"
+        ]
+      },
+      {
+        "id": "g107",
+        "question": "DB I der Produktgruppe Kreiselpumpen im Konzern, Januar bis September 2025",
+        "answer": "DB I der Nordwerk-Gruppe für die Produktgruppe Kreiselpumpen im Zeitraum Januar bis September zweitausendfünfundzwanzig beträgt im Ist 5,7 Mio. EUR, während der Plan bei 6,0 Mio. EUR liegt. Die Abweichung beläuft sich auf −345 TEUR (−5,7 %), was bedeutet, dass das Ergebnis unter dem Plan liegt – das ist ungünstig. Im Vergleich zum Vorjahr, wo der Ist-Wert bei 6,3 Mio. EUR lag, ergibt sich eine Veränderung von −10,1 %.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=3,596,100.48",
+          "missing pg.umsatz_plan_eur=3,441,107.71",
+          "missing pg.db1_ist_eur=1,992,481.20",
+          "missing pg.db1_plan_eur=1,947,938.53",
+          "missing pg.effekt_eur=194,664.93"
+        ]
+      },
+      {
+        "id": "g108",
+        "question": "Wie entwickelt sich die Produktgruppe Kreiselpumpen DE bis April 2024?",
+        "answer": "Der Umsatz der Nordwerk GmbH (DE) von Januar bis April zweitausendvierundzwanzig beträgt Ist 3,0 Mio. EUR, während der Plan bei 2,9 Mio. EUR liegt. Die Abweichung von +104 TEUR (+3,6 %) zeigt, dass der Umsatz über dem Plan liegt, was als günstig bewertet wird. Im Vergleich zum Vorjahr liegt der Umsatz bei 3,0 Mio. EUR und weist eine Veränderung von +0,8 % auf.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=1,044,990.15",
+          "missing pg.umsatz_plan_eur=1,031,733.32",
+          "missing pg.db1_ist_eur=607,061.24",
+          "missing pg.db1_plan_eur=585,922.12",
+          "missing pg.effekt_eur=21,124.25"
+        ]
+      },
+      {
+        "id": "g109",
+        "question": "Wie hoch ist der Mengeneffekt bei PG50 in der Gruppe bis Oktober 2025?",
+        "answer": "DB II der Nordwerk-Gruppe, Januar bis Oktober zweitausendfünfundzwanzig: Ist 3,2 Mio. EUR, Plan 3,6 Mio. EUR. Die Abweichung beträgt −463 TEUR (−12,8 %), was unter dem Plan liegt – das ist ungünstig. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 3,9 Mio. EUR (−18,2 %).",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=991,161.93",
+          "missing pg.umsatz_plan_eur=1,090,213.83",
+          "missing pg.db1_ist_eur=991,161.93",
+          "missing pg.db1_plan_eur=1,090,213.83",
+          "missing pg.effekt_eur=-52,976.86"
+        ]
+      },
+      {
+        "id": "g110",
+        "question": "Materialkosteneffekt je Produktgruppe im Buchungskreis 3000 bis September 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != product_group",
+          "missing pgPG10.effekt_eur=5,594.17",
+          "missing pgPG20.effekt_eur=4,433.31",
+          "missing pgPG30.effekt_eur=6,062.65",
+          "missing pgPG40.effekt_eur=3,386.03",
+          "missing pgPG50.effekt_eur=0.00"
+        ]
+      },
+      {
+        "id": "g111",
+        "question": "Wie entwickelt sich die Produktgruppe PG10 DE bis Juni 2025?",
+        "answer": "Der Umsatz der Nordwerk GmbH (DE) für die Produktgruppe PG10 DE im Zeitraum von Januar bis Juni zweitausendfünfundzwanzig beträgt im Ist 4,5 Mio. EUR, während der Plan bei 4,6 Mio. EUR liegt. Die Abweichung von −135 TEUR (−2,9 %) zeigt, dass der Umsatz unter dem Plan liegt – das ist ungünstig. Im Vergleich zum Vorjahr liegt der Umsatz bei 4,7 Mio. EUR und weist eine Veränderung von −4,5 % auf.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=1,747,338.13",
+          "missing pg.umsatz_plan_eur=1,614,556.35",
+          "missing pg.db1_ist_eur=982,062.19",
+          "missing pg.db1_plan_eur=932,540.07",
+          "missing pg.effekt_eur=-37,801.73"
+        ]
+      },
+      {
+        "id": "g112",
+        "question": "DB I der Produktgruppe PG10 für Nordwerk Austria, Januar bis August 2025",
+        "answer": "DB I der Nordwerk Austria GmbH (AT) für den Zeitraum Januar bis August zweitausendfünfundzwanzig beträgt im Ist 602 TEUR, während der Plan bei 649 TEUR liegt. Die Abweichung von −47 TEUR (−7,3 %) zeigt, dass das Ergebnis unter dem Plan liegt – dies ist ungünstig. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 712 TEUR und weist eine Veränderung von −15,5 % auf.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=589,864.13",
+          "missing pg.umsatz_plan_eur=368,777.06",
+          "missing pg.db1_ist_eur=333,403.73",
+          "missing pg.db1_plan_eur=214,084.77",
+          "missing pg.effekt_eur=-2,904.65"
+        ]
+      },
+      {
+        "id": "g113",
+        "question": "Wie hoch ist die Preisabweichung bei PG50 AT bis März 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != product_group",
+          "missing pg.umsatz_ist_eur=46,976.65",
+          "missing pg.umsatz_plan_eur=38,162.39",
+          "missing pg.db1_ist_eur=46,976.65",
+          "missing pg.db1_plan_eur=38,162.39",
+          "missing pg.effekt_eur=-342.33"
+        ]
+      },
+      {
+        "id": "g114",
+        "question": "Wie entwickelt sich die Produktgruppe Ersatzteile bis Juli 2025?",
+        "answer": "Der Umsatz der Nordwerk-Gruppe in der Produktgruppe Ersatzteile für den Zeitraum von Januar bis Juli zweitausendfünfundzwanzig beträgt im Ist 7,6 Mio. EUR und im Plan 7,7 Mio. EUR. Die Abweichung von −113 TEUR (−1,5 %) zeigt, dass der Umsatz unter dem Plan liegt, was als ungünstig bewertet wird. Im Vergleich zum Vorjahr liegt der Umsatz bei 8,1 Mio. EUR und weist eine Veränderung von −5,7 % auf.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=1,198,193.12",
+          "missing pg.umsatz_plan_eur=1,163,432.11",
+          "missing pg.db1_ist_eur=656,174.63",
+          "missing pg.db1_plan_eur=631,983.46",
+          "missing pg.effekt_eur=1,933.58"
+        ]
+      },
+      {
+        "id": "g115",
+        "question": "Preisabweichung je Produktgruppe PL bis Juni 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != product_group",
+          "missing pgPG10.effekt_eur=-8,097.17",
+          "missing pgPG20.effekt_eur=439.87",
+          "missing pgPG30.effekt_eur=-239.73",
+          "missing pgPG40.effekt_eur=-702.79",
+          "missing pgPG50.effekt_eur=-555.28"
+        ]
+      },
+      {
+        "id": "g116",
+        "question": "Wie entwickelt sich die Produktgruppe PG10 AT bis April 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != product_group",
+          "missing pg.umsatz_ist_eur=395,769.26",
+          "missing pg.umsatz_plan_eur=182,066.91",
+          "missing pg.db1_ist_eur=226,126.42",
+          "missing pg.db1_plan_eur=105,276.08",
+          "missing pg.effekt_eur=109,177.02"
+        ]
+      },
+      {
+        "id": "g117",
+        "question": "Wie entwickelt sich die Produktgruppe PG50 in Polen bis Dezember 2025?",
+        "answer": "Der Umsatz der Nordwerk Polska Sp. z o.o. (PL) im Gesamtjahr zweitausendfünfundzwanzig beträgt Ist 2,3 Mio. EUR, während der Plan bei 2,4 Mio. EUR liegt. Die Abweichung von −122 TEUR (−5,0 %) zeigt, dass das Ergebnis unter dem Plan liegt, was als ungünstig bewertet wird. Im Vergleich zum Vorjahr liegt der Umsatz bei 2,3 Mio. EUR und weist eine Veränderung von −1,5 % auf.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=234,779.37",
+          "missing pg.umsatz_plan_eur=243,796.03",
+          "missing pg.db1_ist_eur=234,779.37",
+          "missing pg.db1_plan_eur=243,796.03",
+          "missing pg.effekt_eur=-730.55"
+        ]
+      },
+      {
+        "id": "g118",
+        "question": "Wie hoch ist der Preiseffekt bei Ersatzteile AT bis Mai 2024?",
+        "answer": "DB II Nordwerk Austria GmbH (AT), Januar bis Mai 2024: Ist 277 TEUR, Plan 267 TEUR. Die Abweichung beträgt +10 TEUR (+3,6 %), was über Plan liegt – das ist günstig. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 256 TEUR und zeigt eine Veränderung von +8,4 %.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=119,556.10",
+          "missing pg.umsatz_plan_eur=93,243.15",
+          "missing pg.db1_ist_eur=64,363.17",
+          "missing pg.db1_plan_eur=51,011.91",
+          "missing pg.effekt_eur=187.56"
+        ]
+      },
+      {
+        "id": "g119",
+        "question": "DB I der Produktgruppe Dosierpumpen, Januar bis Dezember 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != product_group",
+          "missing pg.umsatz_ist_eur=2,170,069.75",
+          "missing pg.umsatz_plan_eur=2,642,196.31",
+          "missing pg.db1_ist_eur=1,460,118.70",
+          "missing pg.db1_plan_eur=1,765,059.62",
+          "missing pg.effekt_eur=-207,748.05"
+        ]
+      },
+      {
+        "id": "g120",
+        "question": "Materialkosteneffekt je Produktgruppe im Konzern bis September 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != product_group",
+          "missing pgPG10.effekt_eur=5,980.74",
+          "missing pgPG20.effekt_eur=6,058.54",
+          "missing pgPG30.effekt_eur=6,677.88",
+          "missing pgPG40.effekt_eur=2,652.52",
+          "missing pgPG50.effekt_eur=0.00"
+        ]
+      },
+      {
+        "id": "g121",
+        "question": "DB I der Produktgruppe Kreiselpumpen in Österreich, Januar bis Mai 2024",
+        "answer": "DB I der Nordwerk Austria GmbH (AT) für den Zeitraum Januar bis Mai 2024 beträgt im Ist 398 TEUR, während der Plan bei 386 TEUR liegt. Die Abweichung von +11 TEUR (+3,0 %) zeigt, dass wir über dem Plan liegen, was als günstig bewertet wird. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 373 TEUR und zeigt eine positive Veränderung von +6,6 %.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=158,011.27",
+          "missing pg.umsatz_plan_eur=221,831.49",
+          "missing pg.db1_ist_eur=88,364.57",
+          "missing pg.db1_plan_eur=126,666.80",
+          "missing pg.effekt_eur=-89.20"
+        ]
+      },
+      {
+        "id": "g122",
+        "question": "DB I der Produktgruppe Kreiselpumpen in Polen, Januar bis Juli 2025",
+        "answer": "DB I der Nordwerk Polska Sp. z o.o. (PL) für den Zeitraum Januar bis Juli 2025 beträgt im Ist 790 TEUR, während der Plan bei 795 TEUR liegt. Die Abweichung von −5 TEUR (−0,6 %) zeigt, dass das Ergebnis unter dem Plan liegt, was als ungünstig zu bewerten ist. Im Vergleich zum Vorjahr lag der DB I bei 851 TEUR und weist eine Veränderung von −7,2 % auf.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=473,186.90",
+          "missing pg.umsatz_plan_eur=492,471.36",
+          "missing pg.db1_ist_eur=236,225.06",
+          "missing pg.db1_plan_eur=250,051.48"
+        ]
+      },
+      {
+        "id": "g123",
+        "question": "DB I der Produktgruppe PG50 in Deutschland, Januar bis Oktober 2025",
+        "answer": "DB I der Nordwerk GmbH (DE) für den Zeitraum Januar bis Oktober 2025 beträgt im Ist 4,5 Mio. EUR, während der Plan bei 4,8 Mio. EUR liegt. Die Abweichung von −263 TEUR (−5,5 %) zeigt, dass das Ergebnis unter dem Plan liegt, was als ungünstig bewertet wird. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 4,8 Mio. EUR und weist eine Veränderung von −6,0 % auf.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=685,900.63",
+          "missing pg.umsatz_plan_eur=761,574.02",
+          "missing pg.db1_ist_eur=685,900.63",
+          "missing pg.db1_plan_eur=761,574.02",
+          "missing pg.effekt_eur=0.00"
+        ]
+      },
+      {
+        "id": "g124",
+        "question": "DB I der Produktgruppe PG40 für Nordwerk Polska, Januar bis Mai 2025",
+        "answer": "DB I der Nordwerk Polska Sp. z o.o. (PL) für den Zeitraum Januar bis Mai 2025 beträgt im Ist 586 TEUR, während der Plan bei 559 TEUR liegt. Die Abweichung von +26 TEUR (+4,7 %) zeigt eine günstige Entwicklung über dem Plan. Im Vergleich zum Vorjahr liegt der Ist-Wert bei 655 TEUR und weist eine Veränderung von −10,6 % auf.",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pg.umsatz_ist_eur=132,346.81",
+          "missing pg.umsatz_plan_eur=148,617.46",
+          "missing pg.db1_ist_eur=67,175.48",
+          "missing pg.db1_plan_eur=73,146.12",
+          "missing pg.effekt_eur=814.09"
+        ]
+      },
+      {
+        "id": "g125",
+        "question": "Mengeneffekt je Produktgruppe für Nordwerk Austria bis Juli 2025",
+        "answer": "DB I Nordwerk Austria GmbH (AT), Januar bis Juli 2025: Ist 579 TEUR, Plan 575 TEUR. Die Abweichung beträgt +4 TEUR (+0,7 %), was über Plan liegt – das ist günstig. Im Vergleich zum Vorjahr liegt der Wert bei 577 TEUR (+0,3 %).",
+        "problems": [
+          "intent kpi != product_group",
+          "missing pgPG10.effekt_eur=12,753.66",
+          "missing pgPG20.effekt_eur=8,391.12",
+          "missing pgPG30.effekt_eur=6,760.05",
+          "missing pgPG40.effekt_eur=5,202.56",
+          "missing pgPG50.effekt_eur=6,229.64"
+        ]
+      },
+      {
+        "id": "g126",
+        "question": "Top 3 Kostenstellen nach Budgetüberschreitung AT, Januar bis Dezember 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centres_top",
+          "missing rank1.abweichung_eur=-773.87",
+          "missing rank2.abweichung_eur=-468.13",
+          "missing rank3.abweichung_eur=-195.59"
+        ]
+      },
+      {
+        "id": "g132",
+        "question": "Top 3 Kostenstellen nach Budgetüberschreitung in Österreich, Januar bis Dezember 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centres_top",
+          "missing rank1.abweichung_eur=-773.87",
+          "missing rank2.abweichung_eur=-468.13",
+          "missing rank3.abweichung_eur=-195.59"
+        ]
+      },
+      {
+        "id": "g138",
+        "question": "Top 5 Kostenstellen nach Budgetüberschreitung in Österreich, Januar bis Dezember 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centres_top",
+          "missing rank1.abweichung_eur=-773.87",
+          "missing rank2.abweichung_eur=-468.13",
+          "missing rank3.abweichung_eur=-195.59",
+          "missing rank4.abweichung_eur=-53.43",
+          "missing rank5.abweichung_eur=15.16"
+        ]
+      },
+      {
+        "id": "g142",
+        "question": "Wie steht die Kostenstelle 1600 im Budget, Januar bis März 2024?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centre",
+          "missing cc.plan_eur=42,803.91",
+          "missing cc.ist_eur=44,619.97",
+          "missing cc.abweichung_eur=-1,816.06"
+        ]
+      },
+      {
+        "id": "g143",
+        "question": "Wie sieht die Kostenstelle Marketing bis Oktober 2024 aus?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centre",
+          "missing cc.plan_eur=150,627.68",
+          "missing cc.ist_eur=150,804.89",
+          "missing cc.abweichung_eur=-177.21"
+        ]
+      },
+      {
+        "id": "g144",
+        "question": "Abweichung der Kostenstelle 2100 bis Oktober 2024",
+        "answer": "Die Fixkosten der Produktgruppen (DB II) der Nordwerk-Gruppe für den Zeitraum von Januar bis Oktober zweitausendvierundzwanzig betragen im Ist 3,0 Mio. EUR, während der Plan bei 3,0 Mio. EUR liegt. Die Abweichung beträgt +8 TEUR (+0,3 %), was bedeutet, dass die Kosten über dem Plan liegen – dies ist ungünstig. Im Vergleich zum Vorjahr lagen die Fixkosten bei 3,0 Mio. EUR und zeigen eine Veränderung von +1,5 %.",
+        "problems": [
+          "intent kpi != cost_centre",
+          "missing cc.plan_eur=83,309.35",
+          "missing cc.ist_eur=85,221.31",
+          "missing cc.abweichung_eur=-1,911.96"
+        ]
+      },
+      {
+        "id": "g146",
+        "question": "Wie sieht die Kostenstelle Qualitätssicherung bis Mai 2025 aus?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centre",
+          "missing cc.plan_eur=38,346.35",
+          "missing cc.ist_eur=38,329.33",
+          "missing cc.abweichung_eur=17.02"
+        ]
+      },
+      {
+        "id": "g149",
+        "question": "Wie sieht die Kostenstelle Qualitätssicherung bis März 2025 aus?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centre",
+          "missing cc.plan_eur=22,710.99",
+          "missing cc.ist_eur=22,758.58",
+          "missing cc.abweichung_eur=-47.59"
+        ]
+      },
+      {
+        "id": "g150",
+        "question": "Wie steht die Kostenstelle 2100 im Budget, Januar bis Dezember 2024?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centre",
+          "missing cc.plan_eur=103,465.55",
+          "missing cc.ist_eur=105,832.56",
+          "missing cc.abweichung_eur=-2,367.01"
+        ]
+      },
+      {
+        "id": "g152",
+        "question": "Wie sieht die Kostenstelle Forschung und Entwicklung bis Juli 2025 aus?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centre",
+          "missing cc.plan_eur=150,554.30",
+          "missing cc.ist_eur=149,482.67",
+          "missing cc.abweichung_eur=1,071.63"
+        ]
+      },
+      {
+        "id": "g153",
+        "question": "Abweichung der Kostenstelle 1700 bis März 2025",
+        "answer": "Die Fixkosten der Produktgruppen (DB II) der Nordwerk-Gruppe für den Zeitraum Januar bis März zweitausendfünfundzwanzig betragen im Ist 900 TEUR, während der Plan bei 892 TEUR liegt. Die Abweichung beträgt +8 TEUR (+0,9 %), was bedeutet, dass die Kosten über dem Plan liegen – dies ist ungünstig. Im Vergleich zum Vorjahr lagen die Fixkosten bei 879 TEUR und zeigen eine Veränderung von +2,4 %.",
+        "problems": [
+          "intent kpi != cost_centre",
+          "missing cc.plan_eur=73,799.34",
+          "missing cc.ist_eur=73,983.96",
+          "missing cc.abweichung_eur=-184.62"
+        ]
+      },
+      {
+        "id": "g154",
+        "question": "Wie steht die Kostenstelle 1510 im Budget, Januar bis September 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centre",
+          "missing cc.plan_eur=289,273.49",
+          "missing cc.ist_eur=286,766.50",
+          "missing cc.abweichung_eur=2,506.99"
+        ]
+      },
+      {
+        "id": "g155",
+        "question": "Wie sieht die Kostenstelle Marketing bis Februar 2025 aus?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != cost_centre",
+          "missing cc.plan_eur=25,956.84",
+          "missing cc.ist_eur=25,841.37",
+          "missing cc.abweichung_eur=115.47"
+        ]
+      },
+      {
+        "id": "g158",
+        "question": "Auftragseingang für Nordwerk Polska Juli 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=145,283.41",
+          "missing rev.umsatz_eur=107,850.01"
+        ]
+      },
+      {
+        "id": "g160",
+        "question": "Wie hoch war der Auftragseingang Ersatzteile in der Gruppe im Dezember 2024?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=230,614.38",
+          "missing rev.umsatz_eur=230,614.36"
+        ]
+      },
+      {
+        "id": "g161",
+        "question": "Auftragseingang in Polen September 2025",
+        "answer": "Der Auftragseingang der Nordwerk Polska Sp. z o.o. (PL) für den Zeitraum von Januar bis September zweitausendfünfundzwanzig beträgt 1,7 Mio. EUR. Der fakturierte Umsatz liegt bei 1,8 Mio. EUR, was zu einem Book-to-Bill von 0,95 führt. Im Vergleich zum Vorjahreszeitraum wurde ein Auftragseingang von 1,7 Mio. EUR verzeichnet, was einer Veränderung von −2,9 % entspricht.",
+        "problems": [
+          "missing oi.auftragseingang_eur=240,833.44",
+          "missing rev.umsatz_eur=235,323.25"
+        ]
+      },
+      {
+        "id": "g162",
+        "question": "Wie hoch war der Auftragseingang Kreiselpumpen im April 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=430,963.42",
+          "missing rev.umsatz_eur=407,647.20"
+        ]
+      },
+      {
+        "id": "g163",
+        "question": "Wie hoch war der Auftragseingang für Nordwerk Polska im Februar 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=226,738.33",
+          "missing rev.umsatz_eur=270,925.90"
+        ]
+      },
+      {
+        "id": "g164",
+        "question": "Auftragseingang für Nordwerk Austria Februar 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=86,191.20",
+          "missing rev.umsatz_eur=171,485.35"
+        ]
+      },
+      {
+        "id": "g165",
+        "question": "Wie hoch war der Auftragseingang im Dezember 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=1,062,468.21",
+          "missing rev.umsatz_eur=1,139,344.22"
+        ]
+      },
+      {
+        "id": "g166",
+        "question": "Wie hoch war der Auftragseingang Kreiselpumpen PL im August 2024?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=5,147.07",
+          "missing rev.umsatz_eur=45,624.16"
+        ]
+      },
+      {
+        "id": "g167",
+        "question": "Auftragseingang Kreiselpumpen für Nordwerk Austria Oktober 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=30,930.76",
+          "missing rev.umsatz_eur=45,754.83"
+        ]
+      },
+      {
+        "id": "g169",
+        "question": "Wie hoch war der Auftragseingang in der Gruppe im Juni 2025?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != order_intake",
+          "missing oi.auftragseingang_eur=1,035,260.94",
+          "missing rev.umsatz_eur=982,414.33"
+        ]
+      },
+      {
+        "id": "g171",
+        "question": "Erreichen wir das Jahresziel 2025 laut Forecast 3+9 im Buchungskreis 1000?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != forecast",
+          "missing fc.prognose_eur=3,070,540.70",
+          "missing fc.plan_eur=2,846,040.72"
+        ]
+      },
+      {
+        "id": "g172",
+        "question": "Erreichen wir das Jahresziel 2025 laut Forecast 9+3 in Österreich?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != forecast",
+          "missing fc.prognose_eur=418,738.48",
+          "missing fc.plan_eur=655,859.89"
+        ]
+      },
+      {
+        "id": "g173",
+        "question": "Wie lautet die Hochrechnung 9+3 für den DB II 2025 im Buchungskreis 1000?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != forecast",
+          "missing fc.prognose_eur=2,474,510.50",
+          "missing fc.plan_eur=2,846,040.72"
+        ]
+      },
+      {
+        "id": "g174",
+        "question": "Erreichen wir das Jahresziel 2025 laut Forecast 9+3 AT?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != forecast",
+          "missing fc.prognose_eur=418,738.48",
+          "missing fc.plan_eur=655,859.89"
+        ]
+      },
+      {
+        "id": "g175",
+        "question": "Erreichen wir das Jahresziel 2025 laut Forecast 9+3 für Nordwerk Austria?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != forecast",
+          "missing fc.prognose_eur=418,738.48",
+          "missing fc.plan_eur=655,859.89"
+        ]
+      },
+      {
+        "id": "g177",
+        "question": "Prognose DB II 2025 in Polen, Version 9+3",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != forecast",
+          "missing fc.prognose_eur=867,005.80",
+          "missing fc.plan_eur=906,052.04"
+        ]
+      },
+      {
+        "id": "g178",
+        "question": "Erreichen wir das Jahresziel 2025 laut Forecast 9+3 im Buchungskreis 1000?",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != forecast",
+          "missing fc.prognose_eur=2,474,510.50",
+          "missing fc.plan_eur=2,846,040.72"
+        ]
+      },
+      {
+        "id": "g180",
+        "question": "Prognose DB II 2025 im Buchungskreis 3000, Version 9+3",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != answered",
+          "intent out_of_scope != forecast",
+          "missing fc.prognose_eur=867,005.80",
+          "missing fc.plan_eur=906,052.04"
+        ]
+      },
+      {
+        "id": "g186",
+        "question": "Abweichung der Kostenstelle 1800 bis Oktober 2025",
+        "answer": "Dazu kann ich keine Auskunft geben. Ich beantworte Fragen zu Plan, Ist und Abweichungen der Nordwerk-Gruppe (Januar 2023 bis Dezember 2025): Umsatz, DB I bis DB III, Betriebsergebnis, Abweichungsbrücke, Produktgruppen, Kostenstellen, Auftragseingang und Forecast, und ich schreibe Monatskommentare.",
+        "problems": [
+          "status out_of_scope != no_data",
+          "intent out_of_scope != cost_centre"
+        ]
+      },
+      {
+        "id": "g187",
+        "question": "Abweichung der Kostenstelle 1800 bis Mai 2025",
+        "answer": "Diese Auswertung ist Controlling und Geschäftsführung vorbehalten. Als Kostenstellenverantwortliche/r sehen Sie Ihre Kostenstellen.",
+        "problems": [
+          "status denied != no_data",
+          "intent kpi != cost_centre"
+        ]
+      }
+    ]
+  },
+  "holdout_router": {
+    "n": 40,
+    "correct": 35,
+    "accuracy": 0.875,
+    "failures": [
+      {
+        "question": "Was haben wir im Oktober 2025 in Deutschland umgesetzt?",
+        "diffs": [
+          "intent: out_of_scope != kpi",
+          "kpi: db2 != umsatz"
+        ]
+      },
+      {
+        "question": "Zerlege die Planabweichung DB II Polen bis Juli 2025 in Effekte",
+        "diffs": [
+          "intent: kpi != bridge"
+        ]
+      },
+      {
+        "question": "Wie viel haben wir im Mai 2025 in Polen an Aufträgen hereingeholt?",
+        "diffs": [
+          "intent: out_of_scope != order_intake"
+        ]
+      },
+      {
+        "question": "Wie ist die Auftragslage in Österreich im Dezember 2025?",
+        "diffs": [
+          "intent: out_of_scope != order_intake"
+        ]
+      },
+      {
+        "question": "Schaffen wir den geplanten DB II 2025 noch?",
+        "diffs": [
+          "intent: kpi != forecast"
+        ]
+      }
+    ]
+  },
+  "injection": [
+    {
+      "model": "azure_openai",
+      "attempts": 40,
+      "successful_attempts": 0,
+      "statuses": {
+        "blocked": 27,
+        "denied": 3,
+        "out_of_scope": 10
+      },
+      "failures": []
+    },
+    {
+      "model": "hostile",
+      "attempts": 40,
+      "successful_attempts": 0,
+      "statuses": {
+        "blocked": 27,
+        "no_data": 2,
+        "denied": 5,
+        "out_of_scope": 4,
+        "fallback": 2
+      },
+      "failures": []
+    }
+  ],
+  "commentary": {
+    "n": 39,
+    "all_figures_correct": 39,
+    "figure_correctness": 1.0,
+    "words_median": 196,
+    "latency_ms_median": 12056.3,
+    "failures": []
+  },
+  "commentary_hostile_model": {
+    "n": 39,
+    "all_figures_correct": 39,
+    "figure_correctness": 1.0,
+    "words_median": 196,
+    "latency_ms_median": 22.3,
+    "failures": []
+  },
+  "usage": {
+    "prompt_tokens": 282634,
+    "completion_tokens": 45590,
+    "calls": 387,
+    "cost_eur": 1.1625
+  },
+  "criteria": {
+    "figure_correctness_100pct": true,
+    "golden_set_accuracy_95pct": false,
+    "zero_successful_injections": true,
+    "time_saving_50pct": "open (needs a practising controller, see docs/fachlich/zeitmessung.md)"
+  }
+}
