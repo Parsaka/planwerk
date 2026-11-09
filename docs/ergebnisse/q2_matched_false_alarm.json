@@ -1,0 +1,136 @@
+{
+  "note": "Exploratory, not pre-registered. The H2 verdict stays as in q2_backtest_summary.json.",
+  "false_alarm_budget": 0.05,
+  "calibration_set": {
+    "scenarios": "0-199",
+    "n_scenarios": 200,
+    "n_miss": 67,
+    "thresholds": {
+      "straight_line": 0.97,
+      "seasonal_naive": 0.99,
+      "ml": 0.99
+    },
+    "straight_line": {
+      "false_alarm_rate": 0.0301,
+      "median_detection_month": 6.0,
+      "mean_detection_month": 5.52,
+      "detected_share": 0.9254
+    },
+    "seasonal_naive": {
+      "false_alarm_rate": 0.015,
+      "median_detection_month": 1.0,
+      "mean_detection_month": 3.76,
+      "detected_share": 1.0
+    },
+    "ml": {
+      "false_alarm_rate": 0.0376,
+      "median_detection_month": 4.0,
+      "mean_detection_month": 4.64,
+      "detected_share": 1.0
+    },
+    "lead_seasonal_naive_vs_straight_line": {
+      "median": 0.0,
+      "q25": 0.0,
+      "q75": 3.0,
+      "mean": 1.76,
+      "share_earlier": 0.4776,
+      "share_later": 0.0299
+    },
+    "lead_ml_vs_straight_line": {
+      "median": 1.0,
+      "q25": 0.0,
+      "q75": 2.0,
+      "mean": 0.88,
+      "share_earlier": 0.5373,
+      "share_later": 0.1493
+    }
+  },
+  "evaluation_set_pre_registered_rule": {
+    "scenarios": "200-399",
+    "n_scenarios": 200,
+    "n_miss": 66,
+    "thresholds": {
+      "straight_line": 0.98,
+      "seasonal_naive": 0.98,
+      "ml": 0.98
+    },
+    "straight_line": {
+      "false_alarm_rate": 0.0821,
+      "median_detection_month": 1.0,
+      "mean_detection_month": 3.71,
+      "detected_share": 1.0
+    },
+    "seasonal_naive": {
+      "false_alarm_rate": 0.0075,
+      "median_detection_month": 1.0,
+      "mean_detection_month": 4.0,
+      "detected_share": 1.0
+    },
+    "ml": {
+      "false_alarm_rate": 0.0075,
+      "median_detection_month": 4.0,
+      "mean_detection_month": 5.5,
+      "detected_share": 1.0
+    },
+    "lead_seasonal_naive_vs_straight_line": {
+      "median": 0.0,
+      "q25": -1.0,
+      "q75": 0.0,
+      "mean": -0.29,
+      "share_earlier": 0.1061,
+      "share_later": 0.3636
+    },
+    "lead_ml_vs_straight_line": {
+      "median": -1.0,
+      "q25": -2.0,
+      "q75": 0.0,
+      "mean": -1.79,
+      "share_earlier": 0.1061,
+      "share_later": 0.6364
+    }
+  },
+  "evaluation_set_matched_false_alarm": {
+    "scenarios": "200-399",
+    "n_scenarios": 200,
+    "n_miss": 66,
+    "thresholds": {
+      "straight_line": 0.97,
+      "seasonal_naive": 0.99,
+      "ml": 0.99
+    },
+    "straight_line": {
+      "false_alarm_rate": 0.0224,
+      "median_detection_month": 3.0,
+      "mean_detection_month": 5.21,
+      "detected_share": 0.8636
+    },
+    "seasonal_naive": {
+      "false_alarm_rate": 0.0224,
+      "median_detection_month": 1.0,
+      "mean_detection_month": 3.15,
+      "detected_share": 1.0
+    },
+    "ml": {
+      "false_alarm_rate": 0.0224,
+      "median_detection_month": 3.0,
+      "mean_detection_month": 4.27,
+      "detected_share": 1.0
+    },
+    "lead_seasonal_naive_vs_straight_line": {
+      "median": 0.0,
+      "q25": 0.0,
+      "q75": 3.0,
+      "mean": 2.06,
+      "share_earlier": 0.3788,
+      "share_later": 0.1061
+    },
+    "lead_ml_vs_straight_line": {
+      "median": 0.0,
+      "q25": 0.0,
+      "q75": 2.0,
+      "mean": 0.94,
+      "share_earlier": 0.4394,
+      "share_later": 0.2424
+    }
+  }
+}
