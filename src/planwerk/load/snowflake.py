@@ -26,8 +26,11 @@ def statements(table: str, path: Path) -> list[str]:
     return [
         f"create temporary stage if not exists {t}_STAGE file_format = (type = parquet)",
         f"put 'file://{path.resolve()}' @{t}_STAGE auto_compress = false overwrite = true",
+        # ignore_case => true: unquoted upper-case column names, also for files with lower-case
+        # columns (drivers.parquet), so that dbt's unquoted identifiers resolve
         (f"create or replace table {SCHEMA}.{t} using template (select array_agg(object_construct(*)) "
-         f"from table(infer_schema(location => '@{t}_STAGE', file_format => 'PLANWERK_PARQUET')))"),
+         f"from table(infer_schema(location => '@{t}_STAGE', file_format => 'PLANWERK_PARQUET', "
+         f"ignore_case => true)))"),
         (f"copy into {SCHEMA}.{t} from @{t}_STAGE file_format = (format_name = 'PLANWERK_PARQUET') "
          f"match_by_column_name = case_insensitive on_error = abort_statement"),
     ]

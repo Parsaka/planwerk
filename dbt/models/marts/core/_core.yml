@@ -12,6 +12,8 @@ models:
     columns:
       - name: period
         tests: [unique, not_null]
+      - name: fiscal_quarter
+        tests: [not_null, {accepted_values: {values: ['Q1', 'Q2', 'Q3', 'Q4']}}]
   - name: dim_material
     columns:
       - name: material

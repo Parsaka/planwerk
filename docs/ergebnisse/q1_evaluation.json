@@ -12,7 +12,7 @@
     "fixed_cost_db2_effect": -475325.03,
     "fx_effect_db2": 458140.87
   },
-  "closure_abs_eur": 1.1734664440155029e-07,
+  "closure_abs_eur": 6.146728992462158e-08,
   "recovery": [
     {
       "effect": "price_pg10",

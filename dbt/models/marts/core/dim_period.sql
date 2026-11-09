@@ -4,7 +4,8 @@ select
     cast(left(period, 4) as integer)  as fiscal_year,
     cast(right(period, 2) as integer) as fiscal_month,
     cast(period || '-01' as date)      as period_start,
-    'Q' || cast((cast(right(period, 2) as integer) - 1) / 3 + 1 as varchar) as fiscal_quarter,
+    -- floor(): '/' is not integer division on DuckDB or Snowflake
+    'Q' || cast(cast(floor((cast(right(period, 2) as integer) - 1) / 3) + 1 as integer) as varchar) as fiscal_quarter,
     case cast(right(period, 2) as integer)
         when 1 then 'Januar' when 2 then 'Februar' when 3 then 'März' when 4 then 'April'
         when 5 then 'Mai' when 6 then 'Juni' when 7 then 'Juli' when 8 then 'August'
