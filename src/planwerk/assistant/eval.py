@@ -20,7 +20,7 @@ import yaml
 
 from planwerk.assistant import tools
 from planwerk.assistant.formatting import parse_numbers
-from planwerk.assistant.graph import Assistant
+from planwerk.assistant.graph import AS_OF, Assistant
 from planwerk.assistant.intents import Intent, consistent, parse
 from planwerk.assistant.llm import OfflineProvider, Usage, get_provider
 from planwerk.assistant.sql_guard import SQLRejected, validate
@@ -107,11 +107,21 @@ def run_golden(asst: Assistant, con) -> dict:
                 cost_eur_per_answer=statistics.mean(cost), failures=total.failures)
 
 
-def run_holdout(cc_names: dict) -> dict:
+def run_holdout(cc_names: dict, route=None) -> dict:
+    """Held-out paraphrases. ``route`` defaults to the rule-based parser; pass a provider's route to
+    measure the full routing chain (parser first, model for what the parser does not recognise)."""
     data = yaml.safe_load((EVAL_DIR / "holdout_questions.yaml").read_text(encoding="utf-8"))
     sc = Score()
     for it in data["items"]:
-        i = parse(it["q"], cost_centres=cc_names)
+        if route is None:
+            i = parse(it["q"], cost_centres=cc_names)
+        else:
+            try:
+                i = route(it["q"], AS_OF, cc_names).validated(set(cc_names))
+                if not consistent(it["q"], i):
+                    i = Intent(name="out_of_scope")
+            except Exception:
+                i = Intent(name="out_of_scope")
         got = i.to_dict()
         diffs = [f"{k}: {got.get(k if k != 'intent' else 'name')} != {v}" for k, v in it.items()
                  if k != "q" and str(got.get(k if k != "intent" else "name")) != str(v)]
@@ -160,19 +170,6 @@ class HostileProvider(OfflineProvider):
 
 def invented(answer: str) -> list[str]:
     return [m for m in HOSTILE_MARKERS if m in answer]
-
-
-def run_holdout_assistant(asst: Assistant) -> dict:
-    """The held-out questions through the assistant's own routing (rules first, then the model for
-    what the rules cannot place). With the offline provider this equals :func:`run_holdout`."""
-    data = yaml.safe_load((EVAL_DIR / "holdout_questions.yaml").read_text(encoding="utf-8"))
-    sc = Score()
-    for it in data["items"]:
-        got = asst.route(it["q"]).to_dict()
-        diffs = [f"{k}: {got.get(k if k != 'intent' else 'name')} != {v}" for k, v in it.items()
-                 if k != "q" and str(got.get(k if k != "intent" else "name")) != str(v)]
-        sc.add(not diffs, dict(question=it["q"], diffs=diffs))
-    return dict(n=sc.n, correct=sc.ok, accuracy=sc.rate, failures=sc.failures)
 
 
 def run_injection(asst: Assistant, label: str) -> dict:
@@ -237,31 +234,27 @@ def run_commentary(asst: Assistant, con) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--provider", default="offline")
-    ap.add_argument("--router", default="rules_first", choices=["rules_first", "model"],
-                    help="rules_first: the model routes only what the rules cannot place; model: it routes everything")
     ap.add_argument("--out", type=Path, default=REPO_ROOT / "docs" / "ergebnisse" / "q3_eval.json")
     a = ap.parse_args(argv)
     provider = get_provider(a.provider)
-    asst = Assistant(provider, audit_log=False, router=a.router)
+    asst = Assistant(provider, audit_log=False)
     con = asst.con
-    res = dict(provider=provider.name, router=asst.router)
+    res = dict(provider=provider.name)
     res["golden_set"] = run_golden(asst, con)
     res["holdout_router"] = run_holdout(asst.cc_names)
-    res["holdout_router_assistant"] = run_holdout_assistant(asst)
-    # the hostile model routes every question itself, so that its wrong routings are exercised
+    if provider.name != "offline":
+        res["holdout_provider"] = run_holdout(asst.cc_names, provider.route)
     res["injection"] = [run_injection(asst, provider.name),
-                        run_injection(Assistant(HostileProvider(), con=con, audit_log=False, router="model"),
-                                      "hostile")]
+                        run_injection(Assistant(HostileProvider(), con=con, audit_log=False), "hostile")]
     res["commentary"] = run_commentary(asst, con)
     # the same test set with a model that inserts an invented figure into every text: the
     # verifier must catch every one and fall back to the verified draft
-    res["commentary_hostile_model"] = run_commentary(
-        Assistant(HostileProvider(), con=con, audit_log=False, router="model"), con)
+    res["commentary_hostile_model"] = run_commentary(Assistant(HostileProvider(), con=con, audit_log=False), con)
     u: Usage = provider.usage
     res["usage"] = dict(prompt_tokens=u.prompt_tokens, completion_tokens=u.completion_tokens, calls=u.calls,
-                        cost_eur=round(u.cost_eur(), 4),
-                        # model calls that failed after all retries and were answered by the rule-based
-                        # router or the template draft; above zero the run says less about the model
+                        rule_routed=u.rule_routed, model_routed=u.model_routed, cost_eur=round(u.cost_eur(), 4),
+                        # model calls that failed after all retries and were answered without the model;
+                        # above zero the run says less about the model
                         fallbacks=u.fallbacks)
     res["model"] = dict(deployment=getattr(provider, "deployment", None),
                         reasoning_family=getattr(provider, "reasoning", None))
@@ -279,9 +272,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"golden set: {g['correct']}/{g['n']} = {g['accuracy']:.1%}  by category: "
           + ", ".join(f"{k} {v['correct']}/{v['n']}" for k, v in g["by_category"].items()))
     print(f"holdout router: {res['holdout_router']['correct']}/{res['holdout_router']['n']}")
-    if provider.name != "offline":
-        h = res["holdout_router_assistant"]
-        print(f"holdout through the assistant ({asst.router}, {provider.name}): {h['correct']}/{h['n']}")
+    if "holdout_provider" in res:
+        print(f"holdout, parser + model: {res['holdout_provider']['correct']}/{res['holdout_provider']['n']}")
     for x in res["injection"]:
         print(f"injection ({x['model']}): {x['successful_attempts']} successful of {x['attempts']}  {x['statuses']}")
     print(f"commentary: {c['all_figures_correct']}/{c['n']} with all figures correct")

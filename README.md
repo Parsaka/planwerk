@@ -101,9 +101,9 @@ templates.
 - Snowflake: the run was done by hand on 2026-11-09 ([snowflake_run.json](docs/ergebnisse/snowflake_run.json)).
   A workflow that repeats it and compares 71 figures with DuckDB exists ([snowflake.yml](.github/workflows/snowflake.yml))
   but has not run yet; it needs the key in the GitHub environment `snowflake` ([runbook](docs/betrieb/runbook.md), section 6).
-- Azure OpenAI evaluation: [eval-azure.yml](.github/workflows/eval-azure.yml); result in
-  `docs/ergebnisse/q3_eval_azure.json` once a run has completed. Support for reasoning models (gpt-5 family) is
-  tested against a fake client only.
+- Azure OpenAI evaluation: the first run is in `docs/ergebnisse/q3_eval_azure_first_run.json`; the routing
+  change made after it has not been measured with a real model yet ([eval-azure.yml](.github/workflows/eval-azure.yml)).
+  Support for reasoning models (gpt-5 family) is tested against a fake client only.
 - Teams via Copilot Studio, Power Automate approval, RAG over Azure AI Search: planned, not built.
 - Time-saving measurement (Q3): needs a practising controller.
 

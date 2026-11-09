@@ -55,14 +55,16 @@ def _no_azure_env(monkeypatch):
 def test_classic_model_gets_temperature_and_max_tokens():
     c = FakeClient(_tool_response(ARGS), _text_response("Text mit {{f:ist}}"))
     p = AzureOpenAIProvider(client=c, deployment="gpt-4o-mini")
-    i = p.route("DB II Österreich Juni 2025?", (2025, 12), {})
+    i = p.route_model("Wie steht Österreich im Juni da?", (2025, 12), {"2100": "Vertrieb AT"})
     assert (i.name, i.scope, i.year, i.month, i.kpi, i.month_given) == ("kpi", "2000", 2025, 6, "db2", True)
     assert p.rewrite("system", "user", "Entwurf") == "Text mit {{f:ist}}"
     route, rewrite = c.requests
     assert route["temperature"] == 0 and route["max_tokens"] == 300 and "max_completion_tokens" not in route
     assert route["tool_choice"]["function"]["name"] == "route_question"
+    assert "2100 Vertrieb AT" in route["messages"][0]["content"]
     assert rewrite["temperature"] == 0.2 and rewrite["max_tokens"] == 600
     assert (p.usage.calls, p.usage.prompt_tokens, p.usage.completion_tokens, p.usage.fallbacks) == (2, 1200, 160, 0)
+    assert (p.usage.rule_routed, p.usage.model_routed) == (0, 1)
 
 
 @pytest.mark.parametrize("deployment", ["gpt-5-mini", "GPT-5-nano", "o4-mini"])
@@ -97,17 +99,20 @@ def test_rate_limit_after_retries_falls_back_and_is_counted():
     limit = _error(openai.RateLimitError, 429, "Requests have exceeded the token rate limit")
     c = FakeClient(limit, limit)
     p = AzureOpenAIProvider(client=c, deployment="gpt-5-mini")
+    # the rules know this question: no model call, so the outage does not matter
     i = p.route("Wie hoch war der Umsatz in Polen im März 2025?", (2025, 12), {})
-    assert (i.name, i.scope, i.month, i.kpi) == ("kpi", "3000", 3, "umsatz")  # rule-based router
+    assert (i.name, i.scope, i.month, i.kpi) == ("kpi", "3000", 3, "umsatz") and c.requests == []
+    # the rules cannot place this one and the model is unreachable: out of scope, and counted
+    assert p.route("Wie ist die Auftragslage in Österreich im Dezember 2025?", (2025, 12), {}).name == "out_of_scope"
     assert p.rewrite("s", "u", "Entwurf {{f:ist}}") == "Entwurf {{f:ist}}"
-    assert p.usage.fallbacks == 2 and p.usage.calls == 0
+    assert (p.usage.fallbacks, p.usage.calls, p.usage.rule_routed, p.usage.model_routed) == (2, 0, 1, 0)
 
 
 def test_content_filter_on_the_question_is_out_of_scope():
     blocked = _error(openai.BadRequestError, 400, "The response was filtered due to the prompt triggering Azure "
                                                   "OpenAI's content management policy.", "content_filter")
     p = AzureOpenAIProvider(client=FakeClient(blocked), deployment="gpt-4o-mini")
-    assert p.route("...", (2025, 12), {}).name == "out_of_scope"
+    assert p.route_model("...", (2025, 12), {}).name == "out_of_scope"
     assert p.usage.fallbacks == 0
 
 
@@ -118,7 +123,7 @@ def test_malformed_routing_never_reaches_sql(response):
     validation, and the graph answers 'out of scope'."""
     p = AzureOpenAIProvider(client=FakeClient(response), deployment="gpt-4o-mini")
     with pytest.raises(Exception):  # noqa: B017 - any failure is fine, the graph catches all of them
-        p.route("frage", (2025, 12), {}).validated(set())
+        p.route_model("frage", (2025, 12), {}).validated(set())
 
 
 def test_empty_or_truncated_wording_keeps_the_draft():

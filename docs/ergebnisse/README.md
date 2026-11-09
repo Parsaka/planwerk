@@ -221,7 +221,7 @@ Caveats, stated plainly:
 
 ### First run with a real model (Azure OpenAI, gpt-4o-mini, 2026-11-09)
 
-[q3_eval_azure.json](q3_eval_azure.json). In this run the model routed every question and worded every
+[q3_eval_azure_first_run.json](q3_eval_azure_first_run.json). In this run the model routed every question and worded every
 answer. 387 model calls, 283 k prompt and 46 k completion tokens, 27 minutes.
 
 | Criterion | Threshold | Result | |
@@ -248,14 +248,37 @@ Reading: the claim that figure correctness does not depend on the model held wit
 gpt-4o-mini through function calling did not: it is far below the rule-based router (200/200 in sample,
 35/40 on the holdout).
 
-Change made afterwards, **not yet measured with a real model**: the assistant now routes with the rules
-first and asks the model only for questions the rules cannot place (`router="rules_first"`, the default;
-`--router model` reproduces the run above). Two things follow for the next run:
+Change made afterwards, **not yet measured with a real model**: the provider now routes with the
+rule-based parser first and asks the model only for questions the parser cannot place
+(`AzureOpenAIProvider.route`; `route_model` is the model alone, with intent descriptions and the
+cost-centre list in its prompt). Two things follow for the next run:
 
-- Under `rules_first` the golden set says little about the model, because the rule-based router is in
-  sample there. The figure to watch is the holdout through the assistant (`holdout_router_assistant`):
-  the rules alone place 35 of 40, the model now gets the five they cannot place.
-- A model's own routing is measured with `--router model`. Improving the router prompt against the
-  golden set would be tuning on the test set and needs a fresh question set.
+- The golden set now says little about the model, because the rule-based parser is in sample there.
+  The figure to watch is the holdout through the full chain (`holdout_provider` in the result): the
+  parser alone places 35 of 40, the model gets the five it cannot place. `usage.rule_routed` and
+  `usage.model_routed` show who routed how many questions.
+- The router prompt was extended after seeing this run. Any further improvement of the model's own
+  routing against the golden set would be tuning on the test set and needs a fresh question set.
 
 Latency (offline): median 5.8 ms per answer, 24.7 ms per commentary. Cost per answer offline: 0 EUR.
+
+---
+
+## The same warehouse on Snowflake
+
+[snowflake_run.json](snowflake_run.json), run on 2026-11-09 on a Snowflake trial account (AWS eu-central-1),
+same simulated data (profile dev, seed 42).
+
+| Check | Result |
+|---|---|
+| Load: 27 S/4HANA tables, 6.27 million rows, via key-pair service user (no password) | row counts equal the generator manifest |
+| `dbt build` on Snowflake: 4 seeds, 27 tables, 25 views, 42 data tests | 98/98 pass, 25 s on an XS warehouse |
+| Parity with DuckDB: row count and sums per relation, tolerance 0.01 EUR | 54 of 54 comparable relations identical |
+| Row access policy on the cost-centre mart | service user sees 0 rows, owner of 1410 sees only 1410, owner of pumps sees 1500 and 1520, controller sees all 9,420 rows |
+
+One change was needed to port it: the loader now upper-cases inferred column names (the
+macro-driver file has lower-case columns, which Snowflake would otherwise create as quoted
+identifiers). Two semantic views also filter on `CURRENT_USER()` inside the view on top of the
+policy, so they cannot be simulated with `POLICY_CONTEXT`; they are plain aggregations of the
+checked mart. The rolling forecast and liquidity tables are written by Python on DuckDB and are
+not part of the Snowflake run.

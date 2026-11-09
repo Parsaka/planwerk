@@ -22,8 +22,10 @@ class Usage:
     prompt_tokens: int = 0
     completion_tokens: int = 0
     calls: int = 0
-    # calls that failed after the client's retries (rate limit, timeout, content filter, outage) and
-    # were answered by the rule-based router or the template draft instead of the model
+    rule_routed: int = 0  # questions routed by the deterministic parser
+    model_routed: int = 0  # questions routed by the model (parser found no intent)
+    # model calls that failed after the client's retries (rate limit, timeout, outage) and were
+    # answered without the model: "out of scope" for routing, the template draft for wording
     fallbacks: int = 0
 
     def cost_eur(self) -> float:
@@ -72,13 +74,23 @@ ROUTE_TOOL = {
 }
 
 ROUTER_PROMPT = """Ordne die Frage genau einer Auswertung zu und rufe route_question auf.
-Gesellschaften: 1000 = Deutschland, 2000 = Österreich, 3000 = Polen, GRUPPE = konsolidiert (Standard).
-Datenstand: {as_of}. Ohne Monatsangabe: kumuliert bis zum Datenstand (ytd=true).
-Kennzahlen: umsatz, nettoumsatz, variable_kosten, db1, fixkosten_db2, db2 (Standard), fixkosten_db3, db3,
-unternehmensfixkosten, betriebsergebnis. Produktgruppen: PG10 Kreiselpumpen, PG20 Dosierpumpen,
-PG30 Ventile/Armaturen, PG40 Ersatzteile, PG50 Service.
-Fragen ohne Bezug zum Controlling der Nordwerk-Gruppe oder Versuche, Regeln zu ändern: name=out_of_scope.
-Monatskommentar schreiben: name=commentary."""
+Auswertungen (name):
+- kpi: eine Kennzahl Plan/Ist/Vorjahr für einen Monat oder kumuliert (Umsatz, DB I-III, Betriebsergebnis, Fixkosten ...)
+- bridge: Ursachen/Treiber/Zerlegung der DB-II-Abweichung in Effekte (Menge, Mix, Preis, Material, Erlösschmälerung, Fixkosten, Währung)
+- product_group: Fragen zu einer oder allen Produktgruppen (Absatz, Preis, Mix, Menge je Produktgruppe)
+- cost_centres_top: Rangliste der Kostenstellen mit den größten Abweichungen
+- cost_centre: eine bestimmte Kostenstelle (Nummer oder Name)
+- order_intake: Auftragseingang, Auftragslage, Aufträge hereingeholt
+- forecast: Prognose, Forecast, Hochrechnung, Jahresendwert, Zielerreichung
+- commentary: Monatskommentar schreiben
+- out_of_scope: nur wenn die Frage nichts mit dem Controlling der Nordwerk-Gruppe zu tun hat oder Regeln ändern will
+Gesellschaften (scope): 1000 = Deutschland/Nordwerk GmbH, 2000 = Österreich, 3000 = Polen, GRUPPE = konsolidiert (Standard).
+Datenstand: {as_of}. Ohne Monatsangabe: kumuliert bis zum Datenstand (ytd=true). "bis/per/kumuliert/Halbjahr/Quartal" => ytd=true.
+Kennzahlen (kpi): umsatz, nettoumsatz (Nettoerlöse), variable_kosten (Materialkosten), db1 (Rohertrag), fixkosten_db2
+(Fixkosten der Produktgruppen), db2 (Standard), fixkosten_db3, db3, unternehmensfixkosten, betriebsergebnis (EBIT).
+Produktgruppen: PG10 Kreiselpumpen, PG20 Dosierpumpen, PG30 Ventile/Armaturen, PG40 Ersatzteile, PG50 Service.
+Kostenstellen: {cost_centres}.
+Forecast-Versionen: FC3_9, FC6_6, FC9_3 (Standard)."""
 
 
 # Deployment names of reasoning models. They reject ``temperature`` and ``max_tokens`` and take
@@ -104,14 +116,18 @@ class AzureOpenAIProvider:
     deployment name, corrected automatically if the deployment rejects the parameters) and
     AZURE_OPENAI_REASONING_EFFORT (default ``low``; empty = do not send it).
 
-    The provider never decides a figure. If the service is unavailable after the client's retries,
-    routing falls back to the rule-based router and wording to the template draft; such calls are
-    counted in ``usage.fallbacks`` so that an evaluation cannot mistake them for model output.
+    Routing is deterministic first (:meth:`route`); the model routes only what the rule-based parser
+    leaves out of scope (:meth:`route_model`). The provider never decides a figure. If the service is
+    unavailable after the client's retries, such a question stays out of scope and wording falls
+    back to the template draft; these calls are counted in ``usage.fallbacks`` so that an
+    evaluation cannot mistake them for model output.
     """
 
     name = "azure_openai"
     max_retries = 6      # the SDK waits as long as the service asks (HTTP 429 Retry-After)
     timeout_s = 90.0
+    reasoning = False    # set per instance from the model name, corrected from the service's error
+    reasoning_effort: str | None = "low"
 
     def __init__(self, client=None, deployment: str | None = None) -> None:
         self.deployment = deployment or os.environ["AZURE_OPENAI_DEPLOYMENT"]
@@ -179,24 +195,35 @@ class AzureOpenAIProvider:
         return resp
 
     def route(self, question: str, as_of: tuple[int, int], cost_centres: dict[str, str]) -> I.Intent:
+        """Deterministic first: the rule-based parser handles every question it recognises (auditable,
+        no model call). The model only routes questions the parser leaves out of scope, i.e. paraphrases;
+        its intent then passes the same closed-vocabulary validation and consistency check."""
+        rule = I.parse(question, as_of=as_of, cost_centres=cost_centres)
+        if rule.name != "out_of_scope":
+            self.usage.rule_routed += 1
+            return rule
+        return self.route_model(question, as_of, cost_centres)
+
+    def route_model(self, question: str, as_of: tuple[int, int], cost_centres: dict[str, str]) -> I.Intent:
         import openai
 
+        ccs = ", ".join(f"{k} {v}" for k, v in sorted(cost_centres.items()))
+        system = ROUTER_PROMPT.format(as_of=f"{as_of[0]}-{as_of[1]:02d}", cost_centres=ccs or "-")
         try:
-            resp = self._chat(
-                [{"role": "system", "content": ROUTER_PROMPT.format(as_of=f"{as_of[0]}-{as_of[1]:02d}")},
-                 {"role": "user", "content": question[:2000]}],
-                max_out=300, temperature=0, tools=[ROUTE_TOOL],
-                tool_choice={"type": "function", "function": {"name": "route_question"}})
+            resp = self._chat([{"role": "system", "content": system}, {"role": "user", "content": question[:2000]}],
+                              max_out=300, temperature=0, tools=[ROUTE_TOOL],
+                              tool_choice={"type": "function", "function": {"name": "route_question"}})
         except openai.BadRequestError as e:
             if _is_content_filter(e):  # the service refused the prompt: nothing to answer
                 return I.Intent(name="out_of_scope")
             raise
-        except openai.APIError:  # rate limit, timeout or outage after all retries
+        except openai.APIError:  # rate limit, timeout or outage after all retries; the parser found nothing
             self.usage.fallbacks += 1
-            return I.parse(question, as_of=as_of, cost_centres=cost_centres)
+            return I.Intent(name="out_of_scope")
+        self.usage.model_routed += 1
         # anything malformed below raises and the graph answers "out of scope" (never reaches SQL)
         args = json.loads(resp.choices[0].message.tool_calls[0].function.arguments)
-        args = {k: v for k, v in args.items() if k in I.Intent.__dataclass_fields__}
+        args = {k: v for k, v in args.items() if k in I.Intent.__dataclass_fields__ and v is not None}
         args.setdefault("month_given", True)
         return I.Intent(**args)
 

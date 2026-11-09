@@ -108,18 +108,19 @@ ist sein Ergebnis auf DuckDB.
    `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, optional `AZURE_OPENAI_MODEL`.
 3. GitHub-Environment `eval` anlegen (Reviewer empfohlen).
 4. Actions → „eval-azure-openai“ starten (startet auch von selbst, wenn `infra/azure/planwerk.env` sich ändert).
-   Ergebnis: `docs/ergebnisse/q3_eval_azure.json`. Der erste Lauf am 09.11.2026 dauerte 27 Minuten bei 10.000 Tokens
-   pro Minute (387 Modellaufrufe, 283.000 + 46.000 Tokens); damals ordnete das Modell jede Frage selbst zu.
-   Mit der Zuordnung über die Regeln (Standard seit dem 10.11.2026) fallen die meisten Zuordnungsaufrufe weg.
-   `python -m planwerk.assistant.eval --provider azure --router model` misst die Zuordnung durch das Modell allein.
+   Ergebnis: `docs/ergebnisse/q3_eval_azure.json`. Der erste Lauf am 09.11.2026
+   (`q3_eval_azure_first_run.json`) dauerte 27 Minuten bei 10.000 Tokens pro Minute (387 Modellaufrufe,
+   283.000 + 46.000 Tokens); damals ordnete das Modell jede Frage selbst zu. Seit die Regeln zuerst zuordnen,
+   fallen die meisten Zuordnungsaufrufe weg.
 
 Schlägt die Anmeldung mit `AADSTS700213 No matching federated identity record` fehl, passt der Betreff des
 GitHub-Tokens nicht zum hinterlegten Eintrag: Repositories, die nach dem 15.07.2026 angelegt wurden, senden
 die Form mit numerischen Kennungen (`repo:Parsaka@115464667/planwerk@1449783613:environment:eval`). Das
 Skript trägt seit dem 09.11.2026 beide Formen ein; erneut ausführen genügt.
 
-Lesen des Ergebnisses: `usage.fallbacks` zählt Modellaufrufe, die nach sechs Wiederholungen (Drosselung,
-Zeitüberschreitung, Störung) ohne Modell beantwortet wurden, also mit dem regelbasierten Router oder dem
+Lesen des Ergebnisses: `usage.rule_routed` und `usage.model_routed` zeigen, wer wie viele Fragen zugeordnet hat.
+`usage.fallbacks` zählt Modellaufrufe, die nach sechs Wiederholungen (Drosselung, Zeitüberschreitung, Störung)
+ohne Modell beantwortet wurden: die Frage bleibt dann „außerhalb des Auftrags“ oder die Antwort ist der
 Vorlagentext. Die Zahlen bleiben dann richtig, der Lauf sagt aber weniger über das Modell. Bei einem Wert
 über null den Lauf wiederholen oder die Kapazität des Deployments erhöhen.
 

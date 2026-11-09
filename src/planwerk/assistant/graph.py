@@ -18,7 +18,7 @@ from langgraph.graph import END, StateGraph
 
 from planwerk.assistant import audit, commentary, guardrails, tools, writer
 from planwerk.assistant.facts import FactSheet
-from planwerk.assistant.intents import Intent, consistent, parse
+from planwerk.assistant.intents import Intent, consistent
 from planwerk.assistant.llm import get_provider
 from planwerk.assistant.verifier import verify
 from planwerk.warehouse import connect
@@ -46,14 +46,7 @@ class State(TypedDict, total=False):
 
 
 class Assistant:
-    def __init__(self, provider=None, con=None, as_of: tuple[int, int] = AS_OF, audit_log: bool = True,
-                 router: str = "rules_first"):
-        """``router``: ``rules_first`` asks the deterministic rule-based router and consults the
-        model only for questions the rules cannot place; ``model`` lets the provider route every
-        question (used to test a hostile model, and to measure a model's routing on its own)."""
-        if router not in ("rules_first", "model"):
-            raise ValueError(f"unknown router {router}")
-        self.router = router
+    def __init__(self, provider=None, con=None, as_of: tuple[int, int] = AS_OF, audit_log: bool = True):
         self.provider = provider or get_provider()
         self.con = con or connect(read_only=True)
         self.as_of = as_of
@@ -69,26 +62,14 @@ class Assistant:
             return dict(status="blocked", block_category=g.category, answer=g.message)
         return {}
 
-    def _checked(self, question: str, route) -> Intent:
-        """An intent that passed validation and matches what the question says, or out_of_scope."""
-        try:
-            i = route(question, self.as_of, self.cc_names).validated(set(self.cc_names))
-            return i if consistent(question, i) else Intent(name="out_of_scope")
-        except Exception:  # an invalid routing never reaches SQL
-            return Intent(name="out_of_scope")
-
-    def route(self, question: str) -> Intent:
-        """Rules first: the rule-based router is deterministic and scores 200/200 on the golden set,
-        while the first run with a real model (gpt-4o-mini, 2026-11-09) placed 45.5 % correctly. The
-        model is asked only when the rules find no intent, which is where paraphrases end up."""
-        if self.router == "rules_first" and self.provider.name != "offline":
-            i = self._checked(question, lambda q, as_of, cc: parse(q, as_of=as_of, cost_centres=cc))
-            if i.name != "out_of_scope":
-                return i
-        return self._checked(question, self.provider.route)
-
     def _route(self, s: State) -> State:
-        i = self.route(s["question"])
+        try:
+            i = self.provider.route(s["question"], self.as_of, self.cc_names)
+            i = i.validated(set(self.cc_names))
+            if not consistent(s["question"], i):
+                i = Intent(name="out_of_scope")
+        except Exception:  # an invalid routing never reaches SQL
+            i = Intent(name="out_of_scope")
         if i.name == "out_of_scope":
             return dict(intent=i, status="out_of_scope", answer=writer.OUT_OF_SCOPE)
         if (i.year, i.month) > self.as_of:
