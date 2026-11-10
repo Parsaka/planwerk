@@ -162,3 +162,36 @@ def test_azure_router_is_deterministic_first():
     i = p.route("Wie ist die Auftragslage in Österreich im Dezember 2025?", (2025, 12), {"1410": "Instandhaltung"})
     assert i.name == "order_intake" and len(calls) == 1 and "1410 Instandhaltung" in calls[0]["messages"][0]["content"]
     assert (p.usage.rule_routed, p.usage.model_routed) == (1, 1)
+
+
+def test_document_search_chunks_and_gate():
+    """Every corpus file is chunked; the in-scope gate uses only the dev questions' threshold."""
+    import yaml
+
+    from planwerk.assistant import knowledge
+    from planwerk.generator.config import REPO_ROOT
+
+    sources = {c.source for c in knowledge.chunks()}
+    assert {"fachkonzept.md", "berechtigungskonzept.md", "runbook.md"} <= sources
+    assert all(c.text.strip() for c in knowledge.chunks())
+    dev = yaml.safe_load((REPO_ROOT / "eval" / "method_dev.yaml").read_text(encoding="utf-8"))
+    assert all(knowledge.in_scope(q) for q in dev["in_scope"])
+    assert not any(knowledge.in_scope(q) for q in dev["out_of_scope"])
+
+
+def test_method_answer_has_source_and_only_document_numbers(warehouse):
+    from planwerk.assistant.graph import Assistant
+    from planwerk.assistant.llm import OfflineProvider
+
+    class Inventing(OfflineProvider):
+        name = "inventing"
+
+        def rewrite(self, system, user, draft):
+            return draft + " Die Aufbewahrung beträgt 37 Monate."  # a number that is in no document
+
+    a = Assistant(OfflineProvider(), audit_log=False)
+    r = a.ask("Was regelt das Löschkonzept für den Assistenten?")
+    assert r["status"] == "answered" and "12 Monate" in r["answer"] and "Quelle: audit-log.md" in r["answer"]
+    assert a.ask("Was ist die Hauptstadt von Spanien?")["status"] == "out_of_scope"
+    bad = Assistant(Inventing(), audit_log=False).ask("Was regelt das Löschkonzept für den Assistenten?")
+    assert "37" not in bad["answer"] and bad["status"] in ("fallback", "answered")

@@ -16,8 +16,9 @@ from typing import Any, TypedDict
 
 from langgraph.graph import END, StateGraph
 
-from planwerk.assistant import audit, commentary, guardrails, tools, writer
+from planwerk.assistant import audit, commentary, guardrails, knowledge, tools, writer
 from planwerk.assistant.facts import FactSheet
+from planwerk.assistant.formatting import parse_numbers
 from planwerk.assistant.intents import Intent, consistent
 from planwerk.assistant.llm import get_provider
 from planwerk.assistant.verifier import verify
@@ -53,6 +54,7 @@ class Assistant:
         self.audit_log = audit_log
         tools.set_user(self.con, "controller")
         self.cc_names = tools.cost_centre_names(self.con)
+        self.index = knowledge.get_index()
         self.graph = self._build()
 
     # ---- nodes ---------------------------------------------------------------------------------
@@ -68,6 +70,8 @@ class Assistant:
             i = i.validated(set(self.cc_names))
             if not consistent(s["question"], i):
                 i = Intent(name="out_of_scope")
+            if i.name == "method" and not knowledge.in_scope(s["question"]):
+                i = Intent(name="out_of_scope")  # decided locally, whatever model or search service ranks
         except Exception:  # an invalid routing never reaches SQL
             i = Intent(name="out_of_scope")
         if i.name == "out_of_scope":
@@ -86,6 +90,8 @@ class Assistant:
     def _query(self, s: State) -> State:
         i = s["intent"]
         tools.set_user(self.con, s["user"])  # row-level security in the views uses this
+        if i.name == "method":
+            return self._documents(s)
         try:
             if i.name == "commentary":
                 scope = i.scope
@@ -99,6 +105,20 @@ class Assistant:
             return dict(status="no_data", answer=writer.no_data(i), sql=res.sql)
         return dict(result=res, sheet=res.sheet, sql=res.sql, draft=writer.offline_answer(i, res))
 
+    def _documents(self, s: State) -> State:
+        """Method questions: passages from the document index; numbers allowed only if they are in them."""
+        hits = self.index.search(s["question"], top=3) or knowledge.local_index().search(s["question"], top=3)
+        if not hits:
+            return dict(status="out_of_scope", answer=writer.OUT_OF_SCOPE)
+        sheet = FactSheet()
+        for h in hits:
+            for k, t in enumerate(parse_numbers(h.chunk.heading + "\n" + h.chunk.text)):
+                unit = {"EUR": "EUR", "PCT": "PCT"}.get(t.unit, "DEC")
+                sheet.add(f"doc_{len(sheet.facts)}_{k}", f"Zahl aus {h.chunk.source}", t.value, unit, h.chunk.id)
+                sheet.allowed_tokens.add(t.text.lstrip("+-−").strip())
+        draft = knowledge.best_sentences(s["question"], hits)
+        return dict(result=hits, sheet=sheet, sql=[f"search:{self.index.name}"], draft=draft)
+
     def _rewrite(self, s: State) -> State:
         attempts = s.get("attempts", 0)
         draft = s["draft"]
@@ -108,6 +128,8 @@ class Assistant:
             i = s["intent"]
             if i.name == "commentary":
                 system, user = commentary.COMMENTARY_SYSTEM_PROMPT, commentary.user_prompt(s["result"])
+            elif i.name == "method":
+                system, user = writer.METHOD_SYSTEM_PROMPT, writer.method_user_prompt(s["question"], s["result"])
             else:
                 system, user = writer.LLM_SYSTEM_PROMPT, writer.llm_user_prompt(s["question"], i, s["result"], draft)
             template, fallback = self.provider.rewrite(system, user, draft), False
@@ -135,7 +157,13 @@ class Assistant:
         if s.get("status"):
             return {}
         if s.get("verified"):
-            return dict(status="fallback" if s.get("fallback_used") else "answered", answer=s["text"])
+            answer = s["text"]
+            if s["intent"].name == "method":
+                hits = s["result"]
+                if answer.strip() == writer.NO_DOC_ANSWER:
+                    return dict(status="out_of_scope", answer=answer)
+                answer += "\n\nQuelle: " + "; ".join(dict.fromkeys(knowledge.cite(h) for h in hits[:2]))
+            return dict(status="fallback" if s.get("fallback_used") else "answered", answer=answer)
         return dict(status="error", answer="Die Antwort konnte nicht mit geprüften Zahlen erstellt werden.")
 
     # ---- graph ---------------------------------------------------------------------------------

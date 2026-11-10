@@ -1,0 +1,49 @@
+# Method and governance questions for the document search (RAG), written by hand on 2026-11-10
+# BEFORE the retriever was run on them. Not used for tuning; results are reported as they are.
+# in_scope items: the answer must come from `source` (file name; `section` is a substring of the
+# heading) and mention at least one of `terms`. out_of_scope items must be refused.
+version: 1
+in_scope:
+  - {q: "Wie wird der Mixeffekt berechnet?", source: fachkonzept.md, section: "6.2", terms: [Mix, DB I]}
+  - {q: "Was ist der Unterschied zwischen DB I und DB II?", source: fachkonzept.md, section: "4.1", terms: [Fixkosten]}
+  - {q: "Wie wird der Preiseffekt ermittelt?", source: fachkonzept.md, section: "6.2", terms: [Istpreis, Planpreis]}
+  - {q: "Was gehört zu den Unternehmensfixkosten?", source: fachkonzept.md, section: "4.1", terms: [Geschäftsführung, Finanzen]}
+  - {q: "Nach welchem Verfahren läuft der Betriebsabrechnungsbogen?", source: fachkonzept.md, section: "5", terms: [Stufenleiter]}
+  - {q: "Mit welchem Schlüssel wird die Instandhaltung umgelegt?", source: fachkonzept.md, section: "5", terms: [Maschinenstunden]}
+  - {q: "Wie wird der Währungseffekt definiert?", source: fachkonzept.md, section: "6.2", terms: [Kurs]}
+  - {q: "Wie funktioniert die Überleitung vom Betriebsergebnis zur GuV?", source: fachkonzept.md, section: "4.2", terms: [Bestandsveränderung, Gesamtkostenverfahren, GuV]}
+  - {q: "Wie funktioniert die lineare Hochrechnung im Forecast?", source: fachkonzept.md, section: "7.1", terms: ["12"]}
+  - {q: "Woraus lernt das ML-Modell des Forecasts?", source: fachkonzept.md, section: "7.1", terms: [Auftragseingang]}
+  - {q: "Ab wann gilt eine Zielverfehlung im Backtest?", source: fachkonzept.md, section: "7.2", terms: ["98"]}
+  - {q: "Wie werden Einzahlungen aus offenen Forderungen in der Liquiditätsvorschau geplant?", source: fachkonzept.md, section: "8", terms: [Fälligkeit, Zahlungsverzug]}
+  - {q: "Welche Datenqualitätsregeln blockieren die Verarbeitung?", source: fachkonzept.md, section: "12", terms: [blockiert, Standardpreis, Gültigkeit]}
+  - {q: "Was enthält die Planbasis des Budgets?", source: fachkonzept.md, section: "6.1", terms: [Planpreisliste, Standardkosten]}
+  - {q: "Welche Treiber hat das Planungsmodell in SAC?", source: fachkonzept.md, section: "9", terms: [Menge, Preis]}
+  - {q: "Wer darf alle Kostenstellen sehen?", source: berechtigungskonzept.md, section: "Rollen", terms: [Controller, Geschäftsführung]}
+  - {q: "Was dürfen Kostenstellenverantwortliche sehen?", source: berechtigungskonzept.md, section: "Rollen", terms: [eigene Kostenstellen]}
+  - {q: "Wie wird die Funktionstrennung im Berechtigungskonzept geregelt?", source: berechtigungskonzept.md, section: "Grundsätze", terms: [Funktionstrennung, genehmigt]}
+  - {q: "Wer pflegt die Zuordnung von Nutzern zu Kostenstellen?", source: berechtigungskonzept.md, section: "Rollen", terms: [Pull Request, Leitung Controlling]}
+  - {q: "Wie lange werden die Audit-Logs des KI-Assistenten aufbewahrt?", source: audit-log.md, section: "Aufbewahrung", terms: ["12 Monate"]}
+  - {q: "Welche Felder protokolliert das Audit-Log?", source: audit-log.md, section: "Felder", terms: [Frage, Status]}
+  - {q: "In welche Risikoklasse fällt der KI-Assistent nach dem EU AI Act?", source: eu-ai-act.md, section: "Risikoklasse", terms: [geringem Risiko, Transparenz]}
+  - {q: "Wann würde der Assistent zum Hochrisiko-System?", source: eu-ai-act.md, section: "Risikoklasse", terms: [Anhang III, bewerten]}
+  - {q: "Ist für den KI-Assistenten eine Datenschutz-Folgenabschätzung nötig?", source: dsfa.md, section: "", terms: [Schwellwert, DSFA, Datenschutz]}
+  - {q: "Welche personenbezogenen Daten verarbeitet der KI-Assistent?", source: vvt.md, section: "Nr. 2", terms: [Nutzer, Frage]}
+  - {q: "Was ist im Runbook für den Monatsabschluss vorgesehen?", source: runbook.md, section: "Monatsabschluss", terms: [Monat]}
+  - {q: "Was tun, wenn die Brücke nicht schließt?", source: runbook.md, section: "Fehlerbilder", terms: [Brücke]}
+  - {q: "Wie werden Schlüssel für die Cloud rotiert?", source: runbook.md, section: "Schlüsselrotation", terms: [Schlüssel]}
+  - {q: "Wann gilt ein Datenmodell als fertig?", source: definition-of-done.md, section: "Datenmodelle", terms: [Test]}
+  - {q: "Wie wird die Zeitersparnis beim Monatskommentar gemessen?", source: zeitmessung.md, section: "Design", terms: [Controller, Zeit]}
+  - {q: "Welche Abnahmekriterien gelten für das Projekt?", source: lastenheft.md, section: "Abnahme", terms: [Abnahme]}
+  - {q: "Welche nichtfunktionalen Anforderungen stellt das Lastenheft?", source: lastenheft.md, section: "Nichtfunktional", terms: [Anforderung]}
+out_of_scope:
+  - "Was ist die Hauptstadt von Spanien?"
+  - "Wie wird das Wetter am Wochenende?"
+  - "Was bedeutet Photosynthese?"
+  - "Wie funktioniert ein Verbrennungsmotor?"
+  - "Wer darf in Deutschland wählen?"
+  - "Wie lange kocht man ein Ei?"
+  - "Was ist ein Haiku?"
+  - "Wie berechnet man den Body-Mass-Index?"
+  - "Welche Regeln gelten beim Schach für die Rochade?"
+  - "Was versteht man unter Quantenverschränkung?"

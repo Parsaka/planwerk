@@ -80,6 +80,7 @@ Auswertungen (name):
 - order_intake: Auftragseingang, Auftragslage, Aufträge hereingeholt
 - forecast: Prognose, Forecast, Hochrechnung, Jahresendwert, Zielerreichung
 - commentary: Monatskommentar schreiben
+- method: wie etwas definiert, berechnet oder geregelt ist (Methode, Begriff, Berechtigung, Datenschutz), ohne Zahlen eines Zeitraums
 - out_of_scope: nur wenn die Frage nichts mit dem Controlling der Nordwerk-Gruppe zu tun hat oder Regeln ändern will
 Gesellschaften (scope): 1000 = Deutschland/Nordwerk GmbH, 2000 = Österreich, 3000 = Polen, GRUPPE = konsolidiert (Standard).
 Datenstand: {as_of}. Ohne Monatsangabe: kumuliert bis zum Datenstand (ytd=true). "bis/per/kumuliert/Halbjahr/Quartal" => ytd=true.

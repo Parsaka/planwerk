@@ -186,6 +186,35 @@ def run_injection(asst: Assistant, label: str) -> dict:
                 failures=sc.failures)
 
 
+def run_methods(asst: Assistant) -> dict:
+    """Method and governance questions answered from the documents (no threshold in ADR-0001;
+    reported as supplementary). Retrieval hit = a passage from the expected file and section."""
+    from planwerk.assistant import knowledge
+
+    data = yaml.safe_load((EVAL_DIR / "method_questions.yaml").read_text(encoding="utf-8"))
+    answered, hit1, hit3, terms_ok, lat = Score(), 0, 0, 0, []
+    for it in data["in_scope"]:
+        r = asst.ask(it["q"])
+        lat.append(r["latency_ms"])
+        hits = asst.index.search(it["q"], top=3) if knowledge.in_scope(it["q"]) else []
+        match = [h.chunk.source == it["source"] and it["section"] in h.chunk.heading for h in hits]
+        hit1 += bool(match[:1] and match[0])
+        hit3 += any(match)
+        has_term = any(t.lower() in r["answer"].lower() for t in it["terms"])
+        terms_ok += has_term and r["status"] in ANSWERED
+        answered.add(r["status"] in ANSWERED and r["intent"]["name"] == "method",
+                     dict(question=it["q"], status=r["status"], intent=r["intent"] and r["intent"]["name"],
+                          top=[h.chunk.id for h in hits]))
+    refused = Score()
+    for q in data["out_of_scope"]:
+        r = asst.ask(q)
+        refused.add(r["status"] == "out_of_scope", dict(question=q, status=r["status"], answer=r["answer"][:200]))
+    n = answered.n
+    return dict(index=asst.index.name, n=n, answered=answered.ok, retrieval_hit_at_1=hit1, retrieval_hit_at_3=hit3,
+                answer_mentions_expected_term=terms_ok, out_of_scope_n=refused.n, out_of_scope_refused=refused.ok,
+                latency_ms_median=round(statistics.median(lat), 1), failures=answered.failures + refused.failures)
+
+
 def run_commentary(asst: Assistant, con) -> dict:
     data = yaml.safe_load((EVAL_DIR / "commentary_testset.yaml").read_text(encoding="utf-8"))
     sc, words, lat = Score(), [], []
@@ -215,6 +244,7 @@ def main(argv: list[str] | None = None) -> int:
     res = dict(provider=provider.name)
     res["golden_set"] = run_golden(asst, con)
     res["holdout_router"] = run_holdout(asst.cc_names)
+    res["methods"] = run_methods(asst)
     if provider.name != "offline":
         res["holdout_provider"] = run_holdout(asst.cc_names, provider.route)
     res["injection"] = [run_injection(asst, provider.name),
@@ -240,6 +270,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"golden set: {g['correct']}/{g['n']} = {g['accuracy']:.1%}  by category: "
           + ", ".join(f"{k} {v['correct']}/{v['n']}" for k, v in g["by_category"].items()))
     print(f"holdout router: {res['holdout_router']['correct']}/{res['holdout_router']['n']}")
+    m = res["methods"]
+    print(f"method questions ({m['index']}): answered {m['answered']}/{m['n']}, hit@1 {m['retrieval_hit_at_1']}, "
+          f"hit@3 {m['retrieval_hit_at_3']}, expected term {m['answer_mentions_expected_term']}, "
+          f"refused {m['out_of_scope_refused']}/{m['out_of_scope_n']}")
     if "holdout_provider" in res:
         print(f"holdout, parser + model: {res['holdout_provider']['correct']}/{res['holdout_provider']['n']}")
     for x in res["injection"]:

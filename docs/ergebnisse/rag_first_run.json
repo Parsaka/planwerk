@@ -1,0 +1,59 @@
+{
+  "index": "local_bm25",
+  "n": 32,
+  "answered": 26,
+  "retrieval_hit_at_1": 16,
+  "retrieval_hit_at_3": 23,
+  "answer_mentions_expected_term": 13,
+  "out_of_scope_n": 10,
+  "out_of_scope_refused": 9,
+  "latency_ms_median": 3.8,
+  "failures": [
+    {
+      "question": "Wie wird der Preiseffekt ermittelt?",
+      "status": "out_of_scope",
+      "intent": "out_of_scope",
+      "top": []
+    },
+    {
+      "question": "Was gehört zu den Unternehmensfixkosten?",
+      "status": "out_of_scope",
+      "intent": "out_of_scope",
+      "top": []
+    },
+    {
+      "question": "Wie wird der Währungseffekt definiert?",
+      "status": "out_of_scope",
+      "intent": "out_of_scope",
+      "top": []
+    },
+    {
+      "question": "Ab wann gilt eine Zielverfehlung im Backtest?",
+      "status": "out_of_scope",
+      "intent": "out_of_scope",
+      "top": [
+        "fachkonzept.md#7.2 Backtest",
+        "runbook.md#1. Lokaler Gesamtlauf (ohne Cloud)",
+        "fachkonzept.md#Anhang A: Simulationsszenario Geschäftsjahr 2025"
+      ]
+    },
+    {
+      "question": "Wer darf alle Kostenstellen sehen?",
+      "status": "out_of_scope",
+      "intent": "out_of_scope",
+      "top": []
+    },
+    {
+      "question": "Was dürfen Kostenstellenverantwortliche sehen?",
+      "status": "out_of_scope",
+      "intent": "out_of_scope",
+      "top": []
+    },
+    {
+      "question": "Wie berechnet man den Body-Mass-Index?",
+      "status": "answered",
+      "answer": "Qualität: Golden Set mit 200 Fragen (erwartete Antworten per SQL berechnet), 36 Kommentare als\n\nQuelle: fachkonzept.md, Abschnitt „11 KI-Controlling-Assistent (Frage F3)“"
+    }
+  ],
+  "note": "First run on eval/method_questions.yaml (offline BM25), before the two general fixes (question-phrasing verbs no longer scored; better German compound splitting). Kept as the honest out-of-sample figure."
+}

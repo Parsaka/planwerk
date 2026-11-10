@@ -31,7 +31,7 @@ from planwerk.generator.config import REPO_ROOT
 
 ACCESS_FILE = REPO_ROOT / "dbt" / "seeds" / "cost_centre_access.csv"
 FULL_ACCESS_ROLES = {"CONTROLLER", "MANAGEMENT"}
-CC_OWNER_INTENTS = {"cost_centre", "cost_centres_top", "out_of_scope"}
+CC_OWNER_INTENTS = {"cost_centre", "cost_centres_top", "method", "out_of_scope"}
 
 
 class AccessDenied(PermissionError):

@@ -13,7 +13,7 @@ import unicodedata
 from dataclasses import asdict, dataclass, replace
 
 INTENTS = ("kpi", "bridge", "product_group", "cost_centres_top", "cost_centre", "order_intake", "forecast",
-           "commentary", "out_of_scope")
+           "commentary", "method", "out_of_scope")
 SCOPES = ("GRUPPE", "1000", "2000", "3000")
 SCOPE_TEXT = {"GRUPPE": "Nordwerk-Gruppe", "1000": "Nordwerk GmbH (DE)", "2000": "Nordwerk Austria GmbH (AT)",
               "3000": "Nordwerk Polska Sp. z o.o. (PL)"}
@@ -132,6 +132,16 @@ def _find(patterns, t):
     return None
 
 
+_METHOD = re.compile(
+    r"^(was (ist|sind|bedeutet|bedeuten|versteht man|heisst|gehoert|enthaelt|steht|regelt|tun)"
+    r"|wie (wird|werden|berechnet|ermittelt|funktioniert|definiert|laeuft|lange|oft)"
+    r"|wer (darf|sieht|pflegt|genehmigt|ist verantwortlich|hat zugriff)"
+    r"|nach welche\w* (verfahren|methode|regel|logik|schluessel)|mit welche\w* (schluessel|verfahren|methode)"
+    r"|welche (regel|methode|treiber|felder|rolle|daten|abnahme|nichtfunktional|personenbezogen|kennzahl|kriteri|schritt|verfahren)\w*"
+    r"|woraus|(ab )?wann (gilt|wird|wuerde)|ist (fuer|eine|ein)\b|in welche\w* risikoklasse"
+    r"|erklaer\w* (mir )?(den|die|das) (begriff|methode|logik|unterschied|berechnung))")
+
+
 def parse(question: str, as_of: tuple[int, int] = (2025, 12), cost_centres: dict[str, str] | None = None) -> Intent:
     """Rule-based German intent parser. ``cost_centres`` maps number -> name for name lookup."""
     t = _norm(question)
@@ -191,6 +201,8 @@ def parse(question: str, as_of: tuple[int, int] = (2025, 12), cost_centres: dict
     if outside or (re.search(r"\b(ignoriere|ignore|vergiss|system ?prompt|anweisung\w*|jailbreak)\b", t)
                    and not kpi):
         name = "out_of_scope"
+    elif not month_given and not re.search(r"\b20\d\d\b", t) and _METHOD.search(t):
+        name = "method"  # how something is defined or regulated: answered from the documents, not the data
     elif re.search(r"\b(\w*kommentar\w*|monatsbericht\w*|management summary)\b", t) or (
             re.search(r"\b(schreib\w*|formulier\w*|erstell\w*|verfass\w*)\b", t)
             and re.search(r"\b(monat\w*|bericht\w*|zusammenfassung)\b", t)):

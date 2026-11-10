@@ -1,0 +1,18 @@
+# Dev questions for setting the in-scope threshold of the document search (knowledge.MIN_SCORE).
+# Separate from eval/method_questions.yaml, which is never used for tuning.
+in_scope:
+  - "Wie wird der Mengeneffekt berechnet?"
+  - "Was steht im Berechtigungskonzept zur Protokollierung?"
+  - "Wie wird die Energieversorgung im BAB verteilt?"
+  - "Welche Kennzahlen nutzt der Backtest?"
+  - "Was regelt das Löschkonzept für den Assistenten?"
+  - "Welche Rolle hat der Service-User PLANWERK_CI?"
+  - "Wie wird die Umsatzsteuer in der Liquiditätsvorschau berücksichtigt?"
+  - "Was ist die Kontrollmatrix?"
+out_of_scope:
+  - "Was ist ein schwarzes Loch?"
+  - "Wie wird man Astronaut?"
+  - "Wer darf ein Auto fahren?"
+  - "Wie lange dauert ein Flug nach New York?"
+  - "Was bedeutet Nachhaltigkeit im Alltag?"
+  - "Wie funktioniert eine Wärmepumpe?"
