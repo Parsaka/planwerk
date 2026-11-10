@@ -62,7 +62,9 @@ Die Ergebnisse liegen danach in `reports/out/` und `docs/ergebnisse/`. Details s
   Kostenstellenverantwortlichen nur seine Kostenstellen.
 - **Azure OpenAI** (gpt-4o-mini, EU-Datenzone, ohne API-Schlüssel): Die Q3-Auswertung läuft in GitHub
   Actions über OIDC. Der erste Lauf scheiterte mit 91 von 200, weil das Modell allein geroutet hat.
-  Mit regelbasiertem Router zuerst erreicht der endgültige Lauf 199 von 200. Details stehen in
+  Mit regelbasiertem Router zuerst erreicht der endgültige Lauf 199 von 200. Methoden- und
+  Governance-Fragen beantwortet der Assistent aus den Projektdokumenten über Azure AI Search, immer mit
+  Quellenabschnitt. Details stehen in
   [docs/ergebnisse](docs/ergebnisse/README.md).
 - **SAP BTP mit HANA Cloud** (Testkonto, US East): Der CAP-Service läuft auf Cloud Foundry mit
   HDI-Container und XSUAA. Ein Live-Test liest dieselben Zahlen wie das Warehouse centgenau, lehnt
@@ -70,6 +72,5 @@ Die Ergebnisse liegen danach in `reports/out/` und `docs/ergebnisse/`. Details s
 
 ## Noch offen
 
-SAP Datasphere und die SAC-Story brauchen eigene 30-Tage-Testzugänge. Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI
-Search sind geplant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen
+SAP Datasphere und die SAC-Story brauchen eigene 30-Tage-Testzugänge. Teams-Anbindung und Power-Automate-Freigabe brauchen einen Microsoft-365-Firmentenant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen
 gesucht ([docs/outreach](docs/outreach)).

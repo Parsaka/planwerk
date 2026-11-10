@@ -152,8 +152,36 @@ The golden set is still in-sample for the parser, so 199/200 mostly measures the
 model's wording. The honest figure is the holdout through the full chain: **36/40**. The model
 fixed two paraphrases the parser missed and broke one the parser had right.
 
+The later run with document search (below) scored 200/200 on the golden set and 36/40 on the holdout.
+
 Latency with the model: median 3.0 s per answer (p95 6.6 s), 12 s per commentary. Cost: about
 0.003 EUR per answer, 0.95 EUR for the whole run (list-price estimate).
+
+### Method and governance questions from the documents (RAG)
+
+The assistant also answers questions like "Wie wird der Mixeffekt berechnet?" or "Wer darf alle
+Kostenstellen sehen?" from the German project documents (Fachkonzept, Lastenheft, governance,
+runbook), always naming the source section. A number may appear in such an answer only if it is in
+the retrieved passages. Whether a question is in scope is decided locally, never by the model or
+the search service. There is no pre-registered threshold for this; the figures are supplementary.
+
+[method_questions.yaml](../../eval/method_questions.yaml): 32 questions plus 10 off-topic ones,
+written before the first run.
+
+| Run | Search | Answered | Expected source in top 3 | Off-topic refused |
+|---|---|---|---|---|
+| First run, offline ([rag_first_run.json](rag_first_run.json)) | BM25, local | 26/32 | 23/32 | 9/10 |
+| After two general fixes, offline (in-sample) | BM25, local | 29/32 | 25/32 | 10/10 |
+| Same, with gpt-4o-mini ([q3_eval_azure.json](q3_eval_azure.json)) | Azure AI Search (free tier, Entra ID only) | 25/32 | 24/32 | 10/10 |
+
+The fixes: the question-phrasing verbs ("berechnet", "gilt", "sehen") no longer count as evidence,
+and German compounds are split ("Währungseffekt" → "Währung" + "Effekt"). With the model, all 25
+answers name the expected term. Four times the passages did not contain the answer and the model
+said so instead of guessing; those count as misses. "Wer darf alle Kostenstellen sehen?" is refused
+in every run: the gate does not recognise it as in scope.
+
+The run with search also kept the golden set at 200/200 and 0/80 successful attacks. Cost of the
+whole run: 1.03 EUR.
 
 ---
 
