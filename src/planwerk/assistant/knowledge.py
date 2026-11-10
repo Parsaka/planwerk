@@ -193,12 +193,12 @@ class AzureSearchIndex:
 
     def __init__(self, endpoint: str | None = None) -> None:
         self.endpoint = (endpoint or os.environ["AZURE_SEARCH_ENDPOINT"]).rstrip("/")
-        self._token = None
+        self._cred = None
 
     def _headers(self) -> dict:
         from azure.identity import DefaultAzureCredential
 
-        if self._token is None:
+        if self._cred is None:
             self._cred = DefaultAzureCredential()
         tok = self._cred.get_token("https://search.azure.com/.default").token
         return {"Authorization": f"Bearer {tok}", "Content-Type": "application/json"}
@@ -233,6 +233,13 @@ class AzureSearchIndex:
                  "chunk_id": c.id, "source": c.source, "heading": c.heading, "content": c.text}
                 for c in chunks()]
         self._req("POST", f"/indexes('{self.INDEX}')/docs/search.index", {"value": docs})
+        import time
+
+        for _ in range(30):  # indexing is eventually consistent: wait until every chunk is searchable
+            if self._req("POST", f"/indexes('{self.INDEX}')/docs/search.post.search",
+                         {"search": "*", "count": True, "top": 0}).get("@odata.count", 0) >= len(docs):
+                break
+            time.sleep(2)
         return len(docs)
 
     def search(self, question: str, top: int = 3) -> list[Hit]:

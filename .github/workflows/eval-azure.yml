@@ -24,7 +24,7 @@ jobs:
       - name: Read deployment settings
         run: |
           if [ -f infra/azure/planwerk.env ]; then grep -E '^[A-Z_]+=' infra/azure/planwerk.env >> "$GITHUB_ENV"; fi
-          for v in AZURE_OPENAI_ENDPOINT AZURE_OPENAI_DEPLOYMENT AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
+          for v in AZURE_OPENAI_ENDPOINT AZURE_OPENAI_DEPLOYMENT AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID AZURE_SEARCH_ENDPOINT; do
             override=$(jq -r --arg k "$v" '.[$k] // empty' <<< '${{ toJSON(vars) }}')
             if [ -n "$override" ]; then echo "$v=$override" >> "$GITHUB_ENV"; fi
           done
@@ -37,6 +37,9 @@ jobs:
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
       - run: pip install -e ".[dbt,assistant,azure,dev]"
       - run: make generate dbt forecast PROFILE=ci
+      - name: Build the document index in Azure AI Search
+        if: env.AZURE_SEARCH_ENDPOINT != ''
+        run: python -c "from planwerk.assistant.knowledge import AzureSearchIndex as I; print('chunks uploaded:', I().create_and_upload())"
       - name: Q3 eval with Azure OpenAI
         run: python -m planwerk.assistant.eval --provider azure --out docs/ergebnisse/q3_eval_azure.json
       - uses: actions/upload-artifact@v4
