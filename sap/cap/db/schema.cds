@@ -10,7 +10,7 @@ type BetragEUR  : Decimal(17, 2);
 entity KennzahlenMonat {
   key periode        : String(7);
   key bereich        : Bereich;
-  key kennzahl       : String(20);
+  key kennzahl       : String(40);
       jahr           : Integer;
       monat          : Integer;
       ist_eur        : BetragEUR;
