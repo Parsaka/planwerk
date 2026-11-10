@@ -3,22 +3,58 @@
   "tenant-mode": "dedicated",
   "description": "Planwerk controlling service (simulated data)",
   "scopes": [
-    { "name": "$XSAPPNAME.Controller", "description": "Controller: all company codes and cost centres" },
-    { "name": "$XSAPPNAME.CostCentreOwner", "description": "Cost-centre owner: own cost centres only" }
+    {
+      "name": "$XSAPPNAME.Controller",
+      "description": "Controller: all company codes and cost centres"
+    },
+    {
+      "name": "$XSAPPNAME.CostCentreOwner",
+      "description": "Cost-centre owner: own cost centres only"
+    }
   ],
   "attributes": [
-    { "name": "kostenstelle", "description": "Cost centres the user is responsible for", "valueType": "string", "valueRequired": false }
+    {
+      "name": "kostenstelle",
+      "description": "Cost centres the user is responsible for",
+      "valueType": "string",
+      "valueRequired": false
+    }
   ],
   "role-templates": [
-    { "name": "Controller", "scope-references": ["$XSAPPNAME.Controller"] },
+    {
+      "name": "Controller",
+      "scope-references": [
+        "$XSAPPNAME.Controller"
+      ]
+    },
     {
       "name": "CostCentreOwner",
-      "scope-references": ["$XSAPPNAME.CostCentreOwner"],
-      "attribute-references": [{ "name": "kostenstelle" }]
+      "scope-references": [
+        "$XSAPPNAME.CostCentreOwner"
+      ],
+      "attribute-references": [
+        {
+          "name": "kostenstelle"
+        }
+      ]
     }
   ],
   "role-collections": [
-    { "name": "Planwerk_Controller", "role-template-references": ["$XSAPPNAME.Controller"] },
-    { "name": "Planwerk_CostCentreOwner", "role-template-references": ["$XSAPPNAME.CostCentreOwner"] }
-  ]
+    {
+      "name": "Planwerk_Controller",
+      "role-template-references": [
+        "$XSAPPNAME.Controller"
+      ]
+    },
+    {
+      "name": "Planwerk_CostCentreOwner",
+      "role-template-references": [
+        "$XSAPPNAME.CostCentreOwner"
+      ]
+    }
+  ],
+  "authorities": [
+    "$XSAPPNAME.Controller"
+  ],
+  "authorities-inheritance": false
 }
