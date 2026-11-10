@@ -175,3 +175,29 @@ identifiers). Two semantic views also filter on `CURRENT_USER()` inside the view
 policy, so they cannot be simulated with `POLICY_CONTEXT`; they are plain aggregations of the
 checked mart. The rolling forecast and liquidity tables are written by Python on DuckDB and are
 not part of the Snowflake run.
+
+---
+
+## The CAP service on SAP BTP with HANA Cloud
+
+[btp_run.json](btp_run.json), deployed on 2026-11-10 to an SAP BTP trial (Cloud Foundry, US East)
+with SAP HANA Cloud (free plan), an HDI container and XSUAA, from [sap/cap](../../sap/cap).
+
+| Check ([btp-smoke.js](../../sap/cap/scripts/btp-smoke.js)) | Result |
+|---|---|
+| Request without a token | 401 |
+| Group DB II, December 2025, read through OData from HANA | identical to the warehouse to the cent |
+| KPI rows in HANA vs exported data | 1,440 of 1,440 |
+| DB II bridge closes (function on HANA) | rest 0.01 EUR, within the 0.07 EUR rounding tolerance |
+| Largest unfavourable cost-centre deviation | 1410, the injected one-off repair |
+| Write attempt (POST) | 403, the service is read-only |
+
+The first deploy failed: HANA rejected "unternehmensfixkosten" (21 characters) in a String(20)
+column, which SQLite in the unit tests had accepted. The column is now String(40), and a new test
+checks every initial-data value against its column length.
+
+The live test uses the app's own technical client, which holds only the Controller scope. The
+cost-centre owner restriction was not tested with a real BTP user, because that needs a role
+collection with the `kostenstelle` attribute assigned to a person. It is covered by the local CAP
+tests and was verified on Snowflake. The trial HANA instance stops every night and has to be
+restarted before use.

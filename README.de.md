@@ -64,10 +64,12 @@ Die Ergebnisse liegen danach in `reports/out/` und `docs/ergebnisse/`. Details s
   Actions über OIDC. Der erste Lauf scheiterte mit 91 von 200, weil das Modell allein geroutet hat.
   Mit regelbasiertem Router zuerst erreicht der endgültige Lauf 199 von 200. Details stehen in
   [docs/ergebnisse](docs/ergebnisse/README.md).
+- **SAP BTP mit HANA Cloud** (Testkonto, US East): Der CAP-Service läuft auf Cloud Foundry mit
+  HDI-Container und XSUAA. Ein Live-Test liest dieselben Zahlen wie das Warehouse centgenau, lehnt
+  Anfragen ohne Token ab und verweigert Schreibzugriffe.
 
 ## Noch offen
 
-SAP HANA Cloud, Datasphere, Deployment des CAP-Service ([sap/cap](sap/cap), gebaut und getestet) auf BTP
-und die SAC-Story brauchen SAP-Testzugänge. Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI
+SAP Datasphere und die SAC-Story brauchen eigene 30-Tage-Testzugänge. Teams-Anbindung, Power-Automate-Freigabe und RAG über Azure AI
 Search sind geplant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen
 gesucht ([docs/outreach](docs/outreach)).

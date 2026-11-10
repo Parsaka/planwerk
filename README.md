@@ -99,10 +99,14 @@ It must not get a single wrong figure through. It did not.
   through OIDC ([eval-azure.yml](.github/workflows/eval-azure.yml)). The first run failed at
   91/200 because the model was routing alone. The final run has the rule parser first and scores
   199/200 ([details](docs/ergebnisse/README.md#with-the-real-model-azure-openai-gpt-4o-mini)).
+- **SAP BTP with HANA Cloud** (trial, US East): the CAP service ([sap/cap](sap/cap)) runs on Cloud
+  Foundry with an HDI container and XSUAA. A live smoke test reads the same figures as the warehouse
+  to the cent, refuses requests without a token and refuses writes
+  ([details](docs/ergebnisse/README.md#the-cap-service-on-sap-btp-with-hana-cloud)).
 
 ## Not built yet (needs accounts or a real client)
 
-- SAP HANA Cloud, Datasphere and deploying the CAP service ([sap/cap](sap/cap), built and tested) to BTP: need SAP trial accounts.
+- SAP Datasphere: needs a 30-day trial.
 - SAC Planning: model design and import files are ready ([sac](sac)); building the story and data actions needs an SAC tenant.
 - Teams via Copilot Studio, Power Automate approval, RAG over Azure AI Search: planned, not built.
 - Time-saving measurement (Q3): needs a practising controller.

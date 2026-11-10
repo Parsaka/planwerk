@@ -1,0 +1,20 @@
+{
+  "run_date": "2026-11-10",
+  "data": "SIMULATED (Nordwerk GmbH), semantic views exported from the dbt warehouse (profile dev, seed 42)",
+  "platform": {"btp": "trial", "region": "us10 (US East, AWS)", "runtime": "Cloud Foundry", "database": "SAP HANA Cloud (plan hana-free), HDI container hdi-shared", "auth": "XSUAA (plan application)"},
+  "commit": "6a29200",
+  "deploy": {"mtar_kb": 5859, "srv_memory_limit": "256M", "first_attempt": "HDI deploy failed: 'unternehmensfixkosten' (21 chars) did not fit String(20); SQLite in the unit tests does not enforce lengths. Fixed in 1f087c5 with a test that checks every CSV value against its column length."},
+  "smoke_test": {
+    "script": "sap/cap/scripts/btp-smoke.js",
+    "token": "client credentials of the app's own XSUAA client, Controller scope only",
+    "checks": [
+      {"name": "anonymous request is rejected", "result": "PASS", "detail": 401},
+      {"name": "controller reads group DB II Dec 2025, equal to the warehouse to the cent", "result": "PASS", "detail": {"ist_eur": "9771484.04", "plan_eur": "10209808.35"}},
+      {"name": "all KPI rows loaded into HANA", "result": "PASS", "detail": {"hana": 1440, "csv": 1440}},
+      {"name": "DB II bridge closes on HANA", "result": "PASS", "detail": {"rest_eur": 0.01, "tolerance_eur": 0.07}},
+      {"name": "largest unfavourable deviation is 1410", "result": "PASS", "detail": "1410 -434,658.17 EUR"},
+      {"name": "service is read-only (POST refused)", "result": "PASS", "detail": 403}
+    ]
+  },
+  "not_tested_on_btp": "cost-centre owner restriction with a real user (needs role-collection assignment with the kostenstelle attribute); covered by the local CAP tests and verified on Snowflake"
+}
