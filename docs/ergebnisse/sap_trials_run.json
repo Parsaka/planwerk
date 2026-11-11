@@ -7,7 +7,9 @@
     "license": "Planning Professional (Limit 1)",
     "trial_days_left": "nicht auf der Startseite angezeigt",
     "steps": {
-      "A1_signed_in": {"status": "done"},
+      "A1_signed_in": {
+        "status": "done"
+      },
       "A2_model_NW_CONTROLLING": {
         "status": "done",
         "rows_imported": 21000,
@@ -22,15 +24,39 @@
         "status": "done",
         "source": "SAC Data Export API (FactData) des Modells",
         "values": {
-          "ERL_PROD": {"seen": 262711023.29, "expected": 262711023.29, "ok": true},
-          "ERL_SKONTO": {"seen": 1708511.99, "expected": 1708511.98, "ok": true, "note": "Rundungsdifferenz 0,01; Summe der CSV-Zeilen ergibt ebenfalls 1.708.511,99"},
-          "VAR_MAT": {"seen": 101544394.96, "expected": 101544394.96, "ok": true},
-          "fixed_cost_accounts_5_7": {"seen": 109230581.31, "expected": 109230581.31, "ok": true},
-          "total_all_accounts": {"seen": 475194511.55, "expected": "475,194,5xx", "ok": true},
+          "ERL_PROD": {
+            "seen": 262711023.29,
+            "expected": 262711023.29,
+            "ok": true
+          },
+          "ERL_SKONTO": {
+            "seen": 1708511.99,
+            "expected": 1708511.98,
+            "ok": true,
+            "note": "Rundungsdifferenz 0,01; Summe der CSV-Zeilen ergibt ebenfalls 1.708.511,99"
+          },
+          "VAR_MAT": {
+            "seen": 101544394.96,
+            "expected": 101544394.96,
+            "ok": true
+          },
+          "fixed_cost_accounts_5_7": {
+            "seen": 109230581.31,
+            "expected": 109230581.31,
+            "ok": true
+          },
+          "total_all_accounts": {
+            "seen": 475194511.55,
+            "expected": "475,194,5xx",
+            "ok": true
+          },
           "rows_actual_2025": 3540
         }
       },
-      "A4_model_NW_SALES_DRIVERS": {"status": "done", "rows_imported": 144},
+      "A4_model_NW_SALES_DRIVERS": {
+        "status": "done",
+        "rows_imported": 144
+      },
       "A5_DA_01": {
         "status": "done",
         "script_used": "MEMBERSET [d/Date] = \"202501\" TO \"202506\"\nDATA() = RESULTLOOKUP([d/Version] = \"public.Actual\")",
@@ -38,21 +64,38 @@
         "fix": "Zielversion wird beim Ausfuehren gewaehlt (FC6_6_2025) statt im DATA()-Operanden.",
         "target_version": "public.FC6_6_2025 (Kategorie Forecast, neu angelegt)",
         "run_message": "The data action finished running on version \"FC6_6_2025\" and the results were published.",
-        "check": {"rows_seen": 1770, "sum_seen": 234991696.03, "rows_expected": 1770, "sum_expected": 234991696.03, "rows_per_month": 295, "ok": true}
+        "check": {
+          "rows_seen": 1770,
+          "sum_seen": 234991696.03,
+          "rows_expected": 1770,
+          "sum_expected": 234991696.03,
+          "rows_per_month": 295,
+          "ok": true
+        }
       },
       "A5b_DA_02": {
         "status": "blocked",
         "error": "Dimension \"ProductGroup, Entity, Version\" should be specified for model \"[NW_SALES_DRIVERS]\".",
         "cause": "LINK braucht gemeinsame (oeffentliche) Dimensionen oder ein explizites Dimensions-Mapping; beide Modelle nutzen modelleigene Dimensionen. Keine Trial-Einschraenkung im engeren Sinn.",
-        "saved": false
+        "saved": false,
+        "phase2": "in Phase 2 auf NW_CONTROLLING_V2 / NW_SALES_DRIVERS_V2 geloest, siehe phase2.sac.DA_02"
       },
       "A6_story": {
         "status": "done",
         "name": "Monatsbericht Nordwerk (simuliert)",
         "content": "Tabelle Account x Version (Actual, Budget2025) 2025; Balkendiagramm Amount_EUR je Entity, Actual vs Budget2025 (1000: 339.501.415,52 vs 339.085.143,16; 2000: 51.862.174,90 vs 56.516.267,24); Story-Filter CostCenter, Date 2025, Version; Data-Action-Starter DA_01.",
-        "deviations": ["Kontohierarchie DB I..BE nicht verfuegbar (flache Account-Dimension)."]
+        "deviations": [
+          "Kontohierarchie DB I..BE nicht verfuegbar (flache Account-Dimension)."
+        ]
       },
-      "A7_screenshots": {"status": "done", "files": ["sap/sac_model.png", "sap/sac_data_action.png", "sap/sac_story.png"]}
+      "A7_screenshots": {
+        "status": "done",
+        "files": [
+          "sap/sac_model.png",
+          "sap/sac_data_action.png",
+          "sap/sac_story.png"
+        ]
+      }
     }
   },
   "datasphere": {
@@ -60,22 +103,284 @@
     "user_and_space": "GE390732",
     "offers": "Eigener Space, Data Builder (Tabellen, grafische/SQL-Views, Analytic Models, Data Access Controls), Business Builder, CSV-Upload in lokale Tabellen.",
     "steps": {
-      "B2_local_tables": {"status": "done", "tables": {"NW_FACT_IST_PLAN": 21000, "NW_DIM_COSTCENTER": 38, "NW_DIM_ACCOUNT": 33}},
+      "B2_local_tables": {
+        "status": "done",
+        "tables": {
+          "NW_FACT_IST_PLAN": 21000,
+          "NW_DIM_COSTCENTER": 38,
+          "NW_DIM_ACCOUNT": 33
+        }
+      },
       "B2_view_V_DB_STATEMENT": {
         "status": "done",
         "type": "SQL-View, Semantik Fact, Kennzahl DB_I = ERL_PROD - ERL_SKONTO - VAR_MAT je Version, Jahr, Gesellschaft",
         "rows": 18,
-        "actual_2025": {"1000": 114016100.24, "2000": 17734830.25, "3000": 27707185.85, "total_seen": 159458116.34, "expected": 159458116.35, "ok": true, "note": "Rundungsdifferenz 0,01; Summe der CSV-Zeilen ergibt 159.458.116,34"}
+        "actual_2025": {
+          "1000": 114016100.24,
+          "2000": 17734830.25,
+          "3000": 27707185.85,
+          "total_seen": 159458116.34,
+          "expected": 159458116.35,
+          "ok": true,
+          "note": "Rundungsdifferenz 0,01; Summe der CSV-Zeilen ergibt 159.458.116,34"
+        }
       },
       "B2_analytic_model_AM_DB_STATEMENT": {
         "status": "done",
-        "preview_DB_I_actual": {"2023": 143985749.23, "2024": 153419912.82, "2025": 159458116.34}
+        "preview_DB_I_actual": {
+          "2023": 143985749.23,
+          "2024": 153419912.82,
+          "2025": 159458116.34
+        }
       },
       "B2_data_access_control_CostCenter": {
         "status": "not_done",
-        "reason": "V_DB_STATEMENT aggregiert die Kostenstelle weg; eine DAC braeuchte eine Berechtigungstabelle (Benutzer -> Kostenstelle) und eine Fakten-View auf Kostenstellenebene. Der DAC-Editor ist im Basic Trial vorhanden."
+        "reason": "V_DB_STATEMENT aggregiert die Kostenstelle weg; eine DAC braeuchte eine Berechtigungstabelle (Benutzer -> Kostenstelle) und eine Fakten-View auf Kostenstellenebene. Der DAC-Editor ist im Basic Trial vorhanden.",
+        "phase2": "in Phase 2 umgesetzt, siehe phase2.datasphere"
       },
-      "B3_screenshots": {"status": "done", "files": ["sap/datasphere_view_db_statement.png", "sap/datasphere_analytic_model.png"]}
+      "B3_screenshots": {
+        "status": "done",
+        "files": [
+          "sap/datasphere_view_db_statement.png",
+          "sap/datasphere_analytic_model.png"
+        ]
+      }
+    }
+  },
+  "phase2": {
+    "run_date": "2026-11-11",
+    "note": "Alle Daten simuliert. Phase 2: oeffentliche Dimensionen, Modelle V2, DA_02, Kontohierarchie, Datasphere-Datenzugriffssteuerung.",
+    "sac": {
+      "public_dimensions": {
+        "NW_ACCOUNT": {
+          "type": "Account",
+          "members": 33,
+          "hierarchy": "BE > DB III > DB II > DB I > Nettoumsatz/variable Kosten; FIX_COSTS eigene Wurzel",
+          "properties": [
+            "AccType (INC/EXP/NFIN)"
+          ]
+        },
+        "NW_ENTITY": {
+          "type": "Organization",
+          "members": 4,
+          "properties": [
+            "Currency"
+          ],
+          "deviation": "Der Import bietet fuer Organization-Dimensionen kein ParentId-Ziel an; flach."
+        },
+        "NW_PRODUCTGROUP": {
+          "type": "Generic",
+          "members": 7,
+          "deviation": "flach"
+        },
+        "NW_COSTCENTER": {
+          "type": "Generic",
+          "members": 38,
+          "hierarchy": "H_CC Kostenstellen nach DB-Stufe",
+          "deviation": "Responsible nicht befuellt: Import meldet INVALID_USER_ID, das Attribut erwartet SAC-Benutzer-IDs."
+        }
+      },
+      "NW_CONTROLLING_V2": {
+        "status": "done",
+        "model_id": "Chjioqr0v96719bndm0tv7tm26",
+        "dimensions": [
+          "Version",
+          "Monat (Datum, 2023-2027)",
+          "Account = NW_ACCOUNT",
+          "Entity = NW_ENTITY",
+          "ProductGroup = NW_PRODUCTGROUP",
+          "CostCenter = NW_COSTCENTER"
+        ],
+        "measures": [
+          "Amount_EUR",
+          "Quantity"
+        ],
+        "versions": {
+          "public.Actual": "Actuals",
+          "public.Budget2023": "Budget",
+          "public.Budget2024": "Budget",
+          "public.Budget2025": "Budget",
+          "public.Budget2026": "Budget"
+        },
+        "rows_imported": 21000,
+        "import_route": "SAC Data Import API (factData-Job: CSV hochladen, validate, run), Methode Update, reverseSignByAccountType=true",
+        "errors": [
+          {
+            "step": "Import-Assistent fact_ist_plan.csv (drei Laeufe)",
+            "seen": "0 rows imported, 21000 rows rejected",
+            "reasons": [
+              "Date out of range: der Assistent pruefte weiter gegen 2026/01/01-2027/12/31, obwohl die Date-Dimension auf 2023-2027 gestellt und gespeichert war (DateMaster zeigte 2022-2027)",
+              "Valid categories limited to: Actuals, Planning, Budget, Forecast, and Rolling Forecast (berechnete Spalte lieferte 'Actual')",
+              "Category update not allowed for existing versions"
+            ]
+          },
+          {
+            "step": "Data Import API mit Spalte Date",
+            "seen": "Invalid column value for: Date (202301 abgelehnt, 202601 angenommen)"
+          },
+          {
+            "step": "Umgehung",
+            "seen": "neue Datumsdimension 'Monat' (2023-2027) als Planungs-Datumsdimension, alte 'Date' geloescht; danach 21000 Zeilen, 0 abgelehnt"
+          },
+          {
+            "step": "erster Import ohne Vorzeichenumkehr",
+            "seen": "die Hierarchie summiert die gespeicherten Werte: DB I = -365,963,930.24 (Umsatz positiv gespeichert, als INC negativ angezeigt). Re-Import mit reverseSignByAccountType=true behebt das; Nebeneffekt: Quantity der INC-Konten ist ebenfalls umgekehrt gespeichert."
+          }
+        ]
+      },
+      "NW_SALES_DRIVERS_V2": {
+        "status": "done",
+        "model_id": "Cbliiaqucel7dd34aaiv411jp3l",
+        "dimensions": [
+          "Version",
+          "Monat (Datum)",
+          "Entity = NW_ENTITY",
+          "ProductGroup = NW_PRODUCTGROUP"
+        ],
+        "measures": [
+          "Units",
+          "Price_EUR",
+          "StdCost_EUR"
+        ],
+        "rows_imported": 144,
+        "version": "public.Budget2026 (Budget)",
+        "import_route": "Data Import API, CleanAndReplace mit dimensionScope Version (erster Import lief noch mit Date und wurde ersetzt)",
+        "check": {
+          "sum_units_x_price": 237043778.99,
+          "sum_units_x_stdcost": 101544395.93
+        }
+      },
+      "actual_2025_check": {
+        "source": "Data Export API (FactData) und Story-Tabelle auf NW_CONTROLLING_V2",
+        "rows": 3540,
+        "ERL_PROD": {
+          "seen": 262711023.29,
+          "expected": 262711023.29,
+          "ok": true
+        },
+        "ERL_SKONTO": {
+          "seen": 1708511.99,
+          "expected": 1708511.98,
+          "ok": true,
+          "note": "Rundung wie in Phase 1"
+        },
+        "VAR_MAT": {
+          "seen": 101544394.96,
+          "expected": 101544394.96,
+          "ok": true
+        },
+        "Nettoumsatz": {
+          "seen": 261002511.3
+        },
+        "DB_I_node": {
+          "seen": 159458116.34,
+          "expected": 159458116.34,
+          "ok": true,
+          "note": "nach Import mit Vorzeichenumkehr nach Kontotyp; vorher -365,963,930.24"
+        },
+        "DB_II_DB_III_BE": {
+          "seen": 159458116.34,
+          "note": "gleich DB I, weil FIX_DB2, FIX_DB3 und FIX_UNT keine Kinder haben; die Fixkosten 109,230,581.31 haengen unter der eigenen Wurzel FIX_COSTS"
+        }
+      },
+      "DA_02": {
+        "status": "done",
+        "target_version": "public.Budget2026",
+        "script": "MEMBERSET [d/Monat] = \"202601\" TO \"202612\"\nMEMBERSET [d/Measures] = \"Amount_EUR\"\nDATA([d/Account] = \"ERL_PROD\", [d/CostCenter] = \"#\") = LINK([NW_SALES_DRIVERS_V2], [d/Measures] = \"Units\", [d/Version] = \"public.Budget2026\", [d/Entity] = [d/Entity], [d/ProductGroup] = [d/ProductGroup]) * LINK([NW_SALES_DRIVERS_V2], [d/Measures] = \"Price_EUR\", [d/Version] = \"public.Budget2026\", [d/Entity] = [d/Entity], [d/ProductGroup] = [d/ProductGroup])\nDATA([d/Account] = \"VAR_MAT\", [d/CostCenter] = \"#\") = LINK([NW_SALES_DRIVERS_V2], [d/Measures] = \"Units\", [d/Version] = \"public.Budget2026\", [d/Entity] = [d/Entity], [d/ProductGroup] = [d/ProductGroup]) * LINK([NW_SALES_DRIVERS_V2], [d/Measures] = \"StdCost_EUR\", [d/Version] = \"public.Budget2026\", [d/Entity] = [d/Entity], [d/ProductGroup] = [d/ProductGroup])",
+        "run_message": "The data action finished running on version \"Budget2026\" and the results were published.",
+        "check": {
+          "rows_seen": 288,
+          "ERL_PROD": {
+            "seen": 237043778.99,
+            "expected": 237043778.99,
+            "ok": true
+          },
+          "VAR_MAT": {
+            "seen": 101544395.93,
+            "expected": 101544395.93,
+            "ok": true
+          },
+          "DB_I_Budget2026_seen": 135499383.06
+        },
+        "errors": [
+          {
+            "variant": "LINK nur mit [d/Measures], oeffentliche Dimensionen",
+            "seen": "Dimension \"Version, Entity, ProductGroup\" should be specified for model \"[NW_SALES_DRIVERS_V2]\"."
+          },
+          {
+            "variant": "[d/Version] = [d/Version]",
+            "seen": "Reference version name should be specified."
+          },
+          {
+            "variant": "CONFIG.FLIPPING_SIGN_ACCORDING_ACCTYPE = ON",
+            "seen": "lief, ERL_PROD danach gespeichert +237,043,778.99 (Story zeigt Umsatz negativ)"
+          },
+          {
+            "variant": "-1 * vor dem Umsatz-LINK",
+            "seen": "lief, Story zeigte ERL_PROD -237,043,778.99"
+          },
+          {
+            "variant": "final ohne Vorzeichenbehandlung",
+            "seen": "Story ERL_PROD 237,043,778.99; gespeichert -237,043,778.99 wie das Ist"
+          }
+        ]
+      },
+      "story": {
+        "name": "Ergebnisrechnung Nordwerk V2 (simuliert)",
+        "content": "Tabelle Account-Hierarchie (Drill Level 7) x Version (Actual, Budget2026), Filter Monat 2025 und 2026; Data-Action-Starter DA_02 (Publish and fail if there are warnings)."
+      },
+      "screenshots": [
+        "sap/sac_hierarchy.png",
+        "sap/sac_da02.png"
+      ],
+      "unchanged": "NW_CONTROLLING, NW_SALES_DRIVERS, DA_01 und die Story 'Monatsbericht Nordwerk (simuliert)' aus Phase 1 sind unveraendert."
+    },
+    "datasphere": {
+      "permissions_table": {
+        "name": "NW_CC_PERMISSIONS",
+        "source": "dbt/seeds/cost_centre_access.csv ohne '*'-Zeilen; leitung_fertigung_pumpen -> GE390732 (Kostenstellen 1500, 1520)",
+        "rows": 13,
+        "note": "Der DAC-Editor verlangt die IdP-Benutzer-ID im Format ge390732@<Academy-Domain>; die beiden GE390732-Zeilen wurden per CSV-Upload mit 'Delete Existing Data Before Upload' ersetzt. Data Editor nicht nutzbar: 'You must define a key for the table before you can edit its data'. COST_CENTER blieb Integer64, die Typumstellung im CSV-Dialog wurde nicht uebernommen."
+      },
+      "dac": {
+        "name": "DAC_COSTCENTER",
+        "structure": "Single Values",
+        "identifier": "USER_ID",
+        "criterion": "COST_CENTER",
+        "status": "Deployed"
+      },
+      "view": {
+        "name": "V_COST_BY_CC",
+        "type": "SQL-View",
+        "columns": [
+          "VERSION",
+          "YEAR",
+          "ENTITY",
+          "COST_CENTER (INTEGER, ohne '#')",
+          "ACCOUNT",
+          "AMOUNT_EUR (SUM)",
+          "ROW_COUNT"
+        ],
+        "dac_mapping": "COST_CENTER -> COST_CENTER",
+        "status": "Deployed"
+      },
+      "preview_as_GE390732": {
+        "rows_seen": 120,
+        "rows_expected": 120,
+        "cost_centres_seen": [
+          "1500",
+          "1520"
+        ],
+        "rows_without_dac": 1574,
+        "ok": true,
+        "expected_amounts": {
+          "all_versions_years": 155726718.33,
+          "actual_2025": 26744016.08
+        }
+      },
+      "screenshots": [
+        "sap/datasphere_dac.png"
+      ]
     }
   }
 }

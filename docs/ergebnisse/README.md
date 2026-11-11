@@ -253,18 +253,68 @@ in Python; SAC and Datasphere sum the same CSV rows to the values shown. The sto
 "Monatsbericht Nordwerk (simuliert)" shows Actual vs Budget 2025 per company with cost-centre,
 date and version filters and a button for DA_01.
 
-What did not work, kept as found:
+What did not work in the first run, kept as found:
 
 - **The DA_01 script in the spec was wrong.** SAC refused `DATA([d/Version] = ...)` with
   "The version dimension cannot be used in the left operand". The target version is now chosen when
   the data action runs; [sac/README.md](../../sac/README.md) is corrected.
 - **DA_02 (driver-based budget 2026 via LINK) was not saved.** SAC asks for "ProductGroup, Entity,
   Version" to be specified for NW_SALES_DRIVERS, because both models use their own private
-  dimensions. It needs shared public dimensions or an explicit mapping in LINK.
+  dimensions. It needs shared public dimensions or an explicit mapping in LINK. *Solved in the second
+  run, see below.*
 - **No hierarchies in SAC.** Account, Entity, ProductGroup and CostCenter were imported flat, so the
-  story cannot roll up DB I to BE as a hierarchy yet.
+  story cannot roll up DB I to BE as a hierarchy yet. *Solved for Account and CostCenter in the
+  second run.*
 - **No data access control in Datasphere.** The DB view aggregates the cost centre away; a DAC needs
-  a user-to-cost-centre table and a fact view at cost-centre level. Cost-centre restriction is shown on
-  Snowflake and in CAP instead.
+  a user-to-cost-centre table and a fact view at cost-centre level. *Built in the second run.*
 - The Datasphere basic trial is a shared SAP tenant with one personal space, not a full tenant.
+
+### Second run: public dimensions, DA_02, hierarchy, DAC
+
+Same day, same trials (`phase2` in [sap_trials_run.json](sap_trials_run.json)). The phase-1 models,
+DA_01 and the first story are unchanged; the new work sits in `NW_CONTROLLING_V2` and
+`NW_SALES_DRIVERS_V2`, both built on the public dimensions `NW_ACCOUNT` (account type, hierarchy and
+`AccType`), `NW_ENTITY` (currency), `NW_PRODUCTGROUP` and `NW_COSTCENTER` (hierarchy by DB level).
+
+| Check | Expected | Seen | |
+|---|---|---|---|
+| SAC NW_CONTROLLING_V2 rows imported | 21,000 | 21,000 | ✓ |
+| SAC V2 Actual 2025 ERL_PROD | 262,711,023.29 | 262,711,023.29 | ✓ |
+| SAC V2 Actual 2025 DB I node (hierarchy, signed by account type) | 159,458,116.34 | 159,458,116.34 | ✓ |
+| SAC DA_02 Budget 2026 ERL_PROD = Σ Units × Price | 237,043,778.99 | 237,043,778.99 | ✓ |
+| SAC DA_02 Budget 2026 VAR_MAT = Σ Units × StdCost | 101,544,395.93 | 101,544,395.93 | ✓ |
+| Datasphere V_COST_BY_CC preview as user GE390732 (DAC) | 120 rows, cost centres 1500 and 1520 | 120 rows, 1500 and 1520 | ✓ |
+
+The story "Ergebnisrechnung Nordwerk V2 (simuliert)" shows the account hierarchy BE > DB III > DB II >
+DB I > net revenue/variable cost for Actual and Budget 2026 and has a button for DA_02
+([sac_hierarchy.png](sap/sac_hierarchy.png), [sac_da02.png](sap/sac_da02.png)). BE, DB III and DB II
+equal DB I because the fixed-cost nodes `FIX_DB2`, `FIX_DB3` and `FIX_UNT` have no children; the
+fixed costs (109,230,581.31) sit under their own root `FIX_COSTS`. Datasphere: permissions table
+`NW_CC_PERMISSIONS` from `cost_centre_access.csv`, DAC `DAC_COSTCENTER` on `COST_CENTER`, view
+`V_COST_BY_CC` ([datasphere_dac.png](sap/datasphere_dac.png)).
+
+What did not work in the second run, kept as found:
+
+- **The SAC import wizard rejected all 21,000 rows of the V2 facts three times** ("0 rows imported,
+  21000 rows rejected"). Reasons from the rejection summary: "Date out of range", although the date
+  dimension had been changed to 2023–2027 and saved (the wizard and the import API kept checking the
+  first range 2026–2027); "Valid categories limited to: Actuals, Planning, Budget, Forecast, and
+  Rolling Forecast" for the value `Actual`; "Category update not allowed for existing versions". Work
+  around: a new date dimension `Monat` (2023–2027) as the planning date dimension, the old one
+  deleted, and the facts loaded through the SAC Data Import API.
+- **Without sign reversal the hierarchy did not net.** SAC sums the stored values; with revenue
+  stored positive, DB I showed −365,963,930.24. Re-importing with "reverse sign by account type"
+  gives 159,458,116.34. Side effect: `Quantity` on revenue accounts is stored negative too.
+- **DA_02 needed three tries.** LINK on the public dimensions still asked for "Version, Entity,
+  ProductGroup"; `[d/Version] = [d/Version]` gave "Reference version name should be specified". The
+  working form names the version and maps Entity and ProductGroup explicitly. With
+  `CONFIG.FLIPPING_SIGN_ACCORDING_ACCTYPE = ON` or with `-1 *` the revenue came out with the wrong
+  sign; the final script has no sign handling.
+- **`Responsible` on NW_COSTCENTER stays empty.** SAC expects SAC user IDs there ("INVALID_USER_ID"),
+  so the SAC-side cost-centre restriction is not set up; the restriction is shown in Datasphere.
+- **NW_ENTITY is flat.** The import offers no parent column for organisation dimensions.
+- **Datasphere wants the IdP user ID** (`ge390732@` plus the academy domain) in the permissions
+  table, not `GE390732`; the rows were replaced by a CSV upload because the data editor needs a key.
+  `COST_CENTER` stayed an integer in the table, so the view casts the cost centre to integer and
+  leaves out `#`.
 

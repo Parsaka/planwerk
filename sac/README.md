@@ -29,6 +29,9 @@ Unternehmensfixkosten ergibt sich aus der DB-Stufe der Kostenstelle; berechnete 
 ### Datenzugriffssteuerung
 CostCenter mit „Data Access Control“: Lese-/Schreibrechte je Kostenstellenverantwortlichem
 (Attribut `Responsible`), entspricht `cost_centre_access.csv`. Controlling: Schreiben auf allen Knoten.
+Stand 2026-11-11: In der öffentlichen Dimension `NW_COSTCENTER` ist `Responsible` leer, weil SAC dort
+SAC-Benutzer-IDs erwartet (Import-Fehler „INVALID_USER_ID“). Die Einschränkung je Kostenstelle ist in
+SAP Datasphere umgesetzt (`DAC_COSTCENTER` auf `V_COST_BY_CC`, siehe `docs/ergebnisse/README.md`).
 
 ## 2. Datenaktionen
 
@@ -48,6 +51,8 @@ Getestet am 2026-11-11: 1.770 Zeilen, 234.991.696,03 EUR = Ist Januar–Juni 202
 Plan-Umsatz = Menge × Nettopreis, variable Kosten = Menge × Standardkosten, je Gesellschaft,
 Produktgruppe und Monat. Startwerte: `driver_basis_2026.csv` (Ist 2025).
 
+Erste Fassung (2026-11-11, auf `NW_CONTROLLING`/`NW_SALES_DRIVERS` mit privaten Dimensionen):
+
 ```
 MEMBERSET [d/Version] = "public.Budget2026"
 MEMBERSET [d/Account] = ("ERL_PROD", "VAR_MAT")
@@ -57,10 +62,35 @@ DATA([d/Account] = "VAR_MAT")  = LINK([NW_SALES_DRIVERS], [d/Measures] = "Units"
                                 * LINK([NW_SALES_DRIVERS], [d/Measures] = "StdCost_EUR")
 ```
 
-Stand 2026-11-11: noch nicht lauffähig. SAC verlangt, dass „ProductGroup, Entity, Version“ für
-`NW_SALES_DRIVERS` angegeben werden, weil beide Modelle eigene (private) Dimensionen haben. Lösung:
-gemeinsame öffentliche Dimensionen für Entity, ProductGroup und Version, oder die Dimensionen im
-`LINK` explizit abbilden.
+Nicht lauffähig: SAC verlangt, dass „ProductGroup, Entity, Version“ für `NW_SALES_DRIVERS` angegeben
+werden, weil beide Modelle eigene (private) Dimensionen haben.
+
+Lauffähige Fassung (2026-11-11, zweiter Lauf) auf `NW_CONTROLLING_V2` und `NW_SALES_DRIVERS_V2`.
+Beide Modelle nutzen die öffentlichen Dimensionen `NW_ENTITY` und `NW_PRODUCTGROUP` und eine
+Datumsdimension mit derselben ID (`Monat`). Die Zielversion `Budget2026` wird beim Ausführen gewählt:
+
+```
+MEMBERSET [d/Monat] = "202601" TO "202612"
+MEMBERSET [d/Measures] = "Amount_EUR"
+DATA([d/Account] = "ERL_PROD", [d/CostCenter] = "#") =
+    LINK([NW_SALES_DRIVERS_V2], [d/Measures] = "Units", [d/Version] = "public.Budget2026",
+         [d/Entity] = [d/Entity], [d/ProductGroup] = [d/ProductGroup])
+  * LINK([NW_SALES_DRIVERS_V2], [d/Measures] = "Price_EUR", [d/Version] = "public.Budget2026",
+         [d/Entity] = [d/Entity], [d/ProductGroup] = [d/ProductGroup])
+DATA([d/Account] = "VAR_MAT", [d/CostCenter] = "#") =
+    LINK([NW_SALES_DRIVERS_V2], [d/Measures] = "Units", [d/Version] = "public.Budget2026",
+         [d/Entity] = [d/Entity], [d/ProductGroup] = [d/ProductGroup])
+  * LINK([NW_SALES_DRIVERS_V2], [d/Measures] = "StdCost_EUR", [d/Version] = "public.Budget2026",
+         [d/Entity] = [d/Entity], [d/ProductGroup] = [d/ProductGroup])
+```
+
+(Im Tenant steht jede `DATA`-Anweisung in einer Zeile.) Auch mit öffentlichen Dimensionen verlangte
+SAC weiter „Version, Entity, ProductGroup“; `[d/Version] = [d/Version]` ergab „Reference version name
+should be specified“. Ergebnis: Budget 2026 ERL_PROD 237.043.778,99 EUR, VAR_MAT 101.544.395,93 EUR,
+je 144 Zeilen, gleich Σ Menge × Preis bzw. Σ Menge × Standardkosten aus `driver_basis_2026.csv`.
+Die Fakten in `NW_CONTROLLING_V2` sind mit Vorzeichenumkehr nach Kontotyp importiert, damit die
+Hierarchie DB I richtig verdichtet; das Skript braucht dann keine eigene Vorzeichenbehandlung
+(`CONFIG.FLIPPING_SIGN_ACCORDING_ACCTYPE = ON` oder `-1 *` lieferten den Umsatz mit falschem Vorzeichen).
 
 ### DA_03 Preis- und Mengenannahmen
 Eingabe-Story mit Prozent-Treibern je Produktgruppe (Preiserhöhung, Mengenwachstum), angewendet auf
