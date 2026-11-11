@@ -107,14 +107,15 @@ It must not get a single wrong figure through. It did not.
   to the cent, refuses requests without a token and refuses writes
   ([details](docs/ergebnisse/README.md#the-cap-service-on-sap-btp-with-hana-cloud)).
 - **SAP Analytics Cloud and SAP Datasphere** (trials): the SAC planning model holds 21,000 rows that
-  match the warehouse to the cent, a data action builds the 6+6 forecast, and a story shows Actual vs
-  Budget. Datasphere computes the same DB I in a view and an analytic model. The driver-based budget
-  action, SAC hierarchies and a Datasphere access control are not built yet
+  match the warehouse to the cent on shared dimensions with an account hierarchy (DB I > DB II >
+  DB III > BE). Data actions build the 6+6 forecast and the driver-based budget 2026 (units × price),
+  and a story shows the hierarchy against Budget. Datasphere computes the same DB I in a view and an
+  analytic model, and a data access control shows each cost-centre owner only their cost centres
   ([details](docs/ergebnisse/README.md#sap-analytics-cloud-and-sap-datasphere)).
 
 ## Not built yet (needs accounts or a real client)
 
-- SAC: driver-based budget data action (needs shared dimensions), hierarchies, data access control.
+- SAC data access per cost-centre owner: needs real SAC user IDs (the trial has one user); built in Datasphere instead.
 - Teams via Copilot Studio and Power Automate approval: need a Microsoft 365 business tenant.
 - Time-saving measurement (Q3): needs a practising controller.
 
