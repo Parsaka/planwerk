@@ -1,0 +1,81 @@
+{
+  "run_date": "2026-11-11",
+  "note": "Alle Daten simuliert (fiktive Nordwerk GmbH). Aufbau in SAP Analytics Cloud Trial und SAP Datasphere Basic Trial per Browser; Importdateien lokal erzeugt mit generate (seed 42) + dbt (98/98) + python -m planwerk.sac.export.",
+  "sac": {
+    "tenant": "sactrial-saceu30-bkg4ijqiqkas6lk5sjokydlm.eu30.hcs.cloud.sap",
+    "release": "2026 Q4 QRC",
+    "license": "Planning Professional (Limit 1)",
+    "trial_days_left": "nicht auf der Startseite angezeigt",
+    "steps": {
+      "A1_signed_in": {"status": "done"},
+      "A2_model_NW_CONTROLLING": {
+        "status": "done",
+        "rows_imported": 21000,
+        "details": "Planungsmodell aus fact_ist_plan.csv. Version als Versionsdimension (Kategorie per berechneter Spalte: Actual/Budget), Date als Datumsdimension Monat (YYYYMM). Account, Entity, ProductGroup, CostCenter als flache generische Dimensionen.",
+        "deviations": [
+          "Hierarchien (ParentId) aus dim_*.csv nicht importiert; Dimensionen flach.",
+          "Entity wurde beim Anlegen als Kennzahl (Integer) erkannt und in eine Dimension umgewandelt.",
+          "Version war zunaechst auf den Festwert public.Actual gemappt; auf die Spalte Version umgestellt."
+        ]
+      },
+      "A3_checks_actual_2025": {
+        "status": "done",
+        "source": "SAC Data Export API (FactData) des Modells",
+        "values": {
+          "ERL_PROD": {"seen": 262711023.29, "expected": 262711023.29, "ok": true},
+          "ERL_SKONTO": {"seen": 1708511.99, "expected": 1708511.98, "ok": true, "note": "Rundungsdifferenz 0,01; Summe der CSV-Zeilen ergibt ebenfalls 1.708.511,99"},
+          "VAR_MAT": {"seen": 101544394.96, "expected": 101544394.96, "ok": true},
+          "fixed_cost_accounts_5_7": {"seen": 109230581.31, "expected": 109230581.31, "ok": true},
+          "total_all_accounts": {"seen": 475194511.55, "expected": "475,194,5xx", "ok": true},
+          "rows_actual_2025": 3540
+        }
+      },
+      "A4_model_NW_SALES_DRIVERS": {"status": "done", "rows_imported": 144},
+      "A5_DA_01": {
+        "status": "done",
+        "script_used": "MEMBERSET [d/Date] = \"202501\" TO \"202506\"\nDATA() = RESULTLOOKUP([d/Version] = \"public.Actual\")",
+        "error_with_readme_script": "The version dimension cannot be used in the left operand.",
+        "fix": "Zielversion wird beim Ausfuehren gewaehlt (FC6_6_2025) statt im DATA()-Operanden.",
+        "target_version": "public.FC6_6_2025 (Kategorie Forecast, neu angelegt)",
+        "run_message": "The data action finished running on version \"FC6_6_2025\" and the results were published.",
+        "check": {"rows_seen": 1770, "sum_seen": 234991696.03, "rows_expected": 1770, "sum_expected": 234991696.03, "rows_per_month": 295, "ok": true}
+      },
+      "A5b_DA_02": {
+        "status": "blocked",
+        "error": "Dimension \"ProductGroup, Entity, Version\" should be specified for model \"[NW_SALES_DRIVERS]\".",
+        "cause": "LINK braucht gemeinsame (oeffentliche) Dimensionen oder ein explizites Dimensions-Mapping; beide Modelle nutzen modelleigene Dimensionen. Keine Trial-Einschraenkung im engeren Sinn.",
+        "saved": false
+      },
+      "A6_story": {
+        "status": "done",
+        "name": "Monatsbericht Nordwerk (simuliert)",
+        "content": "Tabelle Account x Version (Actual, Budget2025) 2025; Balkendiagramm Amount_EUR je Entity, Actual vs Budget2025 (1000: 339.501.415,52 vs 339.085.143,16; 2000: 51.862.174,90 vs 56.516.267,24); Story-Filter CostCenter, Date 2025, Version; Data-Action-Starter DA_01.",
+        "deviations": ["Kontohierarchie DB I..BE nicht verfuegbar (flache Account-Dimension)."]
+      },
+      "A7_screenshots": {"status": "done", "files": ["sap/sac_model.png", "sap/sac_data_action.png", "sap/sac_story.png"]}
+    }
+  },
+  "datasphere": {
+    "tenant": "academydatasphere.eu10.hcs.cloud.sap (Basic Trial, geteilter Tenant)",
+    "user_and_space": "GE390732",
+    "offers": "Eigener Space, Data Builder (Tabellen, grafische/SQL-Views, Analytic Models, Data Access Controls), Business Builder, CSV-Upload in lokale Tabellen.",
+    "steps": {
+      "B2_local_tables": {"status": "done", "tables": {"NW_FACT_IST_PLAN": 21000, "NW_DIM_COSTCENTER": 38, "NW_DIM_ACCOUNT": 33}},
+      "B2_view_V_DB_STATEMENT": {
+        "status": "done",
+        "type": "SQL-View, Semantik Fact, Kennzahl DB_I = ERL_PROD - ERL_SKONTO - VAR_MAT je Version, Jahr, Gesellschaft",
+        "rows": 18,
+        "actual_2025": {"1000": 114016100.24, "2000": 17734830.25, "3000": 27707185.85, "total_seen": 159458116.34, "expected": 159458116.35, "ok": true, "note": "Rundungsdifferenz 0,01; Summe der CSV-Zeilen ergibt 159.458.116,34"}
+      },
+      "B2_analytic_model_AM_DB_STATEMENT": {
+        "status": "done",
+        "preview_DB_I_actual": {"2023": 143985749.23, "2024": 153419912.82, "2025": 159458116.34}
+      },
+      "B2_data_access_control_CostCenter": {
+        "status": "not_done",
+        "reason": "V_DB_STATEMENT aggregiert die Kostenstelle weg; eine DAC braeuchte eine Berechtigungstabelle (Benutzer -> Kostenstelle) und eine Fakten-View auf Kostenstellenebene. Der DAC-Editor ist im Basic Trial vorhanden."
+      },
+      "B3_screenshots": {"status": "done", "files": ["sap/datasphere_view_db_statement.png", "sap/datasphere_analytic_model.png"]}
+    }
+  }
+}
