@@ -106,11 +106,15 @@ It must not get a single wrong figure through. It did not.
   Foundry with an HDI container and XSUAA. A live smoke test reads the same figures as the warehouse
   to the cent, refuses requests without a token and refuses writes
   ([details](docs/ergebnisse/README.md#the-cap-service-on-sap-btp-with-hana-cloud)).
+- **SAP Analytics Cloud and SAP Datasphere** (trials): the SAC planning model holds 21,000 rows that
+  match the warehouse to the cent, a data action builds the 6+6 forecast, and a story shows Actual vs
+  Budget. Datasphere computes the same DB I in a view and an analytic model. The driver-based budget
+  action, SAC hierarchies and a Datasphere access control are not built yet
+  ([details](docs/ergebnisse/README.md#sap-analytics-cloud-and-sap-datasphere)).
 
 ## Not built yet (needs accounts or a real client)
 
-- SAP Datasphere: needs a 30-day trial.
-- SAC Planning: model design and import files are ready ([sac](sac)); building the story and data actions needs an SAC tenant.
+- SAC: driver-based budget data action (needs shared dimensions), hierarchies, data access control.
 - Teams via Copilot Studio and Power Automate approval: need a Microsoft 365 business tenant.
 - Time-saving measurement (Q3): needs a practising controller.
 

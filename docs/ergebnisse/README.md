@@ -229,3 +229,42 @@ cost-centre owner restriction was not tested with a real BTP user, because that 
 collection with the `kostenstelle` attribute assigned to a person. It is covered by the local CAP
 tests and was verified on Snowflake. The trial HANA instance stops every night and has to be
 restarted before use.
+
+---
+
+## SAP Analytics Cloud and SAP Datasphere
+
+[sap_trials_run.json](sap_trials_run.json), built on 2026-11-11 in an SAC trial (2026 Q4 QRC,
+Planning Professional) and the SAP Datasphere basic trial, through the browser. The import files come
+from `python -m planwerk.sac.export` on the same warehouse. Screenshots are in [sap/](sap/).
+
+| Check | Expected (warehouse) | Seen | |
+|---|---|---|---|
+| SAC NW_CONTROLLING rows imported | 21,000 | 21,000 | ✓ |
+| SAC Actual 2025 product revenue (ERL_PROD) | 262,711,023.29 | 262,711,023.29 | ✓ |
+| SAC Actual 2025 variable cost (VAR_MAT) | 101,544,394.96 | 101,544,394.96 | ✓ |
+| SAC Actual 2025 fixed-cost accounts | 109,230,581.31 | 109,230,581.31 | ✓ |
+| SAC Actual 2025 cash discount (ERL_SKONTO) | 1,708,511.98 | 1,708,511.99 | 1 cent, see below |
+| SAC data action DA_01 (Actual Jan–Jun 2025 into FC6_6_2025) | 1,770 rows, 234,991,696.03 | 1,770 rows, 234,991,696.03 | ✓ |
+| Datasphere DB I Actual 2025 (view V_DB_STATEMENT, analytic model AM_DB_STATEMENT) | 159,458,116.35 | 159,458,116.34 | 1 cent, see below |
+
+The two one-cent gaps are float rounding in the reference figures, which were summed from the CSV
+in Python; SAC and Datasphere sum the same CSV rows to the values shown. The story
+"Monatsbericht Nordwerk (simuliert)" shows Actual vs Budget 2025 per company with cost-centre,
+date and version filters and a button for DA_01.
+
+What did not work, kept as found:
+
+- **The DA_01 script in the spec was wrong.** SAC refused `DATA([d/Version] = ...)` with
+  "The version dimension cannot be used in the left operand". The target version is now chosen when
+  the data action runs; [sac/README.md](../../sac/README.md) is corrected.
+- **DA_02 (driver-based budget 2026 via LINK) was not saved.** SAC asks for "ProductGroup, Entity,
+  Version" to be specified for NW_SALES_DRIVERS, because both models use their own private
+  dimensions. It needs shared public dimensions or an explicit mapping in LINK.
+- **No hierarchies in SAC.** Account, Entity, ProductGroup and CostCenter were imported flat, so the
+  story cannot roll up DB I to BE as a hierarchy yet.
+- **No data access control in Datasphere.** The DB view aggregates the cost centre away; a DAC needs
+  a user-to-cost-centre table and a fact view at cost-centre level. Cost-centre restriction is shown on
+  Snowflake and in CAP instead.
+- The Datasphere basic trial is a shared SAP tenant with one personal space, not a full tenant.
+

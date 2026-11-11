@@ -37,8 +37,12 @@ Kopiert geschlossene Monate von `Actual` in die Forecast-Version, z. B. 6+6: Jan
 
 ```
 MEMBERSET [d/Date] = "202501" TO "202506"
-DATA([d/Version] = "public.FC6_6_2025") = RESULTLOOKUP([d/Version] = "public.Actual")
+DATA() = RESULTLOOKUP([d/Version] = "public.Actual")
 ```
+
+Die Zielversion (`public.FC6_6_2025`) wird beim Ausführen gewählt. Die erste Fassung mit
+`DATA([d/Version] = ...)` lehnte SAC ab („The version dimension cannot be used in the left operand“).
+Getestet am 2026-11-11: 1.770 Zeilen, 234.991.696,03 EUR = Ist Januar–Juni 2025.
 
 ### DA_02 Treiberbasierte Umsatz- und Materialplanung (aus `NW_SALES_DRIVERS`)
 Plan-Umsatz = Menge × Nettopreis, variable Kosten = Menge × Standardkosten, je Gesellschaft,
@@ -52,6 +56,11 @@ DATA([d/Account] = "ERL_PROD") = LINK([NW_SALES_DRIVERS], [d/Measures] = "Units"
 DATA([d/Account] = "VAR_MAT")  = LINK([NW_SALES_DRIVERS], [d/Measures] = "Units")
                                 * LINK([NW_SALES_DRIVERS], [d/Measures] = "StdCost_EUR")
 ```
+
+Stand 2026-11-11: noch nicht lauffähig. SAC verlangt, dass „ProductGroup, Entity, Version“ für
+`NW_SALES_DRIVERS` angegeben werden, weil beide Modelle eigene (private) Dimensionen haben. Lösung:
+gemeinsame öffentliche Dimensionen für Entity, ProductGroup und Version, oder die Dimensionen im
+`LINK` explizit abbilden.
 
 ### DA_03 Preis- und Mengenannahmen
 Eingabe-Story mit Prozent-Treibern je Produktgruppe (Preiserhöhung, Mengenwachstum), angewendet auf

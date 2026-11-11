@@ -69,8 +69,12 @@ Die Ergebnisse liegen danach in `reports/out/` und `docs/ergebnisse/`. Details s
 - **SAP BTP mit HANA Cloud** (Testkonto, US East): Der CAP-Service läuft auf Cloud Foundry mit
   HDI-Container und XSUAA. Ein Live-Test liest dieselben Zahlen wie das Warehouse centgenau, lehnt
   Anfragen ohne Token ab und verweigert Schreibzugriffe.
+- **SAP Analytics Cloud und SAP Datasphere** (Testzugänge): Das SAC-Planungsmodell enthält 21.000 Zeilen,
+  centgenau wie im Warehouse. Eine Datenaktion erzeugt den Forecast 6+6, eine Story zeigt Ist gegen Budget.
+  Datasphere berechnet denselben DB I in einer View und einem Analytic Model. Noch offen sind die
+  treiberbasierte Budget-Datenaktion, Hierarchien in SAC und eine Datenzugriffssteuerung in Datasphere.
 
 ## Noch offen
 
-SAP Datasphere und die SAC-Story brauchen eigene 30-Tage-Testzugänge. Teams-Anbindung und Power-Automate-Freigabe brauchen einen Microsoft-365-Firmentenant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen
+In SAC fehlen noch die treiberbasierte Budget-Datenaktion (braucht gemeinsame Dimensionen) und Hierarchien. Teams-Anbindung und Power-Automate-Freigabe brauchen einen Microsoft-365-Firmentenant. Für die Zeitmessung (Q3) und die Umsetzung auf echten Daten wird ein Pilotunternehmen
 gesucht ([docs/outreach](docs/outreach)).
